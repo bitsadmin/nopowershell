@@ -33,6 +33,11 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | List PowerShell processes on remote system | `NoPowerShell.exe gwmi "Select ProcessId,Name,CommandLine From Win32_Process" -ComputerName dc1.corp.local \| ? Name -Like "powershell*" \| select ProcessId,CommandLine` | Explicit credentials can be specified using the `-Username` and `-Password` parameters |
 | Execute program using WMI | `NoPowerShell.exe Invoke-WmiMethod -Class Win32_Process -Name Create "cmd /c calc.exe"` | |
 
+## Install in Cobalt Strike
+1. Copy both NoPowerShell.exe and NoPowerShell.cna to the **scripts** subfolder of Cobalt Strike
+2. Launch Cobalt Strike and load the .cna script in the Script Manager
+3. Interact with a beacon and execute commands using the `nps` command
+
 # Known issues
 - Pipeline characters need to surrounded by spaces
 - TLS 1.1+ is not supported by .NET Framework 2, so any site enforcing it will result in a connection error
