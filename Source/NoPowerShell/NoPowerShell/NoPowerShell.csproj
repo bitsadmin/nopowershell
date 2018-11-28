@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{555AD0AC-1FDB-4016-8257-170A74CB2F55}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>NoPowerShell</RootNamespace>
+    <AssemblyName>NoPowerShell</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Arguments\Argument.cs" />
+    <Compile Include="Arguments\ArgumentList.cs" />
+    <Compile Include="Arguments\BoolArgument.cs" />
+    <Compile Include="Arguments\IntegerArgument.cs" />
+    <Compile Include="Arguments\StringArgument.cs" />
+    <Compile Include="Commands\Additional\GetSystemInfoCommand.cs" />
+    <Compile Include="Commands\Core\GetCommandCommand.cs" />
+    <Compile Include="Commands\Management\GetItemPropertyCommand.cs" />
+    <Compile Include="Commands\Management\RemovetemCommand.cs" />
+    <Compile Include="Commands\Management\InvokeWmiMethodCommand.cs" />
+    <Compile Include="Commands\Management\CopyItemCommand.cs" />
+    <Compile Include="Commands\NetTCPIP\GetNetIPAddressCommand.cs" />
+    <Compile Include="Commands\Management\GetProcessCommand.cs" />
+    <Compile Include="Commands\NetTCPIP\GetNetRouteCommand.cs" />
+    <Compile Include="Commands\NetTCPIP\TestNetConnectionCommand.cs" />
+    <Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
+    <Compile Include="Commands\TemplateCommand.cs" />
+    <Compile Include="Commands\Utility\FormatListCommand.cs" />
+    <Compile Include="Commands\Utility\FormatTableCommand.cs" />
+    <Compile Include="Commands\Management\GetContentCommand.cs" />
+    <Compile Include="Commands\Additional\GetWhoamiCommand.cs" />
+    <Compile Include="Commands\Management\GetChildItemCommand.cs" />
+    <Compile Include="Commands\Management\GetWmiObjectCommand.cs" />
+    <Compile Include="Commands\PSCommand.cs" />
+    <Compile Include="Commands\Utility\SelectObjectCommand.cs" />
+    <Compile Include="Commands\Core\WhereObjectCommand.cs" />
+    <Compile Include="Commands\Utility\InvokeWebRequestCommand.cs" />
+    <Compile Include="HelperClasses\CaseInsensitiveList.cs" />
+    <Compile Include="HelperClasses\CommandResult.cs" />
+    <Compile Include="HelperClasses\PipeParser.cs" />
+    <Compile Include="HelperClasses\ReflectionHelper.cs" />
+    <Compile Include="HelperClasses\ResultRecord.cs" />
+    <Compile Include="HelperClasses\ResultPrinter.cs" />
+    <Compile Include="HelperClasses\WmiHelper.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
