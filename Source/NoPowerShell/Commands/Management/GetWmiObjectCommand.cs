@@ -51,8 +51,8 @@ namespace NoPowerShell.Commands
                 {
                     new StringArgument("Namespace", @"root\cimv2", true),
                     new StringArgument("Query"),
-                    new StringArgument("Class", null, true),
-                    new StringArgument("Filter", null, true)
+                    new StringArgument("Class", true),
+                    new StringArgument("Filter", true)
                 };
             }
         }

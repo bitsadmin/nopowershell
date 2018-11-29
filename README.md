@@ -89,7 +89,6 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 
 | Cmdlet | Contributed by | GitHub | Twitter |
 | - | - | - | - |
-| Resolve-DnsName |  |  |  |
 | Get-ADUser |  |  |  |
 | Get-ADGroupMember |  |  |  |
 
@@ -116,5 +115,6 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Format-Table | Utility | |
 | Invoke-WebRequest | Utility |
 | Select-Object | Utility |
+| Resolve-DnsName | DnsClient | Very basic implementation, support for specifying DNS server and query type need to be added |
 
 **Authored by Arris Huijgen (@_bitsadmin - https://github.com/bitsadmin)**

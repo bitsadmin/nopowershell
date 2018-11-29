@@ -33,8 +33,8 @@ namespace NoPowerShell.Commands
             supportedArguments.AddRange(new List<Argument>()
             {
                 new StringArgument("ComputerName", ".", true),
-                new StringArgument("Username", null, true),
-                new StringArgument("Password", null, true)
+                new StringArgument("Username", true),
+                new StringArgument("Password", true)
             });
 
             _arguments = ParseArguments(userArguments, supportedArguments);

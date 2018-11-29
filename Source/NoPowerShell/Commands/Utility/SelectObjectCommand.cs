@@ -48,7 +48,7 @@ namespace NoPowerShell.Commands
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Property", null)
+                    new StringArgument("Property")
                 };
             }
         }

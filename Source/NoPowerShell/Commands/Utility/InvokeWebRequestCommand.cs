@@ -55,8 +55,8 @@ namespace NoPowerShell.Commands
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("URI", null),
-                    new StringArgument("OutFile", null, true)
+                    new StringArgument("URI"),
+                    new StringArgument("OutFile", true)
                 };
             }
         }

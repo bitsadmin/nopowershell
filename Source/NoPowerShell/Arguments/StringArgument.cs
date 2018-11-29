@@ -35,6 +35,15 @@ namespace NoPowerShell.Arguments
         }
 
         /// <summary>
+        /// Create a new string argument with a null default value specifying whether it is optional or not.
+        /// </summary>
+        /// <param name="argumentName">Name of the parameter</param>
+        /// <param name="optionalArgument">True if the argument is optional; False if not</param>
+        public StringArgument(string argumentName, bool optionalArgument) : this(argumentName, null, optionalArgument)
+        {
+        }
+
+        /// <summary>
         /// Create a new string argument with a null default value.
         /// </summary>
         /// <param name="argumentName">Name of the parameter</param>

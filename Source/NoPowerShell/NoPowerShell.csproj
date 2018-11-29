@@ -46,6 +46,7 @@
     <Compile Include="Arguments\StringArgument.cs" />
     <Compile Include="Commands\Additional\GetSystemInfoCommand.cs" />
     <Compile Include="Commands\Core\GetCommandCommand.cs" />
+    <Compile Include="Commands\DnsClient\ResolveDnsNameCommand.cs" />
     <Compile Include="Commands\Management\GetItemPropertyCommand.cs" />
     <Compile Include="Commands\Management\RemoveItemCommand.cs" />
     <Compile Include="Commands\Management\InvokeWmiMethodCommand.cs" />
