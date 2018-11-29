@@ -92,3 +92,29 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Resolve-DnsName |  |  |  |
 | Get-ADUser |  |  |  |
 | Get-ADGroupMember |  |  |  |
+
+# Included NoPowerShell cmdlets
+| Cmdlet | Category | Notes |
+| - | - | - |
+| Get-SystemInfo | Additional | Few fields still need to be added to mimick systeminfo.exe |
+| Get-Whoami | Additional | whoami.exe /ALL is not implemented yet |
+| Get-Command | Core | |
+| Where-Object | Core | |
+| Copy-Item | Management | |
+| Get-Content | Management | |
+| Get-Process | Management | Quick & dirty implementation |
+| Invoke-WmiMethod | Management | Quick & dirty implementation |
+| Get-ChildItem | Management | |
+| Get-ItemProperty | Management | |
+| Get-WmiObject | Management | |
+| Remove-Item | Management | |
+| Get-NetIPAddress | NetTCPIP | |
+| Get-NetRoute | NetTCPIP | |
+| Test-NetConnection | NetTCPIP | |
+| Get-SmbMapping | SmbShare | |
+| Format-List | Utility | |
+| Format-Table | Utility | |
+| Invoke-WebRequest | Utility |
+| Select-Object | Utility |
+
+**Authored by Arris Huijgen (@_bitsadmin - https://github.com/bitsadmin)**
