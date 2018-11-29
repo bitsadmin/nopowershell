@@ -47,7 +47,7 @@
     <Compile Include="Commands\Additional\GetSystemInfoCommand.cs" />
     <Compile Include="Commands\Core\GetCommandCommand.cs" />
     <Compile Include="Commands\Management\GetItemPropertyCommand.cs" />
-    <Compile Include="Commands\Management\RemovetemCommand.cs" />
+    <Compile Include="Commands\Management\RemoveItemCommand.cs" />
     <Compile Include="Commands\Management\InvokeWmiMethodCommand.cs" />
     <Compile Include="Commands\Management\CopyItemCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetIPAddressCommand.cs" />
