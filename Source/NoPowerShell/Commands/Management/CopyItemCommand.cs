@@ -1,6 +1,6 @@
-﻿using System.IO;
-using NoPowerShell.Arguments;
+﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.IO;
 
 /*
 Author: @_bitsadmin
@@ -96,6 +96,18 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Copies an item from one location to another."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Copy file from one location to another", "copy C:\\Tmp\\nc.exe C:\\Windows\\System32\\nc.exe"),
+                    new ExampleEntry("Copy folder", "copy C:\\Tmp\\MyFolder C:\\Tmp\\MyFolderBackup")
+                };
+            }
         }
     }
 }

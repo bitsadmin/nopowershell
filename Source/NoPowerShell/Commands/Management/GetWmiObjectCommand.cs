@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @_bitsadmin
@@ -49,7 +50,7 @@ namespace NoPowerShell.Commands
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Namespace", @"root\cimv2", true),
+                    new StringArgument("Namespace", @"ROOT\CIMV2", true),
                     new StringArgument("Query"),
                     new StringArgument("Class", true),
                     new StringArgument("Filter", true)
@@ -60,6 +61,27 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Gets instances of WMI classes or information about the available classes."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry
+                    (
+                        "List local shares",
+                        new List<string>()
+                        {
+                            "Get-WmiObject -Namespace ROOT\\CIMV2 -Query \"Select * From Win32_Share Where Name LIKE '%$'\"",
+                            "gwmi -Class Win32_Share -Filter \"Name LIKE '%$'\""
+                        }
+                    ),
+                    new ExampleEntry("Obtain data of Win32_Process class from a remote system and apply a filter on the output", "gwmi \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName dc01.corp.local | ? Name -Like *PowerShell* | select ProcessId,CommandLine"),
+                    new ExampleEntry("View details about a certain service", "Get-WmiObject -Class Win32_Service -Filter \"Name = 'WinRM'\"")
+                };
+            }
         }
     }
 }

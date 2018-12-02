@@ -18,20 +18,40 @@ namespace NoPowerShell.Commands
         public override CommandResult Execute(CommandResult pipeIn)
         {
             string[] attributes = _arguments.Get<StringArgument>("Property").Value.Split(',');
+            int first = _arguments.Get<IntegerArgument>("First").Value;
 
+            bool wildcardSelect = attributes[0] == "*";
+            bool firstSet = first > 0;
+
+            int counter = 0;
             foreach (ResultRecord result in pipeIn)
             {
-                ResultRecord newResult = new ResultRecord();
+                // Obey -First [int32] parameter and break if number is reached
+                if (firstSet && counter == first)
+                    break;
 
-                foreach (string attr in attributes)
+                // If all attributes need to be taken
+                if (wildcardSelect)
                 {
-                    if (result.ContainsKey(attr))
-                        newResult.Add(attr, result[attr]);
-                    else
-                        newResult.Add(attr, null);
+                    _results.Add(result);
+                }
+                // If specific attributes are selected
+                else
+                {
+                    ResultRecord newResult = new ResultRecord();
+
+                    foreach (string attr in attributes)
+                    {
+                        if (result.ContainsKey(attr))
+                            newResult.Add(attr, result[attr]);
+                        else
+                            newResult.Add(attr, null);
+                    }
+
+                    _results.Add(newResult);
                 }
 
-                _results.Add(newResult);
+                counter++;
             }
 
             return _results;
@@ -48,7 +68,8 @@ namespace NoPowerShell.Commands
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Property")
+                    new StringArgument("Property", "*", false),
+                    new IntegerArgument("First", 0, true)
                 };
             }
         }
@@ -56,6 +77,18 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Selects objects or object properties."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Show only the Name in a file listing", "ls C:\\ | select Name"),
+                    new ExampleEntry("Show first 10 results of file listing", "ls C:\\Windows\\System32 -Include *.exe | select -First 10 Name,Length")
+                };
+            }
         }
     }
 }

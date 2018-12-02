@@ -69,5 +69,17 @@ namespace NoPowerShell.Commands
         {
             get { return "Formats the output as a table."; }
         }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Format output as a table", "Get-Process | ft"),
+                    new ExampleEntry("Format output as a table showing only specific attributes", "Get-Process | ft ProcessId,Name"),
+                };
+            }
+        }
     }
 }

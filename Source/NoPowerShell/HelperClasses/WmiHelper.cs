@@ -35,26 +35,38 @@ namespace NoPowerShell.HelperClasses
             Dictionary<string, int> columns = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
             queryResults = new CommandResult(queryCollection.Count);
 
-            // Determine column order
-            int start = wmiQuery.ToLower().IndexOf("select") + "select".Length;
-            int length = wmiQuery.ToLower().IndexOf(" from") - start;
-            string columns_string = wmiQuery.Substring(start, length);
-            string[] dirty_columns = columns_string.Split(',');
-            foreach (string col in dirty_columns)
-                columns.Add(col.Trim(), col.Trim().Length);
-
-            // Case of SELECT *
+            // Determine column order of SELECT query
+            string lowerWmiQuery = wmiQuery.ToLowerInvariant();
             bool wildCardSelect = false;
-            if (columns.ContainsKey("*"))
+            if (lowerWmiQuery.StartsWith("select "))
+            {
+                int start = wmiQuery.ToLower().IndexOf("select") + "select".Length;
+                int length = wmiQuery.ToLower().IndexOf(" from") - start;
+                string columns_string = wmiQuery.Substring(start, length);
+                string[] dirty_columns = columns_string.Split(',');
+                foreach (string col in dirty_columns)
+                    columns.Add(col.Trim(), col.Trim().Length);
+
+                // Case of SELECT *
+                if (columns.ContainsKey("*"))
+                {
+                    columns = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+                    wildCardSelect = true;
+                }
+            }
+            // Other types of queries
+            else if (lowerWmiQuery.StartsWith("associators of ") || lowerWmiQuery.StartsWith("references of"))
             {
                 columns = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
                 wildCardSelect = true;
             }
+            else
+                throw new InvalidOperationException(string.Format("Unknown type of WMI query: {0}", wmiQuery));
 
             // Collect data
             foreach (ManagementObject m in queryCollection)
             {
-                ResultRecord result = new ResultRecord(m.Properties.Count, StringComparer.InvariantCultureIgnoreCase);
+                ResultRecord result = new ResultRecord(m.Properties.Count);
 
                 // Case of SELECT *
                 if (wildCardSelect)

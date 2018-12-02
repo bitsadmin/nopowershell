@@ -1,9 +1,9 @@
-﻿using System;
+﻿using NoPowerShell.Arguments;
+using NoPowerShell.HelperClasses;
+using System;
 using System.IO;
 using System.Text;
 using Microsoft.Win32;
-using NoPowerShell.Arguments;
-using NoPowerShell.HelperClasses;
 
 /*
 Author: @_bitsadmin
@@ -212,6 +212,18 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Gets the files and folders in a file system drive."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Locate KeePass files in the C:\\Users\\ directory", "ls -Recurse -Force C:\\Users\\ -Include *.kdbx"),
+                    new ExampleEntry("List the keys under the SOFTWARE key in the registry", "ls HKLM:\\SOFTWARE")
+                };
+            }
         }
     }
 }

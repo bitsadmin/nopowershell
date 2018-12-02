@@ -100,5 +100,17 @@ namespace NoPowerShell.Commands
         {
             get { return "Deletes files and folders."; }
         }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Delete a read-only file", "Remove-Item -Force C:\\Tmp\\MyFile.txt"),
+                    new ExampleEntry("Recursively delete a folder", "Remove-Item -Recurse C:\\Tmp\\MyTools\\")
+                };
+            }
+        }
     }
 }

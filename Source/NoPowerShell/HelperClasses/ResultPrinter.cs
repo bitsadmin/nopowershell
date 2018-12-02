@@ -130,6 +130,7 @@ namespace NoPowerShell.HelperClasses
                 Console.WriteLine();
             }
         }
+
         private static Dictionary<string, int> CalcColumnWidths(CommandResult results)
         {
             Dictionary<string, int> columnWidths = new Dictionary<string, int>(results[0].Keys.Count);

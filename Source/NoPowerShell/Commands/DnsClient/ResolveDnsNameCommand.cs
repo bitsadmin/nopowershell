@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 using System.Net;
 
 /*
@@ -68,7 +69,26 @@ namespace NoPowerShell.Commands
 
         public static new string Synopsis
         {
-            get { return "This template shows how easy it is to develop new NoPowerShell cmdlets."; }
+            get { return "Resolve DNS name."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry
+                    (
+                        "Resolve domain name",
+                        new List<string>()
+                        {
+                            "Resolve-DnsName microsoft.com",
+                            "host linux.org"
+                        }
+                    )
+                };
+            }
         }
     }
 }

@@ -47,5 +47,16 @@ namespace NoPowerShell.Commands
         {
             get { return "Gets the IP route information from the IP routing table."; }
         }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Show the IP routing table", "Get-NetRoute")
+                };
+            }
+        }
     }
 }

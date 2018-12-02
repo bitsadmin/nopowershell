@@ -56,5 +56,16 @@ namespace NoPowerShell.Commands
         {
             get { return "Calls WMI methods."; }
         }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Launch process using WMI", "Invoke-WmiMethod -Class Win32_Process -Name Create \"cmd /c calc.exe\"")
+                };
+            }
+        }
     }
 }

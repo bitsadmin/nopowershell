@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @_bitsadmin
@@ -58,6 +59,27 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Gets the IP address configuration."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry
+                    (
+                        "Show network interfaces",
+                        new List<string>()
+                        {
+                            "Get-NetIPAddress",
+                            "ipconfig",
+                            "ifconfig"
+                        }
+                    ),
+                    new ExampleEntry("Show all network interfaces", "Get-NetIPAddress -All")
+                };
+            }
         }
     }
 }

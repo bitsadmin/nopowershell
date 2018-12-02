@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 /*
 Author: @_bitsadmin
@@ -14,7 +15,7 @@ namespace NoPowerShell.HelperClasses
         {
         }
 
-        public ResultRecord(int capacity, IEqualityComparer<string> comparer) : base(capacity, comparer)
+        public ResultRecord(int capacity) : base(capacity, StringComparer.InvariantCultureIgnoreCase)
         {
         }
     }

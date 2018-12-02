@@ -1,6 +1,6 @@
-﻿using System.IO;
-using NoPowerShell.Arguments;
+﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.IO;
 
 /*
 Author: @_bitsadmin
@@ -50,6 +50,17 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Gets the contents of a file."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("View contents of a file", "Get-Content C:\\Windows\\WindowsUpdate.log")
+                };
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System;
+using System.Collections.Generic;
 
 /*
 Author: @_bitsadmin
@@ -89,6 +91,26 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "This template shows how easy it is to develop new NoPowerShell cmdlets."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("These entries show up when executing the 'Get-Help Get-TemplateCommand' command", "Get-TemplateCommand -MyFlag"),
+                    new ExampleEntry
+                    (
+                        "This is another example with two related or equivalent examples",
+                        new List<string>()
+                        {
+                            "gtc \"Bye PowerShell\" -MyInteger 30 | ? Attribute2 -Like Line1* | select Attribute2 | fl",
+                            "Get-TemplateCommand -MyInteger 10 \"Bye PowerShell\""
+                        }
+                    )
+                };
+            }
         }
     }
 }

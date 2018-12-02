@@ -89,5 +89,17 @@ namespace NoPowerShell.Commands
         {
             get { return "Selects objects from a collection based on their property values."; }
         }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("List all processes containing PowerShell in the process name", "Get-Process | ? Name -Like *PowerShell*"),
+                    new ExampleEntry("List all active local users", "Get-LocalUser | ? Disabled -EQ False")
+                };
+            }
+        }
     }
 }

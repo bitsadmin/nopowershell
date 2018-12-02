@@ -22,7 +22,7 @@ namespace NoPowerShell
             // If no arguments are provided to the executable, show help
             if (args.Length == 0)
             {
-                Console.WriteLine("== NoPowerShell v1.0 ==\r\nUrl: Website: https://github.com/bitsadmin\r\nUsage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n");
+                Console.WriteLine("== NoPowerShell v1.1 ==\r\nUrl: Website: https://github.com/bitsadmin\r\nUsage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n");
                 userCommands = new List<PSCommand>(1) { new GetCommandCommand(null) };
             }
             // Parse pipes in commandline arguments and commands within pipes
@@ -38,6 +38,13 @@ namespace NoPowerShell
                 justOutput = true;
 
             CommandResult result = null;
+#if DEBUG
+            // Execute commands in pipeline
+            foreach (PSCommand command in userCommands)
+            {
+                result = command.Execute(result);
+            }
+#else
             try
             {
                 // Execute commands in pipeline
@@ -51,6 +58,7 @@ namespace NoPowerShell
                 Console.Write(e.ToString());
                 return -1;
             }
+#endif
 
             // Output to screen
             if (justOutput)

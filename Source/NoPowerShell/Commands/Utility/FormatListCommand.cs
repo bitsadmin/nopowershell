@@ -69,5 +69,17 @@ namespace NoPowerShell.Commands
         {
             get { return "Formats the output as a list of properties in which each property appears on a new line."; }
         }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Format output as a list", "Get-LocalUser | fl"),
+                    new ExampleEntry("Format output as a list showing only specific attributes", "Get-LocalUser | fl Name,Description"),
+                };
+            }
+        }
     }
 }

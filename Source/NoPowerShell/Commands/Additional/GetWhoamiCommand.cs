@@ -57,5 +57,16 @@ namespace NoPowerShell.Commands
         {
             get { return "Show details about the current user."; }
         }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Show the current user", "whoami")
+                };
+            }
+        }
     }
 }

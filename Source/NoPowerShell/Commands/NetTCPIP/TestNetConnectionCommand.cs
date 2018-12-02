@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using NoPowerShell.Arguments;
+﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.NetworkInformation;
 
 /*
 Author: @_bitsadmin
@@ -65,7 +66,7 @@ namespace NoPowerShell.Commands
                     new ResultRecord()
                     {
                         { "ComputerName", computerName },
-                        { "RemoteAddress", reply.Address.ToString() },
+                        { "RemoteAddress", (reply.Address != null) ? reply.Address.ToString() : null },
                         { "PingSucceeded", reply.Status == IPStatus.Success ? "True" : "False" },
                         { "PingReplyDetails (RTT)", reply.RoundtripTime.ToString() }
                     }
@@ -155,7 +156,14 @@ namespace NoPowerShell.Commands
 
         public static new CaseInsensitiveList Aliases
         {
-            get { return new CaseInsensitiveList() { "Test-NetConnection", "ping" }; }
+            get {
+                return new CaseInsensitiveList()
+                {
+                    "Test-NetConnection",
+                    "TNC",
+                    "ping" // Not official
+                };
+            }
         }
 
         public static new ArgumentList SupportedArguments
@@ -166,8 +174,8 @@ namespace NoPowerShell.Commands
                 {
                     new BoolArgument("TraceRoute", false),
                     new StringArgument("ComputerName"),
-                    new IntegerArgument("Count", 1, true),
-                    new IntegerArgument("Timeout", 5000, true),
+                    new IntegerArgument("Count", 1, true),      // Unofficial parameter
+                    new IntegerArgument("Timeout", 5000, true), // Unofficial parameter
                     new IntegerArgument("Hops", 30, true)
                 };
             }
@@ -176,6 +184,18 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Displays diagnostic information for a connection."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout", "Test-NetConnection -Count 2 -Timeout 500 1.1.1.1"),
+                    new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 google.com"),
+                };
+            }
         }
     }
 }

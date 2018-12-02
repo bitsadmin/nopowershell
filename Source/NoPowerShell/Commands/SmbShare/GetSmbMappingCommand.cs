@@ -46,5 +46,16 @@ namespace NoPowerShell.Commands
         {
             get { return "Retrieves the SMB client directory mappings created for a server."; }
         }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("List network shares on the local machine that are exposed to the network", "Get-NetSmbMapping"),
+                };
+            }
+        }
     }
 }

@@ -188,6 +188,14 @@ namespace NoPowerShell.Commands
             get { throw new InvalidOperationException("This attribute should be overridden"); }
         }
 
+        public virtual ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries();
+            }
+        }
+
         public override string ToString()
         {
             PropertyInfo aliasesProperty = this.GetType().GetProperty("Aliases", BindingFlags.Static | BindingFlags.Public);

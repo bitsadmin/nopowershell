@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using NoPowerShell.Arguments;
+﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 /*
@@ -100,7 +100,7 @@ namespace NoPowerShell.Commands
                     { "Virtual Memory: In Use", "" }, // TODO
                     { "Page File Location(s)", sPageFile },
                     { "Domain", wmiCS["Domain"] },
-                    { "Logon Server", "" }, // TODO
+                    { "Logon Server", Environment.GetEnvironmentVariable("LOGONSERVER") },
                     { "Hotfix(s)", string.Join(", ", hotfixes.ToArray()) },
                     { "Network Card(s)", "" }, // TODO
                     { "Hyper-V Requirements", "" } // TODO
@@ -128,6 +128,17 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Shows details about the system such as hardware and Windows installation."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Show information about the current system", "systeminfo")
+                };
+            }
         }
     }
 }

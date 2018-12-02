@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.Win32;
-using NoPowerShell.Arguments;
+﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System;
+using Microsoft.Win32;
 
 /*
 Author: @_bitsadmin
@@ -114,6 +114,17 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Gets the properties of a specified item."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("List autoruns in the registry", "Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run | ft")
+                };
+            }
         }
     }
 }

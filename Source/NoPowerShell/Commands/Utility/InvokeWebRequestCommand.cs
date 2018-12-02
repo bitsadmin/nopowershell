@@ -1,8 +1,8 @@
-﻿using System;
+﻿using NoPowerShell.Arguments;
+using NoPowerShell.HelperClasses;
+using System;
 using System.IO;
 using System.Net;
-using NoPowerShell.Arguments;
-using NoPowerShell.HelperClasses;
 
 /*
 Author: @_bitsadmin
@@ -64,6 +64,18 @@ namespace NoPowerShell.Commands
         public static new string Synopsis
         {
             get { return "Gets content from a web page on the Internet."; }
+        }
+
+        public static new ExampleEntries Examples
+        {
+            get
+            {
+                return new ExampleEntries()
+                {
+                    new ExampleEntry("Download file from the Internet", "wget http://myserver.me/nc.exe"),
+                    new ExampleEntry("Download file from the Internet specifying the destination", "wget http://myserver.me/nc.exe -OutFile C:\\Tmp\\netcat.exe"),
+                };
+            }
         }
     }
 }
