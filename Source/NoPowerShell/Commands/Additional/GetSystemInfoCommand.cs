@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
@@ -20,6 +20,8 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            bool simple = _arguments.Get<BoolArgument>("Simple").Value;
+
             ResultRecord wmiOS = WmiHelper.ExecuteWmiQuery("Select * From Win32_OperatingSystem")[0];
             ResultRecord wmiCS = WmiHelper.ExecuteWmiQuery("Select * From Win32_ComputerSystem")[0];
 
@@ -30,17 +32,24 @@ namespace NoPowerShell.Commands
                 wmiOS["BuildNumber"]);
 
             // Original Install Date
-            Regex dateRegex = new Regex("([0-9]{4})([01][0-9])([012][0-9])([0-9]{2})([0-9]{2})([0-9]{2})");
-            Match dateMatch = dateRegex.Matches(wmiOS["InstallDate"])[0];
-            string sOrigInstallDate = string.Format("{0}-{1}-{2}, {3}:{4}:{5}",
-                dateMatch.Groups[3], dateMatch.Groups[2], dateMatch.Groups[1],
-                dateMatch.Groups[4], dateMatch.Groups[5], dateMatch.Groups[6]);
+            string sOrigInstallDate = null;
+            Match dateMatch = MatchDate(wmiOS, "InstallDate");
+            if(dateMatch != null)
+            {
+                    sOrigInstallDate = string.Format("{0}-{1}-{2}, {3}:{4}:{5}",
+                    dateMatch.Groups[3], dateMatch.Groups[2], dateMatch.Groups[1],
+                    dateMatch.Groups[4], dateMatch.Groups[5], dateMatch.Groups[6]);
+            }
 
             // System Boot Time
-            dateMatch = dateRegex.Matches(wmiOS["LastBootUpTime"])[0];
-            string sSystemBootTime = string.Format("{0}-{1}-{2}, {3}:{4}:{5}",
+            string sSystemBootTime = null;
+            dateMatch = MatchDate(wmiOS, "LastBootUpTime");
+            if(dateMatch != null)
+            {
+                sSystemBootTime = string.Format("{0}-{1}-{2}, {3}:{4}:{5}",
                 dateMatch.Groups[3], dateMatch.Groups[2], dateMatch.Groups[1],
                 dateMatch.Groups[4], dateMatch.Groups[5], dateMatch.Groups[6]);
+            } 
 
             // Processors
             CommandResult wmiCPUs = WmiHelper.ExecuteWmiQuery("Select * From Win32_Processor");
@@ -49,17 +58,26 @@ namespace NoPowerShell.Commands
                 cpus.Add(string.Format("{0} ~{1} Mhz", cpu["Description"], cpu["CurrentClockSpeed"]));
 
             // Bios
+            string strBiosVersion = null;
             ResultRecord wmiBios = WmiHelper.ExecuteWmiQuery("Select * From Win32_BIOS")[0];
-            dateMatch = dateRegex.Matches(wmiBios["ReleaseDate"])[0];
-            string strBiosVersion = string.Format("{0} {1}, {2}-{3}-{4}",
+            dateMatch = MatchDate(wmiBios, "ReleaseDate");
+            if(dateMatch != null)
+            {
+                strBiosVersion = string.Format("{0} {1}, {2}-{3}-{4}",
                 wmiBios["Manufacturer"], wmiBios["SMBIOSBIOSVersion"],
                 dateMatch.Groups[3], dateMatch.Groups[2], dateMatch.Groups[1]);
+            }
 
             // Hotfixes
-            CommandResult wmiHotfixes = WmiHelper.ExecuteWmiQuery("Select HotFixID From Win32_QuickFixEngineering");
-            List<string> hotfixes = new List<string>(wmiHotfixes.Count);
-            foreach(ResultRecord hotfix in wmiHotfixes)
-                hotfixes.Add(hotfix["HotFixID"]);
+            List<string> hotfixes = new List<string>() { "[unlisted]" };
+
+            if (!simple)
+            {
+                CommandResult wmiHotfixes = WmiHelper.ExecuteWmiQuery("Select HotFixID From Win32_QuickFixEngineering");
+                hotfixes = new List<string>(wmiHotfixes.Count);
+                foreach (ResultRecord hotfix in wmiHotfixes)
+                    hotfixes.Add(hotfix["HotFixID"]);
+            }
 
             // Time zone
             int timeZone = Convert.ToInt32(wmiOS["CurrentTimeZone"]) / 60;
@@ -97,17 +115,30 @@ namespace NoPowerShell.Commands
                     { "Available Physical Memory", wmiOS["FreePhysicalMemory"] },
                     { "Virtual Memory: Max Size", wmiOS["TotalVirtualMemorySize"] },
                     { "Virtual Memory: Available", wmiOS["FreeVirtualMemory"] },
-                    { "Virtual Memory: In Use", "" }, // TODO
+                    { "Virtual Memory: In Use", "[not implemented]" }, // TODO
                     { "Page File Location(s)", sPageFile },
                     { "Domain", wmiCS["Domain"] },
                     { "Logon Server", Environment.GetEnvironmentVariable("LOGONSERVER") },
                     { "Hotfix(s)", string.Join(", ", hotfixes.ToArray()) },
-                    { "Network Card(s)", "" }, // TODO
-                    { "Hyper-V Requirements", "" } // TODO
+                    { "Network Card(s)", "[not implemented]" }, // TODO
+                    { "Hyper-V Requirements", "[not implemented]" } // TODO
                 }
             );
             
             return _results;
+        }
+
+        private static Match MatchDate(ResultRecord result, string key)
+        {
+            if (!result.ContainsKey(key))
+                return null;
+
+            Regex dateRegex = new Regex("([0-9]{4})([01][0-9])([012][0-9])([0-9]{2})([0-9]{2})([0-9]{2})");
+            MatchCollection allMatches = dateRegex.Matches(result[key]);
+            if (allMatches.Count > 0)
+                return allMatches[0];
+            else
+                return null;
         }
 
         public static new CaseInsensitiveList Aliases
@@ -121,6 +152,7 @@ namespace NoPowerShell.Commands
             {
                 return new ArgumentList()
                 {
+                    new BoolArgument("Simple")
                 };
             }
         }

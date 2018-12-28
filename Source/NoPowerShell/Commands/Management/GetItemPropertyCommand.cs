@@ -2,9 +2,10 @@
 using NoPowerShell.HelperClasses;
 using System;
 using Microsoft.Win32;
+using System.Collections.Generic;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
@@ -23,6 +24,7 @@ namespace NoPowerShell.Commands
             bool includeHidden = _arguments.Get<BoolArgument>("Force").Value;
             string path = _arguments.Get<StringArgument>("Path").Value;
             string searchPattern = _arguments.Get<StringArgument>("Include").Value;
+            CaseInsensitiveList attributeNames = new CaseInsensitiveList(_arguments.Get<StringArgument>("Name").Value.Split(','));
             string checkPath = path.ToUpperInvariant();
 
             // Registry:
@@ -31,7 +33,7 @@ namespace NoPowerShell.Commands
             //     HKCR:\
             //     HKU:\
             if (checkPath.StartsWith("HKLM:") || checkPath.StartsWith("HKCU:") || checkPath.StartsWith("HKCR:") || checkPath.StartsWith("HKU:"))
-                _results = BrowseRegistry(path, includeHidden);
+                _results = BrowseRegistry(path, includeHidden, attributeNames);
 
             // Filesystem:
             //     \
@@ -43,7 +45,7 @@ namespace NoPowerShell.Commands
             return _results;
         }
 
-        private CommandResult BrowseRegistry(string path, bool includeHidden)
+        private CommandResult BrowseRegistry(string path, bool includeHidden, CaseInsensitiveList attributeNames)
         {
             RegistryKey root = null;
             string newPath = string.Empty;
@@ -80,6 +82,10 @@ namespace NoPowerShell.Commands
                 string valueKind = key.GetValueKind(valueName).ToString();
                 string value = Convert.ToString(key.GetValue(valueName));
 
+                // Skip if -Names parameter is provided and current attribute is not in the list
+                if (attributeNames.Count > 0 && !attributeNames.Contains(valueName))
+                    continue;
+
                 _results.Add(
                     new ResultRecord()
                     {
@@ -106,7 +112,8 @@ namespace NoPowerShell.Commands
                 {
                     new StringArgument("Path", "."),
                     new BoolArgument("Force") ,
-                    new StringArgument("Include", "*", true)
+                    new StringArgument("Include", "*", true),
+                    new StringArgument("Name", true)
                 };
             }
         }

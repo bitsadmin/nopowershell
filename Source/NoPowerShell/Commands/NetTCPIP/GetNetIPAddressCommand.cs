@@ -3,7 +3,7 @@ using NoPowerShell.HelperClasses;
 using System.Collections.Generic;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */

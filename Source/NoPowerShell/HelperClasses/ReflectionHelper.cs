@@ -4,7 +4,7 @@ using System.Reflection;
 using NoPowerShell.Commands;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */

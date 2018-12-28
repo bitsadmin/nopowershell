@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */

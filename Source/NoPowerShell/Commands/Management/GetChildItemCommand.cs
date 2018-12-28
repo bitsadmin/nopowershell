@@ -4,9 +4,10 @@ using System;
 using System.IO;
 using System.Text;
 using Microsoft.Win32;
+using System.Collections;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
@@ -26,15 +27,21 @@ namespace NoPowerShell.Commands
             string path = _arguments.Get<StringArgument>("Path").Value;
             bool recurse = _arguments.Get<BoolArgument>("Recurse").Value;
             string searchPattern = _arguments.Get<StringArgument>("Include").Value;
-            string checkPath = path.ToUpperInvariant();
 
             // Registry:
             //     HKLM:\
             //     HKCU:\
             //     HKCR:\
             //     HKU:\
-            if (checkPath.StartsWith("HKLM:") || checkPath.StartsWith("HKCU:") || checkPath.StartsWith("HKCR:") || checkPath.StartsWith("HKU:"))
-                _results = BrowseRegistry(path, includeHidden);
+            RegistryKey root = ProviderHelper.GetRegistryKey(ref path);
+            if (root != null)
+                _results = BrowseRegistry(root, path, includeHidden);
+
+            // Environment
+            //     env:
+            //     env:systemroot
+            else if (path.ToUpperInvariant().StartsWith("ENV"))
+                _results = BrowseEnvironment(path);
             
             // Filesystem:
             //     \
@@ -45,41 +52,15 @@ namespace NoPowerShell.Commands
 
             return _results;
         }
-        private CommandResult BrowseRegistry(string path, bool includeHidden)
+
+        private static CommandResult BrowseRegistry(RegistryKey root, string path, bool includeHidden)
         {
-            RegistryKey root = null;
-            string newPath = string.Empty;
-            path = path.ToUpperInvariant();
-            if (path.StartsWith("HKLM:"))
-            {
-                root = Registry.LocalMachine;
-                newPath = path.Replace("HKLM:", string.Empty);
-            }
-            else if (path.StartsWith("HKCU:"))
-            {
-                root = Registry.CurrentUser;
-                newPath = path.Replace("HKCU:", string.Empty);
-            }
-            else if (path.StartsWith("HKCR:"))
-            {
-                root = Registry.ClassesRoot;
-                newPath = path.Replace("HKCR:", string.Empty);
-            }
-            else if (path.StartsWith("HKU:"))
-            {
-                root = Registry.Users;
-                newPath = path.Replace("HKU:", string.Empty);
-            }
-            else
-                throw new InvalidOperationException("Unknown registry path.");
+            CommandResult results = new CommandResult();
 
-            if (newPath.StartsWith(@"\"))
-                newPath = newPath.Substring(1);
-
-            RegistryKey key = root.OpenSubKey(newPath);
+            RegistryKey key = root.OpenSubKey(path);
             foreach (string subkey in key.GetSubKeyNames())
             {
-                _results.Add(
+                results.Add(
                     new ResultRecord()
                     {
                         { "Name", subkey }
@@ -87,7 +68,50 @@ namespace NoPowerShell.Commands
                 );
             }
 
-            return _results;
+            return results;
+        }
+
+        private CommandResult BrowseEnvironment(string path)
+        {
+            CommandResult results = new CommandResult();
+
+            string[] selection = path.Split(':');
+            string filter = null;
+            if (selection.Length > 1)
+                filter = selection[1];
+
+            Hashtable variables = new Hashtable((Hashtable)Environment.GetEnvironmentVariables(), StringComparer.InvariantCultureIgnoreCase);
+
+            // Obtain specific variable
+            if (!string.IsNullOrEmpty(filter))
+            {
+                if (!variables.ContainsKey(filter))
+                    throw new Exception(string.Format("Cannot find path '{0}' because it does not exist.", filter));
+
+                results.Add(
+                    new ResultRecord()
+                    {
+                        { "Name", filter },
+                        { "Value", variables[filter].ToString() }
+                    }
+                );
+            }
+            // Obtain all variables
+            else
+            {
+                foreach(DictionaryEntry variable in variables)
+                {
+                    results.Add(
+                        new ResultRecord()
+                        {
+                            { "Name", variable.Key.ToString() },
+                            { "Value", variable.Value.ToString() }
+                        }
+                    );
+                }
+            }
+
+            return results;
         }
 
         public static CommandResult BrowseFilesystem(string path, bool recurse, bool includeHidden, string searchPattern)
@@ -103,9 +127,9 @@ namespace NoPowerShell.Commands
             DirectoryInfo[] directories = null;
             try
             {
-                 directories = gciDir.GetDirectories(recurse ? "*" : searchPattern);
+                directories = gciDir.GetDirectories(recurse ? "*" : searchPattern);
             }
-            catch(UnauthorizedAccessException)
+            catch (UnauthorizedAccessException)
             {
                 Console.WriteLine("Unauthorized to access \"{0}\"", path);
                 return results;
@@ -122,7 +146,7 @@ namespace NoPowerShell.Commands
                 // Don't show directories if -Recurse and an -Include filter is set
                 if (recurse && !string.IsNullOrEmpty(searchPattern))
                     continue;
-                
+
                 ResultRecord currentDir = new ResultRecord()
                 {
                     { "Mode", GetModeFlags(dir) },
@@ -160,9 +184,9 @@ namespace NoPowerShell.Commands
             }
 
             // After adding folders and files in current directory, go depth first
-            if(recurse)
+            if (recurse)
             {
-                foreach(DirectoryInfo subDir in directories)
+                foreach (DirectoryInfo subDir in directories)
                 {
                     // Skip hidden directories in case -Force parameter is not provided
                     if ((subDir.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden && !includeHidden)

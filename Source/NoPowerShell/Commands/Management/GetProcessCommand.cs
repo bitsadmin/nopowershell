@@ -1,8 +1,9 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Text;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
@@ -17,11 +18,42 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            string allNameArguments = _arguments.Get<StringArgument>("Name").Value;
+
+            string where = string.Empty;
+            if (!string.IsNullOrEmpty(allNameArguments))
+            {
+                string[] processNames = allNameArguments.Split(',');
+                StringBuilder whereStr = new StringBuilder(" Where (");
+
+                bool first = true;
+                foreach (string name in processNames)
+                {
+                    string newname = name;
+                    if (!name.ToUpperInvariant().EndsWith(".EXE"))
+                        newname = name + ".exe";
+
+                    if (first)
+                    {
+                        whereStr.AppendFormat("(name = '{0}')", newname);
+                        first = false;
+                    }
+                    else
+                    {
+                        whereStr.AppendFormat(" or (name = '{0}')", newname);
+                    }
+                }
+
+                whereStr.Append(")");
+                where = whereStr.ToString();
+            }
+
+            // Remote
             string computerName = _arguments.Get<StringArgument>("ComputerName").Value;
             string username = _arguments.Get<StringArgument>("Username").Value;
             string password = _arguments.Get<StringArgument>("Password").Value;
 
-            _results = WmiHelper.ExecuteWmiQuery(@"ROOT\CIMV2", "Select ProcessId, Name, CommandLine From Win32_Process", computerName, username, password);
+            _results = WmiHelper.ExecuteWmiQuery(@"ROOT\CIMV2", "Select ProcessId, Name, CommandLine From Win32_Process" + where, computerName, username, password);
 
             return _results;
         }
@@ -37,6 +69,7 @@ namespace NoPowerShell.Commands
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("Name", string.Empty)
                 };
             }
         }

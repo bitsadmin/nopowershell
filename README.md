@@ -3,6 +3,8 @@ NoPowerShell is a tool implemented in C# which supports executing PowerShell-lik
 
 Moreover, this project makes it easy for everyone to extend its functionality using only a few lines of C# code.
 
+Latest binary available from the [Releases](https://github.com/bitsadmin/nopowershell/releases) page.
+
 # Screenshots
 ## Running in Cobalt Strike
 ![NoPowerShell supported commands](https://raw.githubusercontent.com/bitsadmin/nopowershell/master/Pictures/CurrentlySupportedCommands.png "NoPowerShell in Cobalt Strike")
@@ -22,6 +24,7 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | List all commands supported by NoPowerShell | `Get-Command` | |
 | Get help for a command | `Get-Help -Name Get-Process` | Alternative: `man ps` |
 | Show current user | `NoPowerShell.exe whoami` | Unofficial command |
+| List SMB shares of MyServer | `Get-RemoteSmbShare \\MyServer` | Unofficial command |
 | List all user groups in domain | `Get-ADGroup -Filter *` | |
 | List all administrative groups in domain | `Get-ADGroup -LDAPFilter "(admincount=1)" \| select Name` | |
 | List all properties of the Administrator domain user | `Get-ADUser -Identity Administrator -Properties *` | |
@@ -36,6 +39,10 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | List all active members of the Administrators group | `Get-LocalGroupMember -Group Administrators \| ? Disabled -eq False` | |
 | List all local users | `Get-LocalUser` | |
 | List details of a specific user | `Get-LocalUser Administrator` | |
+| List all properties of the DC01 domain computer | `Get-ADComputer -Identity DC01 -Properties *` | |
+| List all Domain Controllers | `Get-ADComputer -LDAPFilter "(msDFSR-ComputerReferenceBL=*)"` | |
+| List all computers in domain | `Get-ADComputer -Filter *` | |
+| List specific attributes of user | `Get-ADComputer DC01 -Properties Name,operatingSystem` | |
 | Copy file from one location to another | `copy C:\Tmp\nc.exe C:\Windows\System32\nc.exe` | |
 | Copy folder | `copy C:\Tmp\MyFolder C:\Tmp\MyFolderBackup` | |
 | Locate KeePass files in the C:\Users\ directory | `ls -Recurse -Force C:\Users\ -Include *.kdbx` | |
@@ -44,6 +51,9 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | List autoruns in the registry | `Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Run \| ft` | |
 | List processes | `Get-Process` | |
 | List processes on remote host | `Get-Process -ComputerName dc01.corp.local -Username Administrator -Password P4ssw0rd!` | |
+| Gracefully stop processes | `Stop-Process -Id 4512,7241` | |
+| Kill process | `Stop-Process -Force -Id 4512` | |
+| Kill all cmd.exe processes | `Get-Process cmd | Stop-Process -Force` | |
 | Obtain data of Win32_Process class from a remote system and apply a filter on the output | `gwmi "Select ProcessId,Name,CommandLine From Win32_Process" -ComputerName dc01.corp.local \| ? Name -Like *PowerShell* \| select ProcessId,CommandLine` | Explicit credentials can be specified using the `-Username` and `-Password` parameters |
 | View details about a certain service | `Get-WmiObject -Class Win32_Service -Filter "Name = 'WinRM'"` | |
 | Launch process using WMI | `Invoke-WmiMethod -Class Win32_Process -Name Create "cmd /c calc.exe"` | This can also be done on a remote system |
@@ -101,7 +111,6 @@ Use the TemplateCommand.cs file in the Commands folder to construct new cmdlets.
 | Run with the -MyInteger parameter which changes the number of iterations from its default number of 5 iterations to whatever number is provided | `gtc -MyInteger 10` |
 | Run with the -MyString parameter which changes the text that is printed from its default value of 'Hello World' to whatever string is provided | `gtc -MyString "Bye PowerShell"` |
 | Combination of parameters | `gtc -MyInteger 10 -MyString "Bye PowerShell"` |
-| Combination of parameters - Alternative | `gtc -MyInteger 10 -MyString "Bye PowerShell"` |
 | Combination of parameters - Using fact that MyString is the only mandatory parameter for this command | `gtc -MyInteger 10 "Bye PowerShell"` |
 | Command in combination with a couple of data manipulators in the pipe | `gtc "Bye PowerShell" -MyInteger 30 \| ? Attribute2 -Like Line1* \| select Attribute2 \| fl` |
 
@@ -122,15 +131,21 @@ Execute the following steps to implement your own cmdlet:
     3. Make sure all results are stored in the `_results` variable.
 8. Remove all of the template sample code and comments from the file to keep the source tidy.
 
+# Requested NoPowerShell cmdlets
+| Cmdlet | Description |
+| - | - |
+| Get-ADTrusts | Unofficial command showing equivalent of `nltest /domain_trusts /all_trusts /v` |
+| Get-QWinsta | Unofficial command showing equivalent of `qwinsta` / `query session` |
+| Invoke-Command | Using PSRemoting execute a command on a remote machine (which in that case will of course be logged) |
+| Get-Service | Include option to also show service paths like in `sc qc` |
+| * | Sysinternals utilities like `pipelist` and `sdelete` |
+
 # Contributed NoPowerShell cmdlets
 Authors of additional NoPowerShell cmdlets are added to the table below. Moreover, the table lists commands that are requested by the community to add. Together we can develop a powerful NoPowerShell toolkit!
 
 | Cmdlet | Contributed by | GitHub | Twitter | Description |
 | - | - | - | - | - |
-| Get-ADTrusts |  |  |  | Unofficial command showing equivalent of `nltest /domain_trusts /all_trusts /v` |
-| Get-QWinsta |  |  |  | Unofficial command showing equivalent of `qwinsta` / `query session` |
-| Invoke-Command |  |  |  |  |
-| Stop-Process |  |  |  |  |
+|  |  |  |  |  |
 
 # Included NoPowerShell cmdlets
 | Cmdlet | Category | Notes |
@@ -138,8 +153,10 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-ADGroup | ActiveDirectory | |
 | Get-ADGroupMember | ActiveDirectory | |
 | Get-ADUser | ActiveDirectory | |
+| Get-ADComputer | ActiveDirectory | |
 | Get-SystemInfo | Additional | Few fields still need to be added to mimick systeminfo.exe |
 | Get-Whoami | Additional | whoami.exe /ALL is not implemented yet |
+| Get-RemoteSmbShare | Additional | |
 | Get-Command | Core | |
 | Get-Help | Core | |
 | Where-Object | Core | |
@@ -151,7 +168,8 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-ChildItem | Management | |
 | Get-Content | Management | |
 | Get-ItemProperty | Management | |
-| Get-Process | Management | Quick & dirty implementation |
+| Get-Process | Management | |
+| Stop-Process | Management | |
 | Get-WmiObject | Management | |
 | Invoke-WmiMethod | Management | Quick & dirty implementation |
 | Remove-Item | Management | |
@@ -165,4 +183,4 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Measure-Object | Utility |
 | Select-Object | Utility |
 
-**Authored by Arris Huijgen (@_bitsadmin - https://github.com/bitsadmin)**
+**Authored by Arris Huijgen ([@bitsadmin](https://twitter.com/bitsadmin/) - https://github.com/bitsadmin/)**

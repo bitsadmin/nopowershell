@@ -6,7 +6,7 @@ using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */

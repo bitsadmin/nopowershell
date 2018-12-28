@@ -45,9 +45,11 @@
     <Compile Include="Arguments\BoolArgument.cs" />
     <Compile Include="Arguments\IntegerArgument.cs" />
     <Compile Include="Arguments\StringArgument.cs" />
+    <Compile Include="Commands\ActiveDirectory\GetADComputerCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupMemberCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
+    <Compile Include="Commands\Additional\GetRemoteSmbShare.cs" />
     <Compile Include="Commands\Additional\GetSystemInfoCommand.cs" />
     <Compile Include="Commands\Core\GetCommandCommand.cs" />
     <Compile Include="Commands\Core\GetHelpCommand.cs" />
@@ -59,6 +61,7 @@
     <Compile Include="Commands\Management\RemoveItemCommand.cs" />
     <Compile Include="Commands\Management\InvokeWmiMethodCommand.cs" />
     <Compile Include="Commands\Management\CopyItemCommand.cs" />
+    <Compile Include="Commands\Management\StopProcessCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetIPAddressCommand.cs" />
     <Compile Include="Commands\Management\GetProcessCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetRouteCommand.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="Commands\Utility\MeasureObjectCommand.cs" />
     <Compile Include="HelperClasses\CaseInsensitiveList.cs" />
     <Compile Include="HelperClasses\CommandResult.cs" />
+    <Compile Include="HelperClasses\ProviderHelper.cs" />
     <Compile Include="HelperClasses\HelpEntries.cs" />
     <Compile Include="HelperClasses\LDAPHelper.cs" />
     <Compile Include="HelperClasses\PipeParser.cs" />

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
@@ -20,6 +20,14 @@ namespace NoPowerShell.HelperClasses
             }
 
             return false;
+        }
+
+        public CaseInsensitiveList() : base()
+        {
+        }
+
+        public CaseInsensitiveList(IEnumerable<string> collection) : base(collection)
+        {
         }
     }
 }

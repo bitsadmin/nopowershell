@@ -3,7 +3,7 @@ using NoPowerShell.HelperClasses;
 using System.Collections.Generic;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
@@ -23,6 +23,10 @@ namespace NoPowerShell.Commands
             string wmiQuery = _arguments.Get<StringArgument>("Query").Value;
             string wmiClass = _arguments.Get<StringArgument>("Class").Value;
             string wmiFilter = _arguments.Get<StringArgument>("Filter").Value;
+
+            // If no query is specified, assume a class is specified
+            if (!wmiQuery.ToUpperInvariant().Contains("SELECT"))
+                wmiClass = wmiQuery;
 
             if (wmiClass != null)
                 wmiQuery = string.Format("Select * From {0}", wmiClass);

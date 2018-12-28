@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */

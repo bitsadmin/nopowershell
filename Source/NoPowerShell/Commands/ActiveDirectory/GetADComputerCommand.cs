@@ -11,9 +11,9 @@ License: BSD 3-Clause
 
 namespace NoPowerShell.Commands
 {
-    public class GetADGroupCommand : PSCommand
+    public class GetADComputerCommand : PSCommand
     {
-        public GetADGroupCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetADComputerCommand(string[] userArguments) : base(userArguments, SupportedArguments)
         {
         }
 
@@ -37,16 +37,14 @@ namespace NoPowerShell.Commands
                 throw new InvalidOperationException("Specify either Identity, Filter or LDAPFilter");
 
             // Build filter
-            string filterBase = "(&(objectCategory=group){0})";
+            string filterBase = "(&(objectCategory=computer){0})";
             string queryFilter = string.Empty;
 
-            // -Identity Administrator
+            // -Identity DC01
             if (filledIdentity)
-            {
-                queryFilter = string.Format(filterBase, string.Format("(sAMAccountName={0})", identity));
-            }
+                queryFilter = string.Format(filterBase, string.Format("(cn={0})", identity));
 
-            // -LDAPFilter "(adminCount=1)"
+            // -LDAPFilter "(msDFSR-ComputerReferenceBL=*)"
             else if (filledLdapFilter)
             {
                 queryFilter = string.Format(filterBase, ldapFilter);
@@ -70,7 +68,7 @@ namespace NoPowerShell.Commands
 
         public static new CaseInsensitiveList Aliases
         {
-            get { return new CaseInsensitiveList() { "Get-ADGroup" }; }
+            get { return new CaseInsensitiveList() { "Get-ADComputer" }; }
         }
 
         public static new ArgumentList SupportedArguments
@@ -80,16 +78,16 @@ namespace NoPowerShell.Commands
                 return new ArgumentList()
                 {
                     new StringArgument("Identity"),
-                    new StringArgument("Filter"),
-                    new StringArgument("LDAPFilter"),
-                    new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID", true)
+                    new StringArgument("Filter", true),
+                    new StringArgument("LDAPFilter", true),
+                    new StringArgument("Properties", "DistinguishedName,DNSHostName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,UserPrincipalName", true)
                 };
             }
         }
 
         public static new string Synopsis
         {
-            get { return "Gets one or more Active Directory groups."; }
+            get { return "Gets one or more Active Directory computers."; }
         }
 
         public static new ExampleEntries Examples
@@ -98,8 +96,10 @@ namespace NoPowerShell.Commands
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List all user groups in domain", "Get-ADGroup -Filter *"),
-                    new ExampleEntry("List all administrative groups in domain", "Get-ADGroup -LDAPFilter \"(admincount=1)\" | select Name")
+                    new ExampleEntry("List all properties of the DC01 domain computer", "Get-ADComputer -Identity DC01 -Properties *"),
+                    new ExampleEntry("List all Domain Controllers", "Get-ADComputer -LDAPFilter \"(msDFSR-ComputerReferenceBL=*)\""),
+                    new ExampleEntry("List all computers in domain", "Get-ADComputer -Filter *"),
+                    new ExampleEntry("List specific attributes of user", "Get-ADComputer DC01 -Properties Name,operatingSystem")
                 };
             }
         }

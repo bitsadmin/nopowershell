@@ -5,7 +5,7 @@ using System.IO;
 using System.Net;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */

@@ -4,7 +4,7 @@ using NoPowerShell.Commands;
 using NoPowerShell.HelperClasses;
 
 /*
-Author: @_bitsadmin
+Author: @bitsadmin
 Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
@@ -22,7 +22,7 @@ namespace NoPowerShell
             // If no arguments are provided to the executable, show help
             if (args.Length == 0)
             {
-                Console.WriteLine("== NoPowerShell v1.1 ==\r\nUrl: Website: https://github.com/bitsadmin\r\nUsage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n");
+                Console.WriteLine("== NoPowerShell v1.2 ==\r\nUrl: Website: https://github.com/bitsadmin\r\nUsage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n");
                 userCommands = new List<PSCommand>(1) { new GetCommandCommand(null) };
             }
             // Parse pipes in commandline arguments and commands within pipes
