@@ -53,7 +53,7 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | List processes on remote host | `Get-Process -ComputerName dc01.corp.local -Username Administrator -Password P4ssw0rd!` | |
 | Gracefully stop processes | `Stop-Process -Id 4512,7241` | |
 | Kill process | `Stop-Process -Force -Id 4512` | |
-| Kill all cmd.exe processes | `Get-Process cmd | Stop-Process -Force` | |
+| Kill all cmd.exe processes | `Get-Process cmd \| Stop-Process -Force` | |
 | Obtain data of Win32_Process class from a remote system and apply a filter on the output | `gwmi "Select ProcessId,Name,CommandLine From Win32_Process" -ComputerName dc01.corp.local \| ? Name -Like *PowerShell* \| select ProcessId,CommandLine` | Explicit credentials can be specified using the `-Username` and `-Password` parameters |
 | View details about a certain service | `Get-WmiObject -Class Win32_Service -Filter "Name = 'WinRM'"` | |
 | Launch process using WMI | `Invoke-WmiMethod -Class Win32_Process -Name Create "cmd /c calc.exe"` | This can also be done on a remote system |
