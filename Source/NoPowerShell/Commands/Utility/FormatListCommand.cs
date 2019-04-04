@@ -7,7 +7,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Utility
 {
     public class FormatListCommand : PSCommand
     {
@@ -20,6 +20,9 @@ namespace NoPowerShell.Commands
             string[] properties = _arguments.Get<StringArgument>("Property").Value.Split(',');
 
             _results.Output = CommandResult.OutputType.List;
+
+            if (pipeIn == null)
+                return null;
 
             foreach (ResultRecord result in pipeIn)
             {

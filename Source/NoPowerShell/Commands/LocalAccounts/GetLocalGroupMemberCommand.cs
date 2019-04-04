@@ -8,7 +8,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.LocalAccounts
 {
     public class GetLocalGroupMemberCommand : PSCommand
     {
@@ -32,7 +32,7 @@ namespace NoPowerShell.Commands
             else
                 throw new InvalidOperationException("-Group or -Name parameter needs to be provided");
 
-            _results = WmiHelper.ExecuteWmiQuery(query);
+            _results = WmiHelper.ExecuteWmiQuery(query, computername, username, password);
 
             return _results;
         }

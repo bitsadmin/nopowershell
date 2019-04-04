@@ -13,7 +13,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.DnsClient
 {
     public class ResolveDnsNameCommand : PSCommand
     {
@@ -28,7 +28,24 @@ namespace NoPowerShell.Commands
             string type = _arguments.Get<StringArgument>("Type").Value;
 
             _results = Dns.GetRecords(query, type);
-            
+
+            // Determine columns in results
+            List<string> columns = new List<string>();
+            foreach (ResultRecord r in _results)
+                foreach (string c in r.Keys)
+                    if (!columns.Contains(c))
+                        columns.Add(c);
+
+            // Add missing columns
+            foreach (ResultRecord r in _results)
+            {
+                foreach (string c in columns)
+                {
+                    if (!r.ContainsKey(c))
+                        r.Add(c, null);
+                }
+            }
+
             return _results;
         }
 
@@ -51,9 +68,8 @@ namespace NoPowerShell.Commands
                 return new ArgumentList()
                 {
                     new StringArgument("Name"),
-                    new StringArgument("Type", "A")
+                    new StringArgument("Type", "A", true)
                     // TODO:
-                    //new StringArgument("Type", true),
                     //new StringArgument("Server", true),
                 };
             }
@@ -61,7 +77,11 @@ namespace NoPowerShell.Commands
 
         public static new string Synopsis
         {
-            get { return "Resolve DNS name."; }
+            get {
+                string[] recordTypes = new string[Dns.RecordTypes.Count];
+                Dns.RecordTypes.Keys.CopyTo(recordTypes, 0);
+                return string.Format("Resolve DNS name.\r\n    Supported query types: {0}", string.Join(",", recordTypes));
+            }
         }
 
         public static new ExampleEntries Examples
@@ -76,7 +96,8 @@ namespace NoPowerShell.Commands
                         new List<string>()
                         {
                             "Resolve-DnsName microsoft.com",
-                            "host linux.org"
+                            "host linux.org",
+                            "Resolve-DnsName -Type MX pm.me"
                         }
                     )
                 };
@@ -90,7 +111,7 @@ namespace NoPowerShell.Commands
     // - Source for switch/case statement: https://www.codeproject.com/Articles/21246/DNS-Query-MFC-based-Application
     public class Dns
     {
-        private static Hashtable recordTypes = new Hashtable(StringComparer.InvariantCultureIgnoreCase)
+        public static readonly Hashtable RecordTypes = new Hashtable(StringComparer.InvariantCultureIgnoreCase)
         {
             { "A", DnsRecordTypes.DNS_TYPE_A },
             { "NS", DnsRecordTypes.DNS_TYPE_NS },
@@ -124,7 +145,7 @@ namespace NoPowerShell.Commands
             }
 
             CommandResult results = new CommandResult();
-            DnsRecordTypes queryType = (DnsRecordTypes)recordTypes[type];
+            DnsRecordTypes queryType = (DnsRecordTypes)RecordTypes[type];
 
             var recordsArray = IntPtr.Zero;
             try
@@ -136,7 +157,6 @@ namespace NoPowerShell.Commands
                 }
 
                 DNS_RECORD record;
-                var recordList = new List<string>();
                 for (var recordPtr = recordsArray; !recordPtr.Equals(IntPtr.Zero); recordPtr = record.pNext)
                 {
                     record = (DNS_RECORD)Marshal.PtrToStructure(recordPtr, typeof(DNS_RECORD));
@@ -208,21 +228,6 @@ namespace NoPowerShell.Commands
                             );
                             break;
 
-                            //message.Format("   SOA %s  nameserv: %s\r\n", record->pName, record.Data.SOA.pNamePrimaryServer);
-
-                            //temp.Format("              admin: %s\r\n", record.Data.SOA.pNameAdministrator);
-                            //message += temp;
-                            //temp.Format("             serial: %u\r\n", record.Data.SOA.dwSerialNo);
-                            //message += temp;
-                            //temp.Format("            refresh: %u\r\n", record.Data.SOA.dwRefresh);
-                            //message += temp;
-                            //temp.Format("                ttl: %u\r\n", record.Data.SOA.dwDefaultTtl);
-                            //message += temp;
-                            //temp.Format("             expire: %u\r\n", record.Data.SOA.dwExpire);
-                            //message += temp;
-                            //temp.Format("              retry: %u", record.Data.SOA.dwRetry);
-                            //message += temp;
-
                         case (ushort)DnsRecordTypes.DNS_TYPE_MB:
                             results.Add(
                                 new ResultRecord()
@@ -256,10 +261,6 @@ namespace NoPowerShell.Commands
                             );
                             break;
 
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_NULL:
-                        //  message.Format("   MB %s %s",record->pName,record.Data.Null.MR.pNameHost);
-                        //break;
-
                         case (ushort)DnsRecordTypes.DNS_TYPE_WKS:
                             results.Add(
                                 new ResultRecord()
@@ -283,19 +284,6 @@ namespace NoPowerShell.Commands
                                 }
                             );
                             break;
-
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_HINFO:
-                        //    message.Format("   HINFO %s", record->pName);
-                        //    for (u_int i = 0; i < record.Data.HINFO.dwStringCount; i++)
-                        //    {
-                        //        message += "\r\n            ";
-                        //        message += record.Data.HINFO.pStringArray[i];
-                        //    }
-                        //    break;
-
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_MINFO:
-                        //    message.Format("   MINFO %s err: %s name: %s", record->pName, record.Data.MINFO.pNameErrorsMailbox, record.Data.MINFO.pNameMailbox);
-                        //    break;
 
                         case (ushort)DnsRecordTypes.DNS_TYPE_MX:
                             results.Add(
@@ -323,32 +311,6 @@ namespace NoPowerShell.Commands
                             }
                             break;
 
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_RP:
-                        //    message.Format("   RP %s err: %s name: %s", record->pName, record.Data.RP.pNameErrorsMailbox, record.Data.RP.pNameMailbox);
-                        //    break;
-
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_AFSDB:
-                        //    message.Format("   AFSDB %s %s pref: %d", record->pName, record.Data.AFSDB.pNameExchange, record.Data.AFSDB.wPreference);
-                        //    break;
-
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_X25:
-                        //    message.Format("   X25 %s", record->pName);
-                        //    for (u_int i = 0; i < record.Data.X25.dwStringCount; i++)
-                        //    {
-                        //        message += "\r\n            ";
-                        //        message += record.Data.X25.pStringArray[i];
-                        //    }
-                        //    break;
-
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_ISDN:
-                        //    message.Format("   ISDN %s", record->pName);
-                        //    for (u_int i = 0; i < record.Data.ISDN.dwStringCount; i++)
-                        //    {
-                        //        message += "\r\n            ";
-                        //        message += record.Data.ISDN.pStringArray[i];
-                        //    }
-                        //    break;
-
                         case (ushort)DnsRecordTypes.DNS_TYPE_RT:
                             results.Add(
                                 new ResultRecord()
@@ -360,13 +322,6 @@ namespace NoPowerShell.Commands
                                 }
                             );
                             break;
-
-
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_SIG:
-                        //break;
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_KEY:
-                        //break;
-
 
                         case (ushort)DnsRecordTypes.DNS_TYPE_AAAA:
                             results.Add(
@@ -390,30 +345,8 @@ namespace NoPowerShell.Commands
                             );
                             break;
 
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_WINS:
-                        //break;
-
-                        //case (ushort)DnsRecordTypes.DNS_TYPE_WINSR:
-                        //    message.Format("   NBSTAT %s %s", record->pName, record.Data.WINSR.pNameResultDomain);
-                        //    break;
-
                         default:
                             throw new Exception(string.Format("Unknown: %s type %d", record.pName, record.wType));
-                    }
-
-                    //if (record->Flags.S.Section == DNSREC_AUTHORITY)
-                    //    message += "   (authority)";
-                    //if (record->Flags.S.Section == DNSREC_ADDITIONAL)
-                    //    message += "   (additional)";
-
-                    //pEdit->SetSel(pEdit->GetWindowTextLength(), pEdit->GetWindowTextLength());
-                    //pEdit->ReplaceSel(message + "\r\n");
-
-
-                    //Console.WriteLine(Marshal.PtrToStringAnsi(record.pName));
-                    if (record.wType == (int)DnsRecordTypes.DNS_TYPE_MX)
-                    {
-                        recordList.Add(Marshal.PtrToStringAuto(record.Data.MX.pNameExchange));
                     }
                 }
 

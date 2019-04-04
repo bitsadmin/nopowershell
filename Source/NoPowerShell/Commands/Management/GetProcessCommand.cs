@@ -8,7 +8,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Management
 {
     public class GetProcessCommand : PSCommand
     {
@@ -18,6 +18,9 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Collect parameters for remote execution
+            base.Execute();
+
             string allNameArguments = _arguments.Get<StringArgument>("Name").Value;
 
             string where = string.Empty;
@@ -48,12 +51,7 @@ namespace NoPowerShell.Commands
                 where = whereStr.ToString();
             }
 
-            // Remote
-            string computerName = _arguments.Get<StringArgument>("ComputerName").Value;
-            string username = _arguments.Get<StringArgument>("Username").Value;
-            string password = _arguments.Get<StringArgument>("Password").Value;
-
-            _results = WmiHelper.ExecuteWmiQuery(@"ROOT\CIMV2", "Select ProcessId, Name, CommandLine From Win32_Process" + where, computerName, username, password);
+            _results = WmiHelper.ExecuteWmiQuery("Select ProcessId, Name, CommandLine From Win32_Process" + where, computername, username, password);
 
             return _results;
         }

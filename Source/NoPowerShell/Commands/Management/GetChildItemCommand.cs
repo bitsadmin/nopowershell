@@ -12,7 +12,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Management
 {
     public class GetChildItemCommand : PSCommand
     {
@@ -26,6 +26,7 @@ namespace NoPowerShell.Commands
             bool includeHidden = _arguments.Get<BoolArgument>("Force").Value;
             string path = _arguments.Get<StringArgument>("Path").Value;
             bool recurse = _arguments.Get<BoolArgument>("Recurse").Value;
+            int depth = _arguments.Get<IntegerArgument>("Depth").Value;
             string searchPattern = _arguments.Get<StringArgument>("Include").Value;
 
             // Registry:
@@ -48,7 +49,7 @@ namespace NoPowerShell.Commands
             //     ..\
             //     D:\
             else
-                _results = BrowseFilesystem(path, recurse, includeHidden, searchPattern);
+                _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPattern);
 
             return _results;
         }
@@ -114,7 +115,7 @@ namespace NoPowerShell.Commands
             return results;
         }
 
-        public static CommandResult BrowseFilesystem(string path, bool recurse, bool includeHidden, string searchPattern)
+        public static CommandResult BrowseFilesystem(string path, bool recurse, int depth, bool includeHidden, string searchPattern)
         {
             CommandResult results = new CommandResult();
 
@@ -184,7 +185,7 @@ namespace NoPowerShell.Commands
             }
 
             // After adding folders and files in current directory, go depth first
-            if (recurse)
+            if (recurse && depth > 0)
             {
                 foreach (DirectoryInfo subDir in directories)
                 {
@@ -192,7 +193,7 @@ namespace NoPowerShell.Commands
                     if ((subDir.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden && !includeHidden)
                         continue;
 
-                    CommandResult currentDir = BrowseFilesystem(subDir.FullName, recurse, includeHidden, searchPattern);
+                    CommandResult currentDir = BrowseFilesystem(subDir.FullName, recurse, depth - 1, includeHidden, searchPattern);
                     results.AddRange(currentDir);
                 }
             }
@@ -228,6 +229,7 @@ namespace NoPowerShell.Commands
                     new StringArgument("Path", "."),
                     new BoolArgument("Force") ,
                     new BoolArgument("Recurse"),
+                    new IntegerArgument("Depth", int.MaxValue, true),
                     new StringArgument("Include", "*", true)
                 };
             }

@@ -7,7 +7,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Utility
 {
     public class MeasureObjectCommand : PSCommand
     {

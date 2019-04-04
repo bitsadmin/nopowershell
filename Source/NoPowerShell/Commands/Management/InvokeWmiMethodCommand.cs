@@ -7,7 +7,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Management
 {
     public class InvokeWmiMethodCommand : PSCommand
     {
@@ -17,18 +17,17 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Collect parameters for remote execution
+            base.Execute();
+
             // Obtain parameters
             string wmiNamespace = _arguments.Get<StringArgument>("Namespace").Value;
             string wmiClass = _arguments.Get<StringArgument>("Class").Value;
             string methodName = _arguments.Get<StringArgument>("Name").Value;
             string methodArguments = _arguments.Get<StringArgument>("ArgumentList").Value;
 
-            // Remote parameters
-            string computerName = _arguments.Get<StringArgument>("ComputerName").Value;
-            string username = _arguments.Get<StringArgument>("Username").Value;
-            string password = _arguments.Get<StringArgument>("Password").Value;
-
-            _results = WmiHelper.InvokeWmiMethod(wmiNamespace, wmiClass, methodName, methodArguments, computerName, username, password);
+            // Invoke WMI method
+            _results = WmiHelper.InvokeWmiMethod(wmiNamespace, wmiClass, methodName, methodArguments, computername, username, password);
 
             return _results;
         }

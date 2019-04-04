@@ -19,17 +19,14 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Collect the (optional) ComputerName, Username and Password parameters
+            base.Execute();
+
             // Obtain cmdlet parameters
             // Will contain all of the arguments from the 'ArgumentList Arguments' below
             bool myFlag = _arguments.Get<BoolArgument>("MyFlag").Value;
             int myInteger = _arguments.Get<IntegerArgument>("MyInteger").Value;
             string myString = _arguments.Get<StringArgument>("MyString").Value;
-
-            // The following (optional) parameters are always available,
-            // no need to add them to the SupportedArguments below
-            string computerName = _arguments.Get<StringArgument>("ComputerName").Value;
-            string username = _arguments.Get<StringArgument>("Username").Value;
-            string password = _arguments.Get<StringArgument>("Password").Value;
 
             // Write your code here, storing the output in attributename-value pairs
             // Example of resulting table:

@@ -7,7 +7,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Utility
 {
     public class SelectObjectCommand : PSCommand
     {
@@ -19,6 +19,9 @@ namespace NoPowerShell.Commands
         {
             string[] attributes = _arguments.Get<StringArgument>("Property").Value.Split(',');
             int first = _arguments.Get<IntegerArgument>("First").Value;
+
+            if (pipeIn == null)
+                return null;
 
             bool wildcardSelect = attributes[0] == "*";
             bool firstSet = first > 0;

@@ -8,7 +8,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Management
 {
     public class GetWmiObjectCommand : PSCommand
     {
@@ -18,6 +18,9 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Collect parameters for remote execution
+            base.Execute();
+
             // Obtain parameters
             string wmiNamespace = _arguments.Get<StringArgument>("Namespace").Value;
             string wmiQuery = _arguments.Get<StringArgument>("Query").Value;
@@ -33,13 +36,9 @@ namespace NoPowerShell.Commands
             if (wmiFilter != null)
                 wmiQuery += string.Format(" Where {0}", wmiFilter);
 
-            // Remote parameters
-            string computerName = _arguments.Get<StringArgument>("ComputerName").Value;
-            string username = _arguments.Get<StringArgument>("Username").Value;
-            string password = _arguments.Get<StringArgument>("Password").Value;
+            // Execute user provided WMI query
+            _results = WmiHelper.ExecuteWmiQuery(wmiNamespace, wmiQuery, computername, username, password);
 
-            // Execute user provided WMI query and return results to pipeline
-            _results = WmiHelper.ExecuteWmiQuery(wmiNamespace, wmiQuery, computerName, username, password);
             return _results;
         }
 

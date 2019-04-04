@@ -11,7 +11,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Additional
 {
     public class GetRemoteSmbShare : PSCommand
     {
@@ -153,7 +153,7 @@ namespace NoPowerShell.Commands
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List SMB shares of MyServer", "Get-RemoteSmbShare \\MyServer")
+                    new ExampleEntry("List SMB shares of MyServer", "Get-RemoteSmbShare \\\\MyServer")
                 };
             }
         }

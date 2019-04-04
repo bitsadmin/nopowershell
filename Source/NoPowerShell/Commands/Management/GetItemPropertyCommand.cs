@@ -10,7 +10,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Management
 {
     public class GetItemPropertyCommand : PSCommand
     {
@@ -24,7 +24,10 @@ namespace NoPowerShell.Commands
             bool includeHidden = _arguments.Get<BoolArgument>("Force").Value;
             string path = _arguments.Get<StringArgument>("Path").Value;
             string searchPattern = _arguments.Get<StringArgument>("Include").Value;
-            CaseInsensitiveList attributeNames = new CaseInsensitiveList(_arguments.Get<StringArgument>("Name").Value.Split(','));
+            string name = _arguments.Get<StringArgument>("Name").Value;
+            CaseInsensitiveList attributeNames = null;
+            if (!string.IsNullOrEmpty(name))
+                attributeNames = new CaseInsensitiveList(name.Split(','));
             string checkPath = path.ToUpperInvariant();
 
             // Registry:
@@ -40,7 +43,7 @@ namespace NoPowerShell.Commands
             //     ..\
             //     D:\
             else
-                _results = GetChildItemCommand.BrowseFilesystem(path, false, includeHidden, searchPattern);
+                _results = GetChildItemCommand.BrowseFilesystem(path, false, 1, includeHidden, searchPattern);
 
             return _results;
         }
@@ -83,7 +86,7 @@ namespace NoPowerShell.Commands
                 string value = Convert.ToString(key.GetValue(valueName));
 
                 // Skip if -Names parameter is provided and current attribute is not in the list
-                if (attributeNames.Count > 0 && !attributeNames.Contains(valueName))
+                if (attributeNames != null && !attributeNames.Contains(valueName))
                     continue;
 
                 _results.Add(

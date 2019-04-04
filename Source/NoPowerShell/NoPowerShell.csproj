@@ -50,7 +50,7 @@
     <Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
     <Compile Include="Commands\Additional\GetRemoteSmbShare.cs" />
-    <Compile Include="Commands\Additional\GetSystemInfoCommand.cs" />
+    <Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
     <Compile Include="Commands\Core\GetCommandCommand.cs" />
     <Compile Include="Commands\Core\GetHelpCommand.cs" />
     <Compile Include="Commands\DnsClient\ResolveDnsNameCommand.cs" />
@@ -62,6 +62,7 @@
     <Compile Include="Commands\Management\InvokeWmiMethodCommand.cs" />
     <Compile Include="Commands\Management\CopyItemCommand.cs" />
     <Compile Include="Commands\Management\StopProcessCommand.cs" />
+    <Compile Include="Commands\Management\GetHotFixCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetIPAddressCommand.cs" />
     <Compile Include="Commands\Management\GetProcessCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetRouteCommand.cs" />

@@ -18,8 +18,14 @@ namespace NoPowerShell.Commands
     /// </summary>
     public class PSCommand
     {
+        // Arguments and pipe output
         protected ArgumentList _arguments;
         protected CommandResult _results;
+
+        // Remote commands
+        protected string computername;
+        protected string username;
+        protected string password;
 
         /// <summary>
         /// Construct a new PSCommand parsing the provided arguments using the provided list of arguments supported by this cmdlet
@@ -149,13 +155,19 @@ namespace NoPowerShell.Commands
         }
 
         /// <summary>
-        /// Implementation of the cmdlet
+        /// Implementation of the cmdlet.
+        /// When calling the base class, it obtains the values from the ComputerName, Username and Password parameters and populates the corresponding variables.
         /// </summary>
         /// <param name="pipeIn">Output from previous command in pipe</param>
         /// <returns></returns>
-        public virtual CommandResult Execute(CommandResult pipeIn)
+        public virtual CommandResult Execute(CommandResult pipeIn=null)
         {
-            throw new InvalidOperationException("This function should be overridden");
+            // Remote parameters
+            computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            username = _arguments.Get<StringArgument>("Username").Value;
+            password = _arguments.Get<StringArgument>("Password").Value;
+
+            return pipeIn;
         }
 
         /// <summary>

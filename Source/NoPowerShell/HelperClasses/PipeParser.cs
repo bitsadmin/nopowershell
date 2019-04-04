@@ -53,7 +53,7 @@ namespace NoPowerShell.HelperClasses
                 }
 
                 if (!foundMatchingCommand)
-                    throw new ArgumentException("Unknown command");
+                    throw new ArgumentException(pipe[0]);
             }
 
             return allCommands;

@@ -9,7 +9,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.ActiveDirectory
 {
     public class GetADComputerCommand : PSCommand
     {
@@ -99,7 +99,7 @@ namespace NoPowerShell.Commands
                     new ExampleEntry("List all properties of the DC01 domain computer", "Get-ADComputer -Identity DC01 -Properties *"),
                     new ExampleEntry("List all Domain Controllers", "Get-ADComputer -LDAPFilter \"(msDFSR-ComputerReferenceBL=*)\""),
                     new ExampleEntry("List all computers in domain", "Get-ADComputer -Filter *"),
-                    new ExampleEntry("List specific attributes of user", "Get-ADComputer DC01 -Properties Name,operatingSystem")
+                    new ExampleEntry("List specific attributes of the DC01 domain computer", "Get-ADComputer DC01 -Properties Name,operatingSystem")
                 };
             }
         }

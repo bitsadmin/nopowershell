@@ -12,20 +12,16 @@ namespace NoPowerShell.HelperClasses
 {
     class WmiHelper
     {
-        public static CommandResult ExecuteWmiQuery(string wmiQuery)
+        public static CommandResult ExecuteWmiQuery(string wmiQuery, string computerName, string username, string password)
         {
-            return ExecuteWmiQuery(@"ROOT\CIMV2", wmiQuery);
-        }
-
-        public static CommandResult ExecuteWmiQuery(string wmiNamespace, string wmiQuery)
-        {
-            return ExecuteWmiQuery(wmiNamespace, wmiQuery, ".", null, null);
+            return ExecuteWmiQuery(@"ROOT\CIMV2", wmiQuery, computerName, username, password);
         }
 
         public static CommandResult ExecuteWmiQuery(string wmiNamespace, string wmiQuery, string computerName, string username, string password)
         {
             CommandResult queryResults = null;
 
+            computerName = computerName ?? ".";
             ManagementScope scope = GetScope(wmiNamespace, computerName, username, password);
 
             ObjectQuery query = new ObjectQuery(wmiQuery);
@@ -144,6 +140,10 @@ namespace NoPowerShell.HelperClasses
 
         private static ManagementScope GetScope(string wmiNamespace, string computerName, string username, string password)
         {
+            // User credentials cannot be used for local connections
+            if (computerName == ".")
+                username = password = null;
+
             ConnectionOptions options = new ConnectionOptions()
             {
                 Impersonation = ImpersonationLevel.Impersonate,

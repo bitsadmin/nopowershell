@@ -7,7 +7,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.SmbShare
 {
     public class GetSmbMapping : PSCommand
     {
@@ -17,7 +17,7 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            _results = WmiHelper.ExecuteWmiQuery(@"ROOT\Microsoft\Windows\SMB", "Select LocalPath,RemotePath From MSFT_SmbMapping");
+            _results = WmiHelper.ExecuteWmiQuery(@"ROOT\Microsoft\Windows\SMB", "Select LocalPath,RemotePath From MSFT_SmbMapping", computername, username, password);
             return _results;
         }
 

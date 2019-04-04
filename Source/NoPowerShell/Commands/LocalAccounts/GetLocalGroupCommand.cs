@@ -7,7 +7,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.LocalAccounts
 {
     public class GetLocalGroupCommand : PSCommand
     {
@@ -29,7 +29,7 @@ namespace NoPowerShell.Commands
             else
                 query = string.Format(query, string.Empty, string.Empty);
 
-            _results = WmiHelper.ExecuteWmiQuery(query);
+            _results = WmiHelper.ExecuteWmiQuery(query, computername, username, password);
 
             return _results;
         }

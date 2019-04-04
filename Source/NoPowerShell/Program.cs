@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using NoPowerShell.Commands;
+using NoPowerShell.Commands.Core;
+using NoPowerShell.Commands.Utility;
 using NoPowerShell.HelperClasses;
 
 /*
@@ -22,13 +24,21 @@ namespace NoPowerShell
             // If no arguments are provided to the executable, show help
             if (args.Length == 0)
             {
-                Console.WriteLine("== NoPowerShell v1.2 ==\r\nUrl: Website: https://github.com/bitsadmin\r\nUsage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n");
+                Console.WriteLine("== NoPowerShell v1.21 ==\r\nWebsite: https://github.com/bitsadmin\r\nUsage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n");
                 userCommands = new List<PSCommand>(1) { new GetCommandCommand(null) };
             }
             // Parse pipes in commandline arguments and commands within pipes
             else
             {
-                userCommands = PipeParser.ParseArguments(args, availableCommands);
+                try
+                {
+                    userCommands = PipeParser.ParseArguments(args, availableCommands);
+                }
+                catch(ArgumentException ex)
+                {
+                    Console.WriteLine("{0} : The term '{0}' is not recognized as the name of a cmdlet.\r\nExecute NoPowerShell without parameters to list all available cmdlets.", ex.Message);
+                    return -1;
+                }
             }
 
             // Add output to console if no explicit output is provided

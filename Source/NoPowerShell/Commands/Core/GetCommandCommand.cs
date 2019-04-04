@@ -10,7 +10,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Core
 {
     public class GetCommandCommand : PSCommand
     {
@@ -58,9 +58,21 @@ namespace NoPowerShell.Commands
                     {
                         { "Command", string.Format("{0} {1}", commandName, strArguments) },
                         { "Aliases", strAliases },
-                        { "Synopsis", strSynopsis }
+                        { "Synopsis", strSynopsis },
+                        { "Module", commandType.Key.Namespace.Replace("NoPowerShell.Commands.",string.Empty) }
                     }
                 );
+            }
+
+            // Organize by module
+            _results.Sort(delegate(ResultRecord a, ResultRecord b){
+                return a["Module"].CompareTo(b["Module"]);
+            });
+
+            // Remove Module attribute
+            foreach(ResultRecord r in _results)
+            {
+                r.Remove("Module");
             }
 
             return _results;

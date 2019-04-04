@@ -7,7 +7,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.NetTCPIP
 {
     public class GetNetRouteCommand : PSCommand
     {
@@ -17,7 +17,7 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            _results = WmiHelper.ExecuteWmiQuery("Select Caption, Description, Destination, Mask, NextHop From Win32_IP4RouteTable");
+            _results = WmiHelper.ExecuteWmiQuery("Select Caption, Description, Destination, Mask, NextHop From Win32_IP4RouteTable", computername, username, password);
 
             return _results;
         }
