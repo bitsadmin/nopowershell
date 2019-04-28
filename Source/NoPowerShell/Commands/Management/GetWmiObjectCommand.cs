@@ -28,7 +28,7 @@ namespace NoPowerShell.Commands.Management
             string wmiFilter = _arguments.Get<StringArgument>("Filter").Value;
 
             // If no query is specified, assume a class is specified
-            if (!wmiQuery.ToUpperInvariant().Contains("SELECT"))
+            if (wmiQuery != null && !wmiQuery.ToUpperInvariant().Contains("SELECT"))
                 wmiClass = wmiQuery;
 
             if (wmiClass != null)

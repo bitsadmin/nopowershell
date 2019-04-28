@@ -13,8 +13,18 @@ License: BSD 3-Clause
 
 namespace NoPowerShell
 {
-    class Program
+    partial class Program
     {
+        public static readonly string VERSION = "1.22";
+        public static readonly string WEBSITE = "https://github.com/bitsadmin";
+#if !DLLBUILD
+        private static readonly string USAGE = "Usage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n";
+        private static readonly string HELP = "\r\nExecute NoPowerShell without parameters to list all available cmdlets.";
+#else
+        private static readonly string USAGE = "";
+        private static readonly string HELP = " Type 'help' to list all available cmdlets.";
+#endif
+
         static int Main(string[] args)
         {
             // Using reflection determine available commands
@@ -24,19 +34,30 @@ namespace NoPowerShell
             // If no arguments are provided to the executable, show help
             if (args.Length == 0)
             {
-                Console.WriteLine("== NoPowerShell v1.21 ==\r\nWebsite: https://github.com/bitsadmin\r\nUsage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n");
+                Console.WriteLine("== NoPowerShell v{0} ==\r\nWebsite: {1}\r\n{2}", VERSION, WEBSITE, USAGE);
                 userCommands = new List<PSCommand>(1) { new GetCommandCommand(null) };
             }
             // Parse pipes in commandline arguments and commands within pipes
             else
             {
+                string error = null;
+
                 try
                 {
                     userCommands = PipeParser.ParseArguments(args, availableCommands);
                 }
-                catch(ArgumentException ex)
+                catch (ParameterBindingException ex)
                 {
-                    Console.WriteLine("{0} : The term '{0}' is not recognized as the name of a cmdlet.\r\nExecute NoPowerShell without parameters to list all available cmdlets.", ex.Message);
+                    error = ex.Message;
+                }
+                catch (CommandNotFoundException ex)
+                {
+                    error = string.Join("", new string[] { ex.Message, HELP });
+                }
+
+                if(error != null)
+                {
+                    WriteError(error);
                     return -1;
                 }
             }
@@ -55,17 +76,24 @@ namespace NoPowerShell
                 result = command.Execute(result);
             }
 #else
+            PSCommand mostRecentCommand = null;
             try
             {
                 // Execute commands in pipeline
                 foreach (PSCommand command in userCommands)
                 {
+                    mostRecentCommand = command;
                     result = command.Execute(result);
                 }
             }
+            catch (NoPowerShellException e)
+            {
+                WriteError(string.Format("{0} : {1}", mostRecentCommand.ToString(), e.Message));
+                return -1;
+            }
             catch (Exception e)
             {
-                Console.Write(e.ToString());
+                WriteError(string.Format("{0} : {1}", mostRecentCommand.ToString(), e.ToString()));
                 return -1;
             }
 #endif
@@ -75,6 +103,19 @@ namespace NoPowerShell
                 ResultPrinter.OutputResults(result);
 
             return 0;
+        }
+
+        static void WriteError(string error)
+        {
+            ConsoleColor BackgroundColor = Console.BackgroundColor;
+            ConsoleColor ForegroundColor = Console.ForegroundColor;
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.Error.WriteLine(error);
+
+            Console.BackgroundColor = BackgroundColor;
+            Console.ForegroundColor = ForegroundColor;
         }
     }
 }

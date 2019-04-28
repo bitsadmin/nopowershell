@@ -63,6 +63,8 @@ namespace NoPowerShell.Commands
             while (i < userArguments.Length)
             {
                 string inputArg = userArguments[i];
+                bool isArgFlag = inputArg.StartsWith("-");
+                string cleanInputArg = inputArg.TrimStart('-');
 
                 // Iterate over the arguments that are available for this cmdlet
                 List<Argument> candidates = new List<Argument>(userArguments.Length);
@@ -70,12 +72,20 @@ namespace NoPowerShell.Commands
                 {
                     // Two options:
                     // 1) Provided argument matches expected argument
+                    //    a) It is an exact match
+                    //    b) It is a partial match
                     // 2) It could be an argument which doesn't need to be "cmd -Argname [value]". It can simply be "cmd [value]"
-                    if (destArg.Name.Equals(inputArg.Substring(1, inputArg.Length - 1), StringComparison.InvariantCultureIgnoreCase))
+                    int compareLength = Math.Min(destArg.Name.Length, cleanInputArg.Length);
+                    if(isArgFlag && destArg.Name.Equals(cleanInputArg, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        candidates = new List<Argument>() { destArg };
+                        break;
+                    }
+                    else if (isArgFlag && destArg.Name.Substring(0, compareLength).Equals(cleanInputArg, StringComparison.InvariantCultureIgnoreCase))
                     {
                         candidates.Add(destArg);
                     }
-                    else if (!inputArg.StartsWith("-") && !destArg.IsOptionalArgument)
+                    else if (!isArgFlag && !destArg.IsOptionalArgument)
                     {
                         destArg.DashArgumentNameSkipUsed = true;
                         candidates.Add(destArg);
@@ -84,7 +94,34 @@ namespace NoPowerShell.Commands
 
                 if (candidates.Count == 0)
                 {
-                    throw new ArgumentException(string.Format("No parameter of {0} found matching \"{1}\".", this.ToString(), inputArg));
+                    throw new ParameterBindingException(this.ToString(), inputArg);
+                }
+                else if (candidates.Count > 1)
+                {
+                    List<Argument> duplicateCandidates = new List<Argument>(candidates.Count);
+                    foreach (Argument c in candidates)
+                    {
+                        if (!c.DashArgumentNameSkipUsed)
+                            duplicateCandidates.Add(c);
+                    }
+
+                    // Ambiguous parameter name is provided
+                    if (duplicateCandidates.Count > 1)
+                    {
+                        string[] paramNames = new string[duplicateCandidates.Count];
+                        int j = 0;
+                        foreach (Argument dc in duplicateCandidates)
+                            paramNames[j++] = dc.Name;
+
+                        throw new ParameterBindingException(
+                            this.ToString(),
+                            string.Format(
+                                "Parameter cannot be processed because the parameter name '{0}' is ambiguous. Possible matches include: -{1}.",
+                                cleanInputArg,
+                                string.Join(" -", paramNames)
+                            )
+                        );
+                    }
                 }
 
                 // Attempt to assign the variable to whatever argument has not been assigned yet

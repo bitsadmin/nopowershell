@@ -121,11 +121,14 @@ namespace NoPowerShell.Commands.Management
 
             DirectoryInfo gciDir = new DirectoryInfo(path);
 
+            if (!gciDir.Exists)
+                throw new ItemNotFoundException(path);
+
             // TODO: Follow symlinks. Skipping them for now
             if ((gciDir.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
                 return results;
 
-            DirectoryInfo[] directories = null;
+            DirectoryInfo[] directories;
             try
             {
                 directories = gciDir.GetDirectories(recurse ? "*" : searchPattern);

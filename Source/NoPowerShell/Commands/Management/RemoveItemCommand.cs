@@ -24,6 +24,9 @@ namespace NoPowerShell.Commands.Management
             bool recurse = _arguments.Get<BoolArgument>("Recurse").Value;
 
             // Determine if provided path is a file or a directory
+            if (!File.Exists(path))
+                throw new NoPowerShellException(string.Format("Cannot find path '{0}' because it does not exist.", path));
+
             FileAttributes attr = File.GetAttributes(path);
 
             // Directory

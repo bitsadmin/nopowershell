@@ -106,7 +106,14 @@ namespace NoPowerShell.Commands.Core
 
         public static new CaseInsensitiveList Aliases
         {
-            get { return new CaseInsensitiveList() { "Get-Command" }; }
+            get
+            {
+                return new CaseInsensitiveList()
+                {
+                    "Get-Command",
+                    "help" // Unofficial
+                };
+            }
         }
 
         public static new ArgumentList SupportedArguments

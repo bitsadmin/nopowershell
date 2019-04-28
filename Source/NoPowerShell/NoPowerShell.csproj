@@ -4,6 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <PlatformTarget>$(Platform)</PlatformTarget>
     <ProjectGuid>{555AD0AC-1FDB-4016-8257-170A74CB2F55}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>NoPowerShell</RootNamespace>
@@ -13,8 +14,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug DLL' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,8 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(Configuration)' == 'Release DLL' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,7 +31,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release DLL' Or '$(Configuration)' == 'Debug DLL' ">
+    <OutputType>Library</OutputType>
+    <DefineConstants>$(DefineConstants);DLLBUILD</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="RGiesecke.DllExport.Metadata, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8f52d83c1a22df51, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnmanagedExports.1.2.7\lib\net\RGiesecke.DllExport.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
@@ -82,6 +92,7 @@
     <Compile Include="Commands\Utility\MeasureObjectCommand.cs" />
     <Compile Include="HelperClasses\CaseInsensitiveList.cs" />
     <Compile Include="HelperClasses\CommandResult.cs" />
+    <Compile Include="HelperClasses\Exceptions.cs" />
     <Compile Include="HelperClasses\ProviderHelper.cs" />
     <Compile Include="HelperClasses\HelpEntries.cs" />
     <Compile Include="HelperClasses\LDAPHelper.cs" />
@@ -91,10 +102,13 @@
     <Compile Include="HelperClasses\ResultPrinter.cs" />
     <Compile Include="HelperClasses\WmiHelper.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="ProgramDll.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.7/tools/RGiesecke.DllExport.targets')" />
 </Project>

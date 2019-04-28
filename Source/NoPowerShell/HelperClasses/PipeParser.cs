@@ -46,14 +46,21 @@ namespace NoPowerShell.HelperClasses
                     if (commandType.Value.Contains(command))
                     {
                         object[] parameters = new object[] { pipeargs };
-                        allCommands.Add((PSCommand)Activator.CreateInstance(commandType.Key, parameters));
+                        try
+                        {
+                            allCommands.Add((PSCommand)Activator.CreateInstance(commandType.Key, parameters));
+                        }
+                        catch(System.Reflection.TargetInvocationException e)
+                        {
+                            throw e.InnerException;
+                        }
                         foundMatchingCommand = true;
                         break;
                     }
                 }
 
                 if (!foundMatchingCommand)
-                    throw new ArgumentException(pipe[0]);
+                    throw new CommandNotFoundException(pipe[0]);
             }
 
             return allCommands;

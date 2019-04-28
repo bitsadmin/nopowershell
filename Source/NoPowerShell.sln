@@ -1,22 +1,55 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoPowerShell", "NoPowerShell\NoPowerShell.csproj", "{555AD0AC-1FDB-4016-8257-170A74CB2F55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug DLL|Any CPU = Debug DLL|Any CPU
+		Debug DLL|x64 = Debug DLL|x64
+		Debug DLL|x86 = Debug DLL|x86
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release DLL|Any CPU = Release DLL|Any CPU
+		Release DLL|x64 = Release DLL|x64
+		Release DLL|x86 = Release DLL|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug DLL|Any CPU.ActiveCfg = Debug DLL|Any CPU
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug DLL|Any CPU.Build.0 = Debug DLL|Any CPU
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug DLL|x64.ActiveCfg = Debug DLL|x64
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug DLL|x64.Build.0 = Debug DLL|x64
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug DLL|x86.ActiveCfg = Debug DLL|x86
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug DLL|x86.Build.0 = Debug DLL|x86
 		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug|x64.ActiveCfg = Debug|x64
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug|x64.Build.0 = Debug|x64
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug|x86.ActiveCfg = Debug|x86
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Debug|x86.Build.0 = Debug|x86
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release DLL|Any CPU.ActiveCfg = Release DLL|Any CPU
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release DLL|Any CPU.Build.0 = Release DLL|Any CPU
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release DLL|x64.ActiveCfg = Release DLL|x64
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release DLL|x64.Build.0 = Release DLL|x64
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release DLL|x86.ActiveCfg = Release DLL|x86
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release DLL|x86.Build.0 = Release DLL|x86
 		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release|x64.ActiveCfg = Release|x64
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release|x64.Build.0 = Release|x64
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release|x86.ActiveCfg = Release|x86
+		{555AD0AC-1FDB-4016-8257-170A74CB2F55}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B3B5B4D8-74DD-4715-801C-1DC6DC1E2091}
 	EndGlobalSection
 EndGlobal

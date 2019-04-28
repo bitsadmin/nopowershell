@@ -1,15 +1,17 @@
 # NoPowerShell
-NoPowerShell is a tool implemented in C# which supports executing PowerShell-like commands while remaining invisible to any PowerShell logging mechanisms. This .NET Framework 2 compatible binary can be loaded in Cobalt Strike to execute commands in-memory. No `System.Management.Automation.dll` is used; only native .NET libraries.
+NoPowerShell is a tool implemented in C# which supports executing PowerShell-like commands while remaining invisible to any PowerShell logging mechanisms. This .NET Framework 2 compatible binary can be loaded in Cobalt Strike to execute commands in-memory. No `System.Management.Automation.dll` is used; only native .NET libraries. An alternative usecase for NoPowerShell is to launch it as a DLL via rundll32.exe: `rundll32 NoPowerShell.dll,main`.
 
 Moreover, this project makes it easy for everyone to extend its functionality using only a few lines of C# code.
 
-Latest binary available from the [Releases](https://github.com/bitsadmin/nopowershell/releases) page.
+Latest binaries available from the [Releases](https://github.com/bitsadmin/nopowershell/releases) page.
 
 # Screenshots
 ## Running in Cobalt Strike
 ![NoPowerShell supported commands](https://raw.githubusercontent.com/bitsadmin/nopowershell/master/Pictures/CurrentlySupportedCommands.png "NoPowerShell in Cobalt Strike")
 ## Sample execution of commands
 ![NoPowerShell sample commands](https://raw.githubusercontent.com/bitsadmin/nopowershell/master/Pictures/SampleCommands.png "NoPowerShell in Cobalt Strike")
+## Rundll32 version
+![NoPowerShellDll via rundll32](https://raw.githubusercontent.com/bitsadmin/nopowershell/master/Pictures/NoPowerShellDll.png "NoPowerShellDll via rundll32")
 
 # Usage
 ## Note
@@ -23,7 +25,7 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | - | - | - |
 | List all commands supported by NoPowerShell | `Get-Command` | |
 | Get help for a command | `Get-Help -Name Get-Process` | Alternative: `man ps` |
-| Show current user | `NoPowerShell.exe whoami` | Unofficial command |
+| Show current user | `whoami` | Unofficial command |
 | List SMB shares of MyServer | `Get-RemoteSmbShare \\MyServer` | Unofficial command |
 | List all user groups in domain | `Get-ADGroup -Filter *` | |
 | List all administrative groups in domain | `Get-ADGroup -LDAPFilter "(admincount=1)" \| select Name` | |
@@ -53,7 +55,7 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | List processes on remote host | `Get-Process -ComputerName dc01.corp.local -Username Administrator -Password P4ssw0rd!` | |
 | Gracefully stop processes | `Stop-Process -Id 4512,7241` | |
 | Kill process | `Stop-Process -Force -Id 4512` | |
-| Kill all cmd.exe processes | `Get-Process cmd | Stop-Process -Force` | |
+| Kill all cmd.exe processes | `Get-Process cmd \| Stop-Process -Force` | |
 | Obtain data of Win32_Process class from a remote system and apply a filter on the output | `gwmi "Select ProcessId,Name,CommandLine From Win32_Process" -ComputerName dc01.corp.local \| ? Name -Like *PowerShell* \| select ProcessId,CommandLine` | Explicit credentials can be specified using the `-Username` and `-Password` parameters |
 | View details about a certain service | `Get-WmiObject -Class Win32_Service -Filter "Name = 'WinRM'"` | |
 | Launch process using WMI | `Invoke-WmiMethod -Class Win32_Process -Name Create "cmd /c calc.exe"` | This can also be done on a remote system |
@@ -63,7 +65,7 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | Show the IP routing table | `Get-NetRoute` | |
 | Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout | `Test-NetConnection -Count 2 -Timeout 500 1.1.1.1` | |
 | Perform a traceroute with a timeout of 1 second and a maximum of 20 hops | `Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 google.com` | |
-| List network shares on the local machine that are exposed to the network | `Get-NetSmbMapping` | |
+| List network shares on the local machine that are exposed to the network | `Get-SmbMapping` | |
 | Format output as a list | `Get-LocalUser \| fl` | |
 | Format output as a list showing only specific attributes | `Get-LocalUser \| fl Name,Description` | |
 | Format output as a table | `Get-Process \| ft` | |
@@ -86,6 +88,12 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 2. Launch Cobalt Strike and load the .cna script in the Script Manager
 3. Interact with a beacon and execute commands using the `nps` command
 
+## Launch via rundll32
+1. Create a new shortcut to `NoPowerShell.dll` file (drag using right click -> Create shortcuts here)
+2. Update the shortcut prefixing the filename with `rundll32` and appending `,main`
+3. The shortcut will now look like `rundll32 C:\Path\to\NoPowerShell.dll,main`
+4. Double click the shortcut
+
 # Known issues
 - Pipeline characters need to surrounded by spaces
 - TLS 1.1+ is not supported by .NET Framework 2, so any site enforcing it will result in a connection error
@@ -98,43 +106,7 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 - Add support for .NET code in commandline, i.e.: `[System.Security.Principal.WindowsIdentity]::GetCurrent().Name`
 
 # Contributing
-Add your own cmdlets by submitting a pull request.
-## Requirement
-- Maintain .NET 2.0 compatibility in order to support the broadest range of operating systems
-
-## Instructions
-Use the TemplateCommand.cs file in the Commands folder to construct new cmdlets. The TemplateCommand cmdlet is hidden from the list of available cmdlets, but can be called in order to understand its workings. This command looks as follows: `Get-TemplateCommand [-MyFlag] -MyInteger [Int32] -MyString [Value]` and is also accessible via alias `gtc`.
-
-### Example usages
-| Action | Command |
-| - | - |
-| Simply run with default values | `gtc` |
-| Run with the -MyFlag parameter which executes the 'else' statement | `gtc -MyFlag` |
-| Run with the -MyInteger parameter which changes the number of iterations from its default number of 5 iterations to whatever number is provided | `gtc -MyInteger 10` |
-| Run with the -MyString parameter which changes the text that is printed from its default value of 'Hello World' to whatever string is provided | `gtc -MyString "Bye PowerShell"` |
-| Combination of parameters | `gtc -MyInteger 10 -MyString "Bye PowerShell"` |
-| Combination of parameters - Using fact that MyString is the only mandatory parameter for this command | `gtc -MyInteger 10 "Bye PowerShell"` |
-| Command in combination with a couple of data manipulators in the pipe | `gtc "Bye PowerShell" -MyInteger 30 \| ? Attribute2 -Like Line1* \| select Attribute2 \| fl` |
-
-Execute the following steps to implement your own cmdlet:
-1. Download Visual Studio Community from https://visualstudio.microsoft.com/downloads/
-    * In the installer select the **.NET desktop development** component.
-    * From this component no optional modules are required for developing NoPowerShell modules.
-2. Make sure to have the .NET 2 framework installed: OptionalFeatures -> '.NET Framework 3.5 (includes .NET 2.0 and 3.0)'.
-3. Clone this repository and create a copy of the **TemplateCommand.cs** file.
-    * In case you are implementing a native PowerShell command, place it in folder the corresponding to the _Source_ attribute when executing in PowerShell: `Get-Command My-Commandlet`.
-        * Moreover, use the name of the _Source_ attribute in the command's namespace.
-        * Example of a native command: `Get-Command Get-Process` -> Source: `Microsoft.PowerShell.Management` -> Place the .cs file in the **Management** subfolder and use `NoPowerShell.Commands.Management` namespace.
-    * In case it is a non-native command, place it in the **Additional** folder and use the `NoPowerShell.Commands.Additional` namespace.
-4. Update the `TemplateCommand` classname and its constructor name.
-5. Update the static **Aliases** variable to the command and aliases you want to use to call this cmdlet. For native PowerShell commands you can lookup the aliases using `Get-Alias | ? ResolvedCommandName -EQ My-Commandlet` to obtain the list of aliases. Always make sure the full command is the first "alias", for example: `Get-Alias | ? ResolvedCommandName -EQ Get-Process` -> Aliases are: `Get-Process`, `gps`, `ps`
-6. Update the static **Synopsis** variable to a small text that describes the command. This will be shown in the help.
-7. Update the arguments supported by the command by adding _StringArguments_, _BoolArguments_ and _IntegerArguments_ to the static **SupportedArguments** variable.
-8. In the Execute function:
-    1. Fetch the values of the _StringArguments_, _BoolArguments_ and _IntegerArguments_ as shown in the examples;
-    2. Based on the parameters provided by the user, perform your actions;
-    3. Make sure all results are stored in the `_results` variable.
-9. Remove all of the template sample code and comments from the file to keep the source tidy.
+See [CONTRIBUTING.md](https://github.com/bitsadmin/nopowershell/blob/master/CONTRIBUTING.md).
 
 # Requested NoPowerShell cmdlets
 | Cmdlet | Description |

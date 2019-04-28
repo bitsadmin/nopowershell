@@ -53,6 +53,13 @@ namespace NoPowerShell.Commands.Management
 
             _results = WmiHelper.ExecuteWmiQuery("Select ProcessId, Name, CommandLine From Win32_Process" + where, computername, username, password);
 
+            if(_results.Count == 0)
+            {
+                throw new NoPowerShellException(
+                    string.Format("Cannot find a process with the name \"{0}\". Verify the process name and call the cmdlet again.", allNameArguments)
+                );
+            }
+
             return _results;
         }
 

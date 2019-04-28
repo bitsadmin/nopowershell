@@ -26,7 +26,7 @@ namespace NoPowerShell.Commands.SmbShare
             get {
                 return new CaseInsensitiveList()
                 {
-                    "Get-NetSmbMapping",
+                    "Get-SmbMapping",
                     "netuse" // Not official
                 };
             }

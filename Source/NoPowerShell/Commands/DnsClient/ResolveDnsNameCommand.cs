@@ -77,10 +77,9 @@ namespace NoPowerShell.Commands.DnsClient
 
         public static new string Synopsis
         {
-            get {
-                string[] recordTypes = new string[Dns.RecordTypes.Count];
-                Dns.RecordTypes.Keys.CopyTo(recordTypes, 0);
-                return string.Format("Resolve DNS name.\r\n    Supported query types: {0}", string.Join(",", recordTypes));
+            get
+            {
+                return string.Format("Resolve DNS name.");
             }
         }
 
@@ -145,7 +144,14 @@ namespace NoPowerShell.Commands.DnsClient
             }
 
             CommandResult results = new CommandResult();
-            DnsRecordTypes queryType = (DnsRecordTypes)RecordTypes[type];
+            object foundType = RecordTypes[type];
+            if (foundType == null)
+            {
+                string[] types = new string[RecordTypes.Count];
+                RecordTypes.Keys.CopyTo(types, 0);
+                throw new NoPowerShellException(string.Format("Invalid type specified. Specify one of the following: {0}.", string.Join(",", types)));
+            }
+            DnsRecordTypes queryType = (DnsRecordTypes)foundType;
 
             var recordsArray = IntPtr.Zero;
             try

@@ -20,6 +20,7 @@ namespace NoPowerShell.Commands.Core
             // Obtain parameters
             string property = _arguments.Get<StringArgument>("Property").Value;
             bool eq = _arguments.Get<BoolArgument>("EQ").Value;
+            bool ne = _arguments.Get<BoolArgument>("NE").Value;
             bool like = _arguments.Get<BoolArgument>("Like").Value;
             string value = _arguments.Get<StringArgument>("Value").Value;
 
@@ -35,6 +36,10 @@ namespace NoPowerShell.Commands.Core
                 if (eq)
                 {
                     foundValue = (tablevalue == checkvalue);
+                }
+                else if (ne)
+                {
+                    foundValue = (tablevalue != checkvalue);
                 }
                 // Name -like "value"
                 else if (like)
@@ -79,6 +84,7 @@ namespace NoPowerShell.Commands.Core
                 {
                     new StringArgument("Property"),
                     new BoolArgument("EQ"),
+                    new BoolArgument("NE"),
                     new BoolArgument("Like"),
                     new StringArgument("Value")
                 };
