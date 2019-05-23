@@ -13,6 +13,10 @@ namespace NoPowerShell.HelperClasses
         public NoPowerShellException(string message) : base(message)
         {
         }
+
+        public NoPowerShellException(string messageFormat, params object[] args) : base(string.Format(messageFormat, args))
+        {
+        }
     }
 
     class CommandNotFoundException : NoPowerShellException

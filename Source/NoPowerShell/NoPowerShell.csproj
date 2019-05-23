@@ -34,9 +34,23 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release DLL' Or '$(Configuration)' == 'Debug DLL' ">
     <OutputType>Library</OutputType>
     <DefineConstants>$(DefineConstants);DLLBUILD</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)' == 'x86'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)' == 'x64'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DotNetVersion>$([System.String]::new('$(TargetFrameworkVersion.Substring(1).Replace(".",""))').PadRight(3,'0'))</DotNetVersion>
+    <MajorVersion>$(DotNetVersion.SubString(0,1))</MajorVersion>
+    <MinorVersion>$(DotNetVersion.SubString(1,1))</MinorVersion>
+    <SubVersion>$(DotNetVersion.SubString(2,1))</SubVersion>
+    <DefineConstants>$(DefineConstants);NET$(DotNetVersion);MAJOR$(MajorVersion);MINOR$(MinorVersion);SUB$(SubVersion)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RGiesecke.DllExport.Metadata, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8f52d83c1a22df51, processorArchitecture=MSIL">
@@ -48,6 +62,7 @@
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Management" />
     <Reference Include="System.Xml" />
+    <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments\Argument.cs" />
@@ -60,6 +75,8 @@
     <Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
     <Compile Include="Commands\Additional\GetRemoteSmbShare.cs" />
+    <Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
+    <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
     <Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
     <Compile Include="Commands\Core\GetCommandCommand.cs" />
     <Compile Include="Commands\Core\GetHelpCommand.cs" />
@@ -73,6 +90,7 @@
     <Compile Include="Commands\Management\CopyItemCommand.cs" />
     <Compile Include="Commands\Management\StopProcessCommand.cs" />
     <Compile Include="Commands\Management\GetHotFixCommand.cs" />
+    <Compile Include="Commands\Management\GetPSDriveCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetIPAddressCommand.cs" />
     <Compile Include="Commands\Management\GetProcessCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetRouteCommand.cs" />

@@ -64,7 +64,9 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | Show all network interfaces | `Get-NetIPAddress -All` | |
 | Show the IP routing table | `Get-NetRoute` | |
 | Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout | `Test-NetConnection -Count 2 -Timeout 500 1.1.1.1` | |
+| Perform ping with maximum TTL specified | `ping -TTL 32 1.1.1.1` | |
 | Perform a traceroute with a timeout of 1 second and a maximum of 20 hops | `Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 google.com` | |
+| Check for open port | `tnc bitsadm.in -Port 80` | |
 | List network shares on the local machine that are exposed to the network | `Get-SmbMapping` | |
 | Format output as a list | `Get-LocalUser \| fl` | |
 | Format output as a list showing only specific attributes | `Get-LocalUser \| fl Name,Description` | |
@@ -81,7 +83,10 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 | List local shares | `Get-WmiObject -Namespace ROOT\CIMV2 -Query "Select * From Win32_Share Where Name LIKE '%$'"` | Alternative: `gwmi -Class Win32_Share -Filter "Name LIKE '%$'"` |
 | Show network interfaces | `Get-NetIPAddress` | Alternatives: `ipconfig`, `ifconfig` |
 | Show computer information | `Get-ComputerInfo` | Alternative: `systeminfo` |
-| List installed hotfixes | `Get-HotFix` | The output of this cmdlet together with the output of the `Get-SystemInfo` cmdlet can be provided to [WES-NG](https://github.com/bitsadmin/wesng/) to determine missing patches |
+| List installed hotfixes | `Get-HotFix` | The output of this cmdlet together with the output of the `Get-ComputerInfo` cmdlet can be provided to [WES-NG](https://github.com/bitsadmin/wesng/) to determine missing patches |
+| List local drives | `Get-PSDrive` | |
+| Compress folder to zip | `Compress-Archive -Path C:\MyFolder -DestinationPath C:\MyFolder.zip` | |
+| Extract zip | `Expand-Archive -Path C:\MyArchive.zip -DestinationPath C:\Extracted` | Alternative: `unzip C:\MyArchive.zip` |
 
 ## Install in Cobalt Strike
 1. Copy both NoPowerShell.exe and NoPowerShell.cna to the **scripts** subfolder of Cobalt Strike

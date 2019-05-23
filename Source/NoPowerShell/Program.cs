@@ -15,7 +15,7 @@ namespace NoPowerShell
 {
     partial class Program
     {
-        public static readonly string VERSION = "1.22";
+        public static readonly string VERSION = "1.23";
         public static readonly string WEBSITE = "https://github.com/bitsadmin";
 #if !DLLBUILD
         private static readonly string USAGE = "Usage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n";

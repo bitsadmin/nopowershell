@@ -22,7 +22,7 @@ Execute the following steps to implement your own cmdlet:
 1. Download Visual Studio Community from https://visualstudio.microsoft.com/downloads/
     * In the installer select the **.NET desktop development** component.
     * From this component no optional modules are required for developing NoPowerShell modules.
-2. Make sure to have the .NET 2 framework installed: OptionalFeatures -> '.NET Framework 3.5 (includes .NET 2.0 and 3.0)'.
+2. Make sure to have the .NET 2 framework installed: `OptionalFeatures.exe` -> '.NET Framework 3.5 (includes .NET 2.0 and 3.0)'.
 3. Clone this repository and create a copy of the **TemplateCommand.cs** file.
     * In case you are implementing a native PowerShell command, place it in folder the corresponding to the _Source_ attribute when executing in PowerShell: `Get-Command My-Commandlet`.
         * Moreover, use the name of the _Source_ attribute in the command's namespace.
