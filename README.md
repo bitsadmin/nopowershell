@@ -181,12 +181,14 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Select-Object | Utility |
 
 # Acknowledgements
-Various NoPowerShell cmdlets include code created by other developers. 
+Various NoPowerShell cmdlets and NoPowerShell DLL include code created by other developers.
 | Who | Website | Notes |
+| - | - | - |
 | Contributors of pinvoke.net | https://www.pinvoke.net/ | Various cmdlets use snippets from pinvoke |
 | Michael Conrad | https://github.com/MichaCo/ | Parts of the Resolve-Dns cmdlet are based on the code of the DnsClient.Net project |
 | Rex Logan | https://stackoverflow.com/a/1148861 | Most code of the Get-NetNeighbor cmdlet originates from his StackOverflow post |
 | PowerShell developers | https://github.com/PowerShell/ | Code of NoPowerShell DLL is largely based on the code handling the console input of PowerShell |
+| Denis Kuzmin | https://github.com/3F/DllExport | NoPowerShell DLL depends on this |
 
 
 **Authored by Arris Huijgen ([@bitsadmin](https://twitter.com/bitsadmin/) - https://github.com/bitsadmin/)**
