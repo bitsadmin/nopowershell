@@ -1,6 +1,5 @@
 ﻿#if DLLBUILD
 using Microsoft.Win32.SafeHandles;
-using RGiesecke.DllExport;
 using System;
 using System.Collections.Generic;
 using System.IO;
