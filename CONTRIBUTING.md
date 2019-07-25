@@ -1,8 +1,9 @@
 # Contributing 
 
 Add your own cmdlets by submitting a pull request.
-## Requirement
+## Aim
 - Maintain .NET 2.0 compatibility in order to support the broadest range of operating systems
+- In case for whatever reason .NET 2.0 compatibility is not possible, add the `#if` preprocessor directive to the class specifying the unsupported .NET versions (for examples check the `*-Archive` cmdlets)
 
 ## Instructions
 Use the TemplateCommand.cs file in the Commands folder to construct new cmdlets. The TemplateCommand cmdlet is hidden from the list of available cmdlets, but can be called in order to understand its workings. This command looks as follows: `Get-TemplateCommand [-MyFlag] -MyInteger [Int32] -MyString [Value]` and is also accessible via alias `gtc`.

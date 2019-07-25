@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 
 /*
 Author: @bitsadmin
@@ -20,8 +21,20 @@ namespace NoPowerShell
         [DllExport("main", CallingConvention = CallingConvention.StdCall)]
         public static void Main()
         {
+#if DEBUG
             ProgramDll nps = new ProgramDll();
             nps.NoPowerShellExecute();
+#else
+            try
+            {
+                ProgramDll nps = new ProgramDll();
+                nps.NoPowerShellExecute();
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message, "NoPowerShell", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+#endif
         }
 
         public static void DllMain(string[] args)

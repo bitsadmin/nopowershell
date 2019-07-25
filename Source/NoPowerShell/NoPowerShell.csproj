@@ -61,6 +61,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Management" />
+    <Reference Condition="'$(Configuration)' == 'Release DLL' Or '$(Configuration)' == 'Debug DLL'" Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
@@ -94,6 +95,7 @@
     <Compile Include="Commands\NetTCPIP\GetNetIPAddressCommand.cs" />
     <Compile Include="Commands\Management\GetProcessCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetRouteCommand.cs" />
+    <Compile Include="Commands\NetTCPIP\GetNetNeighborCommand.cs" />
     <Compile Include="Commands\NetTCPIP\TestNetConnectionCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
     <Compile Include="Commands\TemplateCommand.cs" />
