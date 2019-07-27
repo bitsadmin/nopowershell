@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -25,6 +26,33 @@ namespace NoPowerShell.Commands.Utility
 
             bool wildcardSelect = attributes[0] == "*";
             bool firstSet = first > 0;
+
+            // Simply return pipeIn if empty
+            if (pipeIn.Count == 0)
+                return pipeIn;
+
+            // Ignore casing
+            List<string> correctAttributes = new List<string>();
+            foreach(string inputAttr in attributes)
+            {
+                bool found = false;
+
+                // Locate case-insensitive match
+                foreach (string key in pipeIn[0].Keys)
+                {
+                    if(inputAttr.Equals(key, System.StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        correctAttributes.Add(key);
+                        found = true;
+                        break;
+                    }
+                }
+
+                // Add original non-existent column if no matching column found
+                if (!found)
+                    correctAttributes.Add(inputAttr);
+            }
+            attributes = correctAttributes.ToArray();
 
             int counter = 0;
             foreach (ResultRecord result in pipeIn)

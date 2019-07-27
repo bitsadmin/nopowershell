@@ -25,7 +25,7 @@ namespace NoPowerShell.Commands.Management
 
             // Determine if provided path is a file or a directory
             if (!File.Exists(path))
-                throw new NoPowerShellException(string.Format("Cannot find path '{0}' because it does not exist.", path));
+                throw new NoPowerShellException("Cannot find path '{0}' because it does not exist.", path);
 
             FileAttributes attr = File.GetAttributes(path);
 

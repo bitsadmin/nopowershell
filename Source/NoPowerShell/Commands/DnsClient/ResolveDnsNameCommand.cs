@@ -149,7 +149,7 @@ namespace NoPowerShell.Commands.DnsClient
             {
                 string[] types = new string[RecordTypes.Count];
                 RecordTypes.Keys.CopyTo(types, 0);
-                throw new NoPowerShellException(string.Format("Invalid type specified. Specify one of the following: {0}.", string.Join(",", types)));
+                throw new NoPowerShellException("Invalid type specified. Specify one of the following: {0}.", string.Join(",", types));
             }
             DnsRecordTypes queryType = (DnsRecordTypes)foundType;
 

@@ -3,7 +3,9 @@ using NoPowerShell.HelperClasses;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 using System.Net.NetworkInformation;
+using System.Text;
 
 /*
 Author: @bitsadmin
@@ -15,6 +17,8 @@ namespace NoPowerShell.Commands.NetTCPIP
 {
     public class TestNetConnectionCommand : PSCommand
     {
+        private static readonly byte[] alphabet = Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwabcdefghi");
+
         public TestNetConnectionCommand(string[] userArguments) : base(userArguments, SupportedArguments)
         {
         }
@@ -27,22 +31,86 @@ namespace NoPowerShell.Commands.NetTCPIP
             int timeout = _arguments.Get<IntegerArgument>("Timeout").Value;
             string computerName = _arguments.Get<StringArgument>("ComputerName").Value;
             int hops = _arguments.Get<IntegerArgument>("Hops").Value;
+            int ttl = _arguments.Get<IntegerArgument>("TTL").Value;
+            int port = _arguments.Get<IntegerArgument>("Port").Value;
 
-            // Traceroute or Ping
-            if (performTraceroute)
-                _results = PerformTraceroute(computerName, count, timeout, hops);
+            // Resolve host
+            string ip = ResolveIP(computerName);
+
+            // ICMP
+            if(port == -1)
+            {
+                // Traceroute
+                if (performTraceroute)
+                    _results = PerformTraceroute(ip, computerName, count, timeout, hops);
+                // Ping
+                else
+                    _results = PerformPing(ip, computerName, count, timeout, ttl);
+            }
+            // TCP port
             else
-                _results = PerformPing(computerName, count, timeout);
+            {
+                _results = PerformPortTest(ip, computerName, port);
+            }
+            
 
             return _results;
         }
 
-        private static CommandResult PerformPing(string computerName, int count, int timeout)
+        private static string ResolveIP(string computerName)
+        {
+            IPHostEntry ip = null;
+            try
+            {
+                ip = Dns.GetHostEntry(computerName);
+            }
+            catch(SocketException)
+            {
+                throw new NoPowerShellException("Name resolution of {0} failed", computerName);
+            }
+
+            return ip.AddressList[0].ToString();
+        }
+
+        private static CommandResult PerformPortTest(string ip, string computerName, int port)
+        {
+            CommandResult results = new CommandResult(1);
+
+            if (port < 1 || port > 65535)
+                throw new NoPowerShellException("Cannot validate argument on parameter 'Port'. The {0} argument is greater than the maximum allowed range of 65535. Supply an argument that is less than or equal to 65535 and then try the command again.", port);
+
+            bool connected = false;
+            try
+            {
+                TcpClient client = new TcpClient(ip, port);
+                string address = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
+                string localAddress = ((IPEndPoint)client.Client.LocalEndPoint).Address.ToString();
+                connected = true;
+
+                results.Add(new ResultRecord()
+                {
+                    { "ComputerName", computerName },
+                    { "RemoteAddress", address},
+                    { "RemotePort", port.ToString() },
+                    //{ "InterfaceAlias", string.Empty }, // TODO
+                    { "SourceAddress", localAddress },
+                    { "TcpTestSucceeded", connected ? "True" : "False" }
+                });
+            }
+            catch(SocketException)
+            {
+                throw new NoPowerShellException("TCP connect to ({0} : {1}) failed", ip, port);
+            }
+
+            return results;
+        }
+
+        private static CommandResult PerformPing(string ip, string computerName, int count, int timeout, int ttl)
         {
             CommandResult results = new CommandResult(count);
 
             Ping ping = new Ping();
-            PingOptions options = new PingOptions(64, false);
+            PingOptions options = new PingOptions(ttl, false);
 
             bool succeeded = false;
 
@@ -52,7 +120,7 @@ namespace NoPowerShell.Commands.NetTCPIP
 
                 try
                 {
-                    reply = ping.Send(computerName, timeout);
+                    reply = ping.Send(ip, timeout, alphabet, options);
                 }
                 catch(PingException)
                 {
@@ -91,14 +159,9 @@ namespace NoPowerShell.Commands.NetTCPIP
             return results;
         }
 
-        private static CommandResult PerformTraceroute(string computerName, int count, int timeout, int maxHops)
+        private static CommandResult PerformTraceroute(string ip, string computerName, int count, int timeout, int maxHops)
         {
             CommandResult results = new CommandResult(count);
-
-            // Fill buffer with a-z
-            byte[] buffer = new byte[32];
-            for (int i = 0; i < buffer.Length; i++)
-                buffer[i] = Convert.ToByte(0x61 + (i % 26));
 
             Ping ping = new Ping();
             List<string> IPs = new List<string>(maxHops);
@@ -115,7 +178,7 @@ namespace NoPowerShell.Commands.NetTCPIP
 
                 try
                 {
-                    reply = ping.Send(computerName, timeout, buffer, options);
+                    reply = ping.Send(ip, timeout, alphabet, options);
                 }
                 catch(PingException)
                 {
@@ -176,7 +239,9 @@ namespace NoPowerShell.Commands.NetTCPIP
                     new StringArgument("ComputerName"),
                     new IntegerArgument("Count", 1, true),      // Unofficial parameter
                     new IntegerArgument("Timeout", 5000, true), // Unofficial parameter
-                    new IntegerArgument("Hops", 30, true)
+                    new IntegerArgument("TTL", 128, true),      // Unofficial parameter
+                    new IntegerArgument("Hops", 30, true),
+                    new IntegerArgument("Port", -1)
                 };
             }
         }
@@ -194,6 +259,8 @@ namespace NoPowerShell.Commands.NetTCPIP
                 {
                     new ExampleEntry("Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout", "Test-NetConnection -Count 2 -Timeout 500 1.1.1.1"),
                     new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 google.com"),
+                    new ExampleEntry("Perform ping with maximum TTL specified", "ping -TTL 32 1.1.1.1"),
+                    new ExampleEntry("Check for open port", "tnc bitsadm.in -Port 80")
                 };
             }
         }
