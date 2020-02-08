@@ -19,6 +19,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
         public override CommandResult Execute(CommandResult pipeIn)
         {
             // Obtain cmdlet parameters
+            string server = _arguments.Get<StringArgument>("Server").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
 
             // Obtain distinguishedname for group
@@ -29,8 +30,12 @@ namespace NoPowerShell.Commands.ActiveDirectory
             string distinguishedName = dn[0]["distinguishedName"];
 
             _results = LDAPHelper.QueryLDAP(
+                null,
                 string.Format("(memberOf={0})", distinguishedName),
-                new List<string>(1) { "distinguishedName", "name", "objectClass", "objectGUID", "SamAccountName", "SID" }
+                new List<string>(1) { "distinguishedName", "name", "objectClass", "objectGUID", "SamAccountName", "SID" },
+                server,
+                username,
+                password
             );
 
             return _results;
@@ -47,7 +52,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Identity"),
+                    new StringArgument("Server", true),
+                    new StringArgument("Identity")
                 };
             }
         }

@@ -20,6 +20,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
         public override CommandResult Execute(CommandResult pipeIn)
         {
             // Obtain cmdlet parameters
+            string server = _arguments.Get<StringArgument>("Server").Value;
+            string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
             string filter = _arguments.Get<StringArgument>("Filter").Value;
@@ -63,7 +65,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
             }
 
             // Query
-            _results = LDAPHelper.QueryLDAP(queryFilter, new List<string>(properties.Split(',')));
+            _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, new List<string>(properties.Split(',')), server, username, password);
 
             return _results;
         }
@@ -79,6 +81,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("Server", true),
+                    new StringArgument("SearchBase", true),
                     new StringArgument("Identity"),
                     new StringArgument("Filter"),
                     new StringArgument("LDAPFilter"),

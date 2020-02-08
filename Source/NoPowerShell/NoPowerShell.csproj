@@ -90,6 +90,7 @@
     <Compile Include="Commands\ActiveDirectory\GetADGroupMemberCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
+    <Compile Include="Commands\ActiveDirectory\GetADObjectCommand.cs" />
     <Compile Include="Commands\Additional\GetRemoteSmbShare.cs" />
     <Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
     <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />

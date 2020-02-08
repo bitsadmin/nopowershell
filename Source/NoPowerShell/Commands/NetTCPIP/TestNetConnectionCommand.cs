@@ -223,7 +223,7 @@ namespace NoPowerShell.Commands.NetTCPIP
                 return new CaseInsensitiveList()
                 {
                     "Test-NetConnection",
-                    "TNC",
+                    "tnc",
                     "ping" // Not official
                 };
             }

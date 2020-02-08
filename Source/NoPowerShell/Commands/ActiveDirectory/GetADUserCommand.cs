@@ -20,6 +20,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
         public override CommandResult Execute(CommandResult pipeIn)
         {
             // Obtain cmdlet parameters
+            string server = _arguments.Get<StringArgument>("Server").Value;
+            string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
             string filter = _arguments.Get<StringArgument>("Filter").Value;
@@ -61,7 +63,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
             }
 
             // Query
-            _results = LDAPHelper.QueryLDAP(queryFilter, new List<string>(properties.Split(',')));
+            _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, new List<string>(properties.Split(',')), server, username, password);
 
             return _results;
         }
@@ -77,6 +79,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("Server", true),
+                    new StringArgument("SearchBase", true),
                     new StringArgument("Identity"),
                     new StringArgument("Filter", true),
                     new StringArgument("LDAPFilter", true),
@@ -100,6 +104,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                     new ExampleEntry("List all Administrative users in domain", "Get-ADUser -LDAPFilter \"(admincount=1)\""),
                     new ExampleEntry("List all users in domain", "Get-ADUser -Filter *"),
                     new ExampleEntry("List specific attributes of user", "Get-ADUser Administrator -Properties SamAccountName,ObjectSID"),
+                    new ExampleEntry("List all users in a specific OU", "Get-ADUser -SearchBase \"CN=Users,DC=MyDomain,DC=local\" -Filter *")
                 };
             }
         }
