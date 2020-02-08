@@ -59,6 +59,12 @@ namespace NoPowerShell.Commands.NetTCPIP
 
         private static string ResolveIP(string computerName)
         {
+            // If IP is already provided, not required to resolve
+            IPAddress ip_addr;
+            if (IPAddress.TryParse(computerName, out ip_addr))
+                return ip_addr.ToString();
+
+            // In case it is a hostname, resolve it
             IPHostEntry ip = null;
             try
             {

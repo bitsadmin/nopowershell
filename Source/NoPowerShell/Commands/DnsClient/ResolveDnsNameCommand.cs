@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Text;
 
 /*
 Author: @bitsadmin
@@ -98,7 +99,8 @@ namespace NoPowerShell.Commands.DnsClient
                             "host linux.org",
                             "Resolve-DnsName -Type MX pm.me"
                         }
-                    )
+                    ),
+                    new ExampleEntry("Reverse DNS lookup", "Resolve-DnsName 1.1.1.1")
                 };
             }
         }
@@ -141,6 +143,33 @@ namespace NoPowerShell.Commands.DnsClient
             if (Environment.OSVersion.Platform != PlatformID.Win32NT)
             {
                 throw new NotSupportedException();
+            }
+
+            // Identify if IP address has been entered
+            // In that case, perform a reverse lookup
+            if (IPAddress.TryParse(domain, out IPAddress ip))
+            {
+                type = "PTR";
+
+                // IPv6
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+                {
+                    // ipv6.google.com = 2a00:1450:400e:80e::200e -> e.0.0.2.0.0.0.0.0.0.0.0.0.0.0.0.e.0.8.0.e.0.0.4.0.5.4.1.0.0.a.2.ip6.arpa
+                    byte[] ipv6_bytes = ip.GetAddressBytes();
+                    StringBuilder sb = new StringBuilder(72);
+                    for (int i = ipv6_bytes.Length - 1; i >= 0; i--)
+                    {
+                        byte currentByte = ipv6_bytes[i];
+                        byte lo = (byte)(currentByte & 0x0F);
+                        byte hi = (byte)(currentByte >> 4);
+                        sb.AppendFormat("{0:x}.{1:x}.", lo, hi);
+                    }
+                    sb.Append("ip6.arpa");
+                    domain = sb.ToString();
+                }
+                // IPv4
+                else
+                    domain = string.Format("{0}.in-addr.arpa", ip);
             }
 
             CommandResult results = new CommandResult();
