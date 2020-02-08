@@ -98,10 +98,6 @@ namespace NoPowerShell.HelperClasses
                         // Fixups
                         switch (propertyKey.ToLowerInvariant())
                         {
-                            // The UserAccountControl bitmask contains a bit which states whether the account is enabled or not
-                            case "useraccountcontrol":
-                                foundRecord["Enabled"] = IsActive(result).ToString();
-                                continue;
                             // Byte array needs to be converted to GUID
                             case "objectguid":
                                 Guid g = new Guid((byte[])objArray[0]);
@@ -111,6 +107,14 @@ namespace NoPowerShell.HelperClasses
                             case "objectsid":
                                 SecurityIdentifier sid = new SecurityIdentifier((byte[])objArray[0], 0);
                                 foundRecord[propertyKey] = sid.ToString();
+                                continue;
+                            // Date fields
+                            case "lastlogon":
+                            case "lastlogontimestamp":
+                            case "badpasswordtime":
+                            case "pwdlastset":
+                                DateTime lastlogon = DateTime.FromFileTime((long)objArray[0]);
+                                foundRecord[propertyKey] = lastlogon.ToString();
                                 continue;
                             // This attribute is automatically added
                             case "adspath":
@@ -138,12 +142,12 @@ namespace NoPowerShell.HelperClasses
             return _results;
         }
 
-        private static bool IsActive(SearchResult de)
+        public static bool IsActive(string bits)
         {
-            if (de.Properties["ObjectGUID"] == null)
-                return false;
+            if (string.IsNullOrEmpty(bits))
+                return true;
 
-            int flags = Convert.ToInt32(de.Properties["userAccountControl"][0]);
+            int flags = Convert.ToInt32(bits);
 
             return !Convert.ToBoolean(flags & 0x0002);
         }

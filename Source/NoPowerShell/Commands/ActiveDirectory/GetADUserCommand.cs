@@ -25,7 +25,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
             string identity = _arguments.Get<StringArgument>("Identity").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
             string filter = _arguments.Get<StringArgument>("Filter").Value;
-            string properties = _arguments.Get<StringArgument>("Properties").Value;
+            CaseInsensitiveList properties = new CaseInsensitiveList(_arguments.Get<StringArgument>("Properties").Value.Split(','));
 
             // Determine filters
             bool filledIdentity = !string.IsNullOrEmpty(identity);
@@ -63,7 +63,19 @@ namespace NoPowerShell.Commands.ActiveDirectory
             }
 
             // Query
-            _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, new List<string>(properties.Split(',')), server, username, password);
+            _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, properties, server, username, password);
+
+            // Translate UserAccountControl AD field into whether the account is enabled
+            if (_results.Count > 0 && _results[0].ContainsKey("useraccountcontrol"))
+            {
+                foreach (ResultRecord r in _results)
+                {
+                    string uac = r["useraccountcontrol"];
+                    bool active = LDAPHelper.IsActive(uac);
+                    r["Enabled"] = active.ToString();
+                    //r.Remove("useraccountcontrol");
+                }
+            }
 
             return _results;
         }
