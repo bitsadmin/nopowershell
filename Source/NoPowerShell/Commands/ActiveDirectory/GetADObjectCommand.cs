@@ -84,6 +84,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 {
                     new ExampleEntry("Get the sites from the configuration naming context", "Get-ADObject -LDAPFilter \"(objectClass=site)\" -SearchBase \"CN=Configuration,DC=MyDomain,DC=local\" -Properties whenCreated,cn"),
                     new ExampleEntry("Get specific object", "Get-ADObject -Identity \"CN=Directory Service,CN=Windows NT,CN=Services,CN=Configuration,DC=MyDomain,DC=local\" -Properties *"),
+                    new ExampleEntry("List all global groups", "Get-ADObject –LDAPFilter \"(GroupType:1.2.840.113556.1.4.803:=2)\" –SearchBase \"DC=MyDomain,DC=local\"")
                 };
             }
         }
