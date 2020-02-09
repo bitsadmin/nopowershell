@@ -34,9 +34,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
             // Input checks
             if (filledIdentity && filledLdapFilter)
-                throw new InvalidOperationException("Specify either Identity or LDAPFilter, not both");
+                throw new NoPowerShellException("Specify either Identity or LDAPFilter, not both");
             if (!filledIdentity && !filledLdapFilter && !filledFilter)
-                throw new InvalidOperationException("Specify either Identity, Filter or LDAPFilter");
+                throw new NoPowerShellException("Specify either Identity, Filter or LDAPFilter");
 
             // Build filter
             string filterBase = "(&(objectCategory=user){0})";
@@ -57,7 +57,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 // TODO: allow more types of filters
                 if (filter != "*")
-                    throw new InvalidOperationException("Currently only * filter is supported");
+                    throw new NoPowerShellException("Currently only * filter is supported");
 
                 queryFilter = string.Format(filterBase, string.Empty);
             }

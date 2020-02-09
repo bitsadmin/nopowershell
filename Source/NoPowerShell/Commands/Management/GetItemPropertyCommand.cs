@@ -74,7 +74,7 @@ namespace NoPowerShell.Commands.Management
                 newPath = path.Replace("HKU:", string.Empty);
             }
             else
-                throw new InvalidOperationException("Unknown registry path.");
+                throw new NoPowerShellException("Unknown registry path: \"{0}\"", path);
 
             if (newPath.StartsWith(@"\"))
                 newPath = newPath.Substring(1);

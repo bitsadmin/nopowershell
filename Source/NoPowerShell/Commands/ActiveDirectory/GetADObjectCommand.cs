@@ -33,7 +33,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 // Neither LDAPFilter nor Identity specified
                 if (string.IsNullOrEmpty(identity))
-                    throw new InvalidOperationException("Either LDAPFilter or Identity parameter is required");
+                    throw new NoPowerShellException("Either LDAPFilter or Identity parameter is required");
                 // Identity is specified, so search on the base
                 else
                 {

@@ -57,7 +57,7 @@ namespace NoPowerShell.HelperClasses
                 wildCardSelect = true;
             }
             else
-                throw new InvalidOperationException(string.Format("Unknown type of WMI query: {0}", wmiQuery));
+                throw new NoPowerShellException(string.Format("Unknown type of WMI query: {0}", wmiQuery));
 
             // Collect data
             foreach (ManagementObject m in queryCollection)

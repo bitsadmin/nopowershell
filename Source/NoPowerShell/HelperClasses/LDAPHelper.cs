@@ -72,7 +72,7 @@ namespace NoPowerShell.HelperClasses
                     // Validate if all properties are available
                     //foreach (string property in properties)
                     //    if (!ciProperties.Contains(property))
-                    //        throw new InvalidOperationException(string.Format("Column {0} not available in results", property));
+                    //        throw new NoPowerShellException(string.Format("Column {0} not available in results", property));
                     
                     // Create template
                     // This makes sure the order of columns is in the order the user specified

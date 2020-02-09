@@ -30,7 +30,7 @@ namespace NoPowerShell.Commands.LocalAccounts
             else if (!string.IsNullOrEmpty(name))
                 query = string.Format(query, hostname, name);
             else
-                throw new InvalidOperationException("-Group or -Name parameter needs to be provided");
+                throw new NoPowerShellException("-Group or -Name parameter needs to be provided");
 
             _results = WmiHelper.ExecuteWmiQuery(query, computername, username, password);
 

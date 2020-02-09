@@ -43,7 +43,7 @@ namespace NoPowerShell.Commands.Core
                 }
 
                 if (!found)
-                    throw new InvalidOperationException(string.Format("Command {0} not found", name));
+                    throw new NoPowerShellException(string.Format("Command {0} not found", name));
             }
 
             // Collect information
