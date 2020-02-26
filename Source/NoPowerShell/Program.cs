@@ -107,13 +107,17 @@ namespace NoPowerShell
 
         static void WriteError(string error)
         {
+            // Save existing color
             ConsoleColor BackgroundColor = Console.BackgroundColor;
             ConsoleColor ForegroundColor = Console.ForegroundColor;
+
+            // Change color to error text
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Red;
 
             Console.Error.WriteLine(error);
 
+            // Revert colors
             Console.BackgroundColor = BackgroundColor;
             Console.ForegroundColor = ForegroundColor;
         }

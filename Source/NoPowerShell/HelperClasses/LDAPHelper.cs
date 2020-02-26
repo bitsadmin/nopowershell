@@ -25,15 +25,15 @@ namespace NoPowerShell.HelperClasses
             CommandResult _results = new CommandResult();
 
             // Select all properties if * parameter is provided
-            if (properties.Count > 0 && properties[0] == "*")
+            if (properties == null || (properties.Count > 0 && properties[0] == "*"))
                 properties = new List<string>(0);
 
             // Compile LDAP connection string
             string ldap = "LDAP://";
             if(!string.IsNullOrEmpty(server))
-                ldap += server + "/";
+                ldap += server;
             if (!string.IsNullOrEmpty(searchBase))
-                ldap += searchBase;
+                ldap += "/" + searchBase;
             if (ldap == "LDAP://")
                 ldap = string.Empty;
 
@@ -87,7 +87,7 @@ namespace NoPowerShell.HelperClasses
                     SearchResult result = results[i];
 
                     // First records should have the same number of properties as any other record
-                    ResultRecord foundRecord = (ResultRecord)recordTemplate.Clone(); // new ResultRecord(results[0].Properties.Count);
+                    ResultRecord foundRecord = (ResultRecord)recordTemplate.Clone();
 
                     // Iterate over result properties
                     foreach (DictionaryEntry property in result.Properties)
@@ -105,6 +105,7 @@ namespace NoPowerShell.HelperClasses
                                 continue;
                             // Byte array needs to be converted to SID
                             case "objectsid":
+                            case "securityidentifier":
                                 SecurityIdentifier sid = new SecurityIdentifier((byte[])objArray[0], 0);
                                 foundRecord[propertyKey] = sid.ToString();
                                 continue;

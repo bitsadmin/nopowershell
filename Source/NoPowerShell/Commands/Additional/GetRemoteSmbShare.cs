@@ -22,6 +22,10 @@ namespace NoPowerShell.Commands.Additional
         public override CommandResult Execute(CommandResult pipeIn)
         {
             string server = _arguments.Get<StringArgument>("Server").Value;
+
+            if (string.IsNullOrEmpty(server))
+                throw new NoPowerShellException("Mandatory -Server argument missing");
+            
             server = server.Replace(@"\\", "");
 
             GetNetShares gns = new GetNetShares();
