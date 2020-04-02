@@ -79,6 +79,7 @@
     <Reference Condition="'$(Configuration)' == 'Release DLL' Or '$(Configuration)' == 'Debug DLL'" Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression.FileSystem" />
+    <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments\Argument.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Commands\NetTCPIP\GetNetRouteCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetNeighborCommand.cs" />
     <Compile Include="Commands\NetTCPIP\TestNetConnectionCommand.cs" />
+    <Compile Include="Commands\SmbShare\GetSmbShareCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
     <Compile Include="Commands\TemplateCommand.cs" />
     <Compile Include="Commands\Utility\FormatListCommand.cs" />

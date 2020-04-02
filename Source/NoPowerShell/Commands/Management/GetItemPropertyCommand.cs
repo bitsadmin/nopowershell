@@ -23,7 +23,7 @@ namespace NoPowerShell.Commands.Management
             // Obtain parameters
             bool includeHidden = _arguments.Get<BoolArgument>("Force").Value;
             string path = _arguments.Get<StringArgument>("Path").Value;
-            string searchPattern = _arguments.Get<StringArgument>("Include").Value;
+            string[] searchPatterns = _arguments.Get<StringArgument>("Include").Value.Split(new char[] { ',' });
             string name = _arguments.Get<StringArgument>("Name").Value;
             CaseInsensitiveList attributeNames = null;
             if (!string.IsNullOrEmpty(name))
@@ -43,7 +43,7 @@ namespace NoPowerShell.Commands.Management
             //     ..\
             //     D:\
             else
-                _results = GetChildItemCommand.BrowseFilesystem(path, false, 1, includeHidden, searchPattern);
+                _results = GetChildItemCommand.BrowseFilesystem(path, false, 1, includeHidden, searchPatterns);
 
             return _results;
         }

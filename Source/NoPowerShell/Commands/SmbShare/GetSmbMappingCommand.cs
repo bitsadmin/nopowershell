@@ -53,7 +53,7 @@ namespace NoPowerShell.Commands.SmbShare
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List network shares on the local machine that are exposed to the network", "Get-NetSmbMapping"),
+                    new ExampleEntry("List network shares on the local machine that are exposed to the network", "Get-SmbMapping"),
                 };
             }
         }

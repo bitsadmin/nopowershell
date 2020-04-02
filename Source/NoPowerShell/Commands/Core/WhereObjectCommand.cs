@@ -27,6 +27,10 @@ namespace NoPowerShell.Commands.Core
             // Iterate over output lines of previous command in pipe
             foreach (ResultRecord result in pipeIn)
             {
+                // In case property does not exist, skip
+                if (!result.ContainsKey(property))
+                    continue;
+
                 string tablevalue = result[property].ToLowerInvariant();
                 string checkvalue = value.ToLowerInvariant();
                 string cleancheckvalue = checkvalue.TrimStart('*').TrimEnd('*');

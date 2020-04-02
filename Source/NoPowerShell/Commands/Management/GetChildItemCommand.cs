@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Win32;
 using System.Collections;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -27,7 +28,7 @@ namespace NoPowerShell.Commands.Management
             string path = _arguments.Get<StringArgument>("Path").Value;
             bool recurse = _arguments.Get<BoolArgument>("Recurse").Value;
             int depth = _arguments.Get<IntegerArgument>("Depth").Value;
-            string searchPattern = _arguments.Get<StringArgument>("Include").Value;
+            string[] searchPatterns = _arguments.Get<StringArgument>("Include").Value.Split(new char[] { ',' });
 
             // Registry:
             //     HKLM:\
@@ -49,7 +50,7 @@ namespace NoPowerShell.Commands.Management
             //     ..\
             //     D:\
             else
-                _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPattern);
+                _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPatterns);
 
             return _results;
         }
@@ -115,7 +116,7 @@ namespace NoPowerShell.Commands.Management
             return results;
         }
 
-        public static CommandResult BrowseFilesystem(string path, bool recurse, int depth, bool includeHidden, string searchPattern)
+        public static CommandResult BrowseFilesystem(string path, bool recurse, int depth, bool includeHidden, string[] searchPatterns)
         {
             CommandResult results = new CommandResult();
 
@@ -128,10 +129,18 @@ namespace NoPowerShell.Commands.Management
             if ((gciDir.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
                 return results;
 
-            DirectoryInfo[] directories;
+            List<DirectoryInfo> directories = new List<DirectoryInfo>();
             try
             {
-                directories = gciDir.GetDirectories(recurse ? "*" : searchPattern);
+                if (recurse)
+                    directories.AddRange(gciDir.GetDirectories("*"));
+                else
+                {
+                    foreach (string pattern in searchPatterns)
+                    {
+                        directories.AddRange(gciDir.GetDirectories(pattern));
+                    }
+                }
             }
             catch (UnauthorizedAccessException)
             {
@@ -139,7 +148,11 @@ namespace NoPowerShell.Commands.Management
                 return results;
             }
 
-            FileInfo[] files = gciDir.GetFiles(searchPattern);
+            List<FileInfo> files = new List<FileInfo>();
+            foreach(string pattern in searchPatterns)
+            {
+                files.AddRange(gciDir.GetFiles(pattern));
+            }
 
             // Enumerate directories
             foreach (DirectoryInfo dir in directories)
@@ -148,7 +161,7 @@ namespace NoPowerShell.Commands.Management
                     continue;
 
                 // Don't show directories if -Recurse and an -Include filter is set
-                if (recurse && !string.IsNullOrEmpty(searchPattern))
+                if (recurse && !string.IsNullOrEmpty(searchPatterns[0]))
                     continue;
 
                 ResultRecord currentDir = new ResultRecord()
@@ -196,7 +209,7 @@ namespace NoPowerShell.Commands.Management
                     if ((subDir.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden && !includeHidden)
                         continue;
 
-                    CommandResult currentDir = BrowseFilesystem(subDir.FullName, recurse, depth - 1, includeHidden, searchPattern);
+                    CommandResult currentDir = BrowseFilesystem(subDir.FullName, recurse, depth - 1, includeHidden, searchPatterns);
                     results.AddRange(currentDir);
                 }
             }
@@ -250,7 +263,8 @@ namespace NoPowerShell.Commands.Management
                 return new ExampleEntries()
                 {
                     new ExampleEntry("Locate KeePass files in the C:\\Users\\ directory", "ls -Recurse -Force C:\\Users\\ -Include *.kdbx"),
-                    new ExampleEntry("List the keys under the SOFTWARE key in the registry", "ls HKLM:\\SOFTWARE")
+                    new ExampleEntry("List the keys under the SOFTWARE key in the registry", "ls HKLM:\\SOFTWARE"),
+                    new ExampleEntry("Search for scripts on the C-drive", "ls -Recurse -Force C:\\ -Include *.cmd,*.bat,*.ps1"),
                 };
             }
         }
