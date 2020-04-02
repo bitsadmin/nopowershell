@@ -73,7 +73,7 @@ namespace NoPowerShell.Commands.Core
 
         public static new CaseInsensitiveList Aliases
         {
-            get { return new CaseInsensitiveList() { "Where-Object", "?" }; }
+            get { return new CaseInsensitiveList() { "Where-Object", "where", "?" }; }
         }
 
         public static new ArgumentList SupportedArguments

@@ -18,7 +18,7 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | List all active local users | `Get-LocalUser \| ? Disabled -EQ False` | |
 | List all local groups | `Get-LocalGroup` | |
 | List details of a specific group | `Get-LocalGroup Administrators` | |
-| List all active members of the Administrators group | `Get-LocalGroupMember -Group Administrators \| ? Disabled -eq False` | |
+| List all members of the Administrators group | `Get-LocalGroupMember -Group Administrators` | |
 | List all local users | `Get-LocalUser` | |
 | List details of a specific user | `Get-LocalUser Administrator` | |
 | List all properties of the DC01 domain computer | `Get-ADComputer -Identity DC01 -Properties *` | |
