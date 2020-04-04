@@ -272,7 +272,7 @@ namespace NoPowerShell.Commands.Management
                         }
                     ),
                     new ExampleEntry("List the keys under the SOFTWARE key in the registry", "ls HKLM:\\SOFTWARE"),
-                    new ExampleEntry("Search for files which can contain sensitive data on the C-drive", "ls -Recurse -Force C:\\ -Include *.xml,*.ini,*.txt,*.cmd,*.bat,*.conf,*.config,*.log,*.reg,*.ps1,*.psm1,*.psd1,*.ps1xml,*.psc1,*.rdp,*.rdg,*.url,*.sql"),
+                    new ExampleEntry("Search for files which can contain sensitive data on the C-drive", "ls -Recurse -Force C:\\ -Include *.cmd,*.bat,*.ps1,*.psm1,*.psd1"),
                 };
             }
         }

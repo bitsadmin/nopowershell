@@ -150,16 +150,6 @@ namespace NoPowerShell.Commands.Core
 
                             i++;
                         }
-
-                        // Alternative(s)
-                        //string alt = null;
-                        //if (examplestrings.Count > 1)
-                        //{
-                        //    List<string> alternatives = examplestrings.GetRange(1, example.Examples.Count - 1);
-                        //    alt = string.Format("`{0}`", string.Join("`, `", alternatives.ToArray()));
-                        //}
-
-                        //Console.WriteLine("| {0} | `{1}` | {2} |", example.Description, examplestrings[0], alt);
                     }
                 }
 
