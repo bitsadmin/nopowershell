@@ -3,6 +3,7 @@
 #else
 using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 
@@ -82,8 +83,16 @@ namespace NoPowerShell.Commands.Archive
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Extract zip", "Expand-Archive -Path C:\\MyArchive.zip -DestinationPath C:\\Extracted"),
-                    new ExampleEntry("Extract zip current directory", "unzip C:\\MyArchive.zip"),
+                    new ExampleEntry
+                    (
+                        "Extract zip",
+                        new List<string>()
+                        {
+                            "Expand-Archive -Path C:\\MyArchive.zip -DestinationPath C:\\Extracted",
+                            "unzip C:\\MyArchive.zip C:\\Extracted"
+                        }
+                    ),
+                    new ExampleEntry("Extract zip into current directory", "unzip C:\\MyArchive.zip"),
                 };
             }
         }

@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -53,7 +54,15 @@ namespace NoPowerShell.Commands.SmbShare
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List network shares on the local machine that are exposed to the network", "Get-SmbMapping"),
+                    new ExampleEntry
+                    (
+                        "List network shares on the local machine that are exposed to the network",
+                        new List<string>()
+                        {
+                            "Get-SmbMapping",
+                            "netuse"
+                        }
+                    )
                 };
             }
         }

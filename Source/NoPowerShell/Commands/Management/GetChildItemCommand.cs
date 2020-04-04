@@ -144,7 +144,7 @@ namespace NoPowerShell.Commands.Management
             }
             catch (UnauthorizedAccessException)
             {
-                Console.WriteLine("Unauthorized to access \"{0}\"", path);
+                Program.WriteError("Access to the path '{0}' is denied.", path);
                 return results;
             }
 
@@ -262,9 +262,17 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Locate KeePass files in the C:\\Users\\ directory", "ls -Recurse -Force C:\\Users\\ -Include *.kdbx"),
+                    new ExampleEntry
+                    (
+                        "Locate KeePass files in the C:\\Users\\ directory",
+                        new List<string>()
+                        {
+                            "Get-ChildItem -Recurse -Force C:\\Users\\ -Include *.kdbx",
+                            "ls -Recurse -Force C:\\Users\\ -Include *.kdbx"
+                        }
+                    ),
                     new ExampleEntry("List the keys under the SOFTWARE key in the registry", "ls HKLM:\\SOFTWARE"),
-                    new ExampleEntry("Search for scripts on the C-drive", "ls -Recurse -Force C:\\ -Include *.cmd,*.bat,*.ps1"),
+                    new ExampleEntry("Search for files which can contain sensitive data on the C-drive", "ls -Recurse -Force C:\\ -Include *.xml,*.ini,*.txt,*.cmd,*.bat,*.conf,*.config,*.log,*.reg,*.ps1,*.psm1,*.psd1,*.ps1xml,*.psc1,*.rdp,*.rdg,*.url,*.sql"),
                 };
             }
         }

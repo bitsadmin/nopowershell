@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 /*
 Author: @bitsadmin
@@ -56,6 +57,21 @@ namespace NoPowerShell.HelperClasses
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            string[] values = new string[this.Count];
+            int i = 0;
+            
+            // Concatenate values with a vertical bar (|)
+            foreach(KeyValuePair<string, string> kvp in this)
+            {
+                values[i] = kvp.Value;
+                i++;
+            }
+
+            return string.Join(" | ", values);
         }
     }
 }

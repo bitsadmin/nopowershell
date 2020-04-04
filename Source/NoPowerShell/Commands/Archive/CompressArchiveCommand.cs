@@ -4,6 +4,7 @@
 using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 
@@ -112,7 +113,15 @@ namespace NoPowerShell.Commands.Archive
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Compress folder to zip", "Compress-Archive -Path C:\\MyFolder -DestinationPath C:\\MyFolder.zip"),
+                    new ExampleEntry
+                    (
+                        "Compress folder to zip",
+                        new List<string>()
+                        {
+                            "Compress-Archive -Path C:\\MyFolder -DestinationPath C:\\MyFolder.zip",
+                            "zip C:\\MyFolder C:\\MyFolder.zip"
+                        }
+                    )
                 };
             }
         }

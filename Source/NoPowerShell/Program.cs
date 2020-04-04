@@ -105,7 +105,7 @@ namespace NoPowerShell
             return 0;
         }
 
-        static void WriteError(string error)
+        public static void WriteError(string error, params object[] args)
         {
             // Save existing color
             ConsoleColor BackgroundColor = Console.BackgroundColor;
@@ -115,7 +115,24 @@ namespace NoPowerShell
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Red;
 
-            Console.Error.WriteLine(error);
+            Console.Error.WriteLine(error, args);
+
+            // Revert colors
+            Console.BackgroundColor = BackgroundColor;
+            Console.ForegroundColor = ForegroundColor;
+        }
+
+        public static void WriteWarning(string warning, params object[] args)
+        {
+            // Save existing color
+            ConsoleColor BackgroundColor = Console.BackgroundColor;
+            ConsoleColor ForegroundColor = Console.ForegroundColor;
+
+            // Change color to error text
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+
+            Console.Error.WriteLine(warning, args);
 
             // Revert colors
             Console.BackgroundColor = BackgroundColor;

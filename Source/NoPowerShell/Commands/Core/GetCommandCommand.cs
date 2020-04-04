@@ -1,6 +1,7 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -20,7 +21,16 @@ namespace NoPowerShell.Commands.Core
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain parameters
+            bool included = _arguments.Get<BoolArgument>("_Included").Value;
+            bool cheatsheet = _arguments.Get<BoolArgument>("_Cheatsheet").Value;
+            string moduleFilter = _arguments.Get<StringArgument>("Module").Value;
+
+            // Get all commands
             Dictionary<Type, CaseInsensitiveList> commandTypes = ReflectionHelper.GetCommands();
+
+            // Intialize hashtable for cheatsheet
+            Hashtable exampletable = new Hashtable();
 
             // Iterate over all available cmdlets
             foreach (KeyValuePair<Type, CaseInsensitiveList> commandType in commandTypes)
@@ -44,14 +54,39 @@ namespace NoPowerShell.Commands.Core
                 else
                     arguments = new ArgumentList();
 
+                // Hide internal parameters
+                ArgumentList newarguments = new ArgumentList();
+                foreach (Argument arg in arguments)
+                {
+                    if (!arg.Name.StartsWith("_"))
+                        newarguments.Add(arg);
+                }
+                arguments = newarguments;
+
                 // Synopsis
                 string strSynopsis = null;
                 PropertyInfo synopsisProperty = commandType.Key.GetProperty("Synopsis", BindingFlags.Static | BindingFlags.Public);
                 if (synopsisProperty != null)
                     strSynopsis = (string)synopsisProperty.GetValue(null, null);
 
+                // Arguments
                 string strArguments = GetArguments(arguments);
+
+                // Aliases
                 string strAliases = string.Join(", ", aliases.GetRange(1, aliases.Count - 1).ToArray());
+
+                // Module
+                string module = commandType.Key.Namespace.Replace("NoPowerShell.Commands.", string.Empty);
+                if (!string.IsNullOrEmpty(moduleFilter) && moduleFilter.ToLowerInvariant() != module.ToLowerInvariant())
+                    continue;
+
+                // Store examples to generate the cheatsheet
+                if (cheatsheet)
+                {
+                    PropertyInfo examplesProperty = commandType.Key.GetProperty("Examples", BindingFlags.Static | BindingFlags.Public);
+                    ExampleEntries examples = (examplesProperty != null) ? (ExampleEntries)examplesProperty.GetValue(null, null) : null;
+                    exampletable[commandName] = examples;
+                }
 
                 _results.Add(
                     new ResultRecord()
@@ -59,18 +94,71 @@ namespace NoPowerShell.Commands.Core
                         { "Command", string.Format("{0} {1}", commandName, strArguments) },
                         { "Aliases", strAliases },
                         { "Synopsis", strSynopsis },
-                        { "Module", commandType.Key.Namespace.Replace("NoPowerShell.Commands.",string.Empty) }
+                        { "Module", module }
                     }
                 );
             }
 
             // Organize by module
-            _results.Sort(delegate(ResultRecord a, ResultRecord b){
+            _results.Sort(delegate (ResultRecord a, ResultRecord b)
+            {
                 return a["Module"].CompareTo(b["Module"]);
             });
 
+            // Generate markdown of all available commands
+            // Make sure to run this having the project compiled as .NET 4.5 to include all commands
+            if (included)
+            {
+                Console.WriteLine("| Cmdlet | Module | Notes |\r\n| - | - | - |");
+
+                foreach (ResultRecord r in _results)
+                {
+                    Console.WriteLine("| {0} | {1} | |", r["Command"].Split(new char[] { ' ' })[0], r["Module"]);
+                }
+
+                Console.WriteLine("\r\n\r\nTotal: {0}", _results.Count);
+
+                return null;
+            }
+
+            // Generate cheatsheet markdown
+            if (cheatsheet)
+            {
+                Console.WriteLine("| Action | Command | Alternative |\r\n| - | - | - |");
+
+                foreach (ResultRecord r in _results)
+                {
+                    string cmdlet = r["Command"].Split(new char[] { ' ' })[0];
+                    ExampleEntries examples = (ExampleEntries)exampletable[cmdlet];
+
+                    foreach (ExampleEntry example in examples)
+                    {
+                        List<string> examplestrings = new List<string>(example.Examples.Count);
+                        foreach (string ex in example.Examples)
+                            examplestrings.Add(ex.Replace("|", "\\|"));
+
+                        // Alternative(s)
+                        string alt = null;
+                        if (examplestrings.Count > 1)
+                        {
+                            //string format = "Alternative: `{0}`";
+
+                            //if (examplestrings.Count > 2)
+                            //    format = "Alternatives: `{0}`";
+
+                            List<string> alternatives = examplestrings.GetRange(1, example.Examples.Count - 1);
+                            alt = string.Format("`{0}`", string.Join("`, `", alternatives.ToArray()));
+                        }
+
+                        Console.WriteLine("| {0} | `{1}` | {2} |", example.Description, examplestrings[0], alt);
+                    }
+                }
+
+                return null;
+            }
+
             // Remove Module attribute
-            foreach(ResultRecord r in _results)
+            foreach (ResultRecord r in _results)
             {
                 r.Remove("Module");
             }
@@ -122,6 +210,9 @@ namespace NoPowerShell.Commands.Core
             {
                 return new ArgumentList()
                 {
+                    new BoolArgument ("_Included"),
+                    new BoolArgument ("_Cheatsheet"),
+                    new StringArgument ("Module"),
                 };
             }
         }
@@ -137,7 +228,8 @@ namespace NoPowerShell.Commands.Core
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List all commands supported by NoPowerShell", "Get-Command")
+                    new ExampleEntry("List all commands supported by NoPowerShell", "Get-Command"),
+                    new ExampleEntry("List commands of a certain module", "Get-Command -Module ActiveDirectory")
                 };
             }
         }

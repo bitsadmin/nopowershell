@@ -97,9 +97,9 @@ namespace NoPowerShell.Commands.DnsClient
                         {
                             "Resolve-DnsName microsoft.com",
                             "host linux.org",
-                            "Resolve-DnsName -Type MX pm.me"
                         }
                     ),
+                    new ExampleEntry("Lookup specific record", "Resolve-DnsName -Type MX pm.me"),
                     new ExampleEntry("Reverse DNS lookup", "Resolve-DnsName 1.1.1.1")
                 };
             }

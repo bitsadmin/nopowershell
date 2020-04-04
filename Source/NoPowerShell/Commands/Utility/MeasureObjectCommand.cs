@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -67,7 +68,15 @@ namespace NoPowerShell.Commands.Utility
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Count number of results", "Get-Process | measure"),
+                    new ExampleEntry
+                    (
+                        "Count number of results",
+                        new List<string>()
+                        {
+                            "Get-Process | Measure-Object",
+                            "Get-Process | measure"
+                        }
+                    ),
                     new ExampleEntry("Count number of lines in file", "gc C:\\Windows\\WindowsUpdate.log | measure"),
                 };
             }

@@ -58,7 +58,6 @@ When using NoPowerShell from cmd.exe or PowerShell, you need to escape the pipe 
 # Requested NoPowerShell cmdlets
 | Cmdlet | Description |
 | - | - |
-| Get-ADTrusts | Unofficial command showing equivalent of `nltest /domain_trusts /all_trusts /v` |
 | Get-QWinsta | Unofficial command showing equivalent of `qwinsta` / `query session` |
 | Invoke-Command | Using PSRemoting execute a command on a remote machine (which in that case will of course be logged) |
 | Get-Service | Include option to also show service paths like in `sc qc` |
@@ -74,45 +73,50 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 |  |  |  |  |  |
 
 # Included NoPowerShell cmdlets
-| Cmdlet | Category | Notes |
+| Cmdlet | Module | Notes |
 | - | - | - |
+| Get-ADObject | ActiveDirectory | |
+| Get-ADTrust | ActiveDirectory | |
 | Get-ADGroup | ActiveDirectory | |
 | Get-ADGroupMember | ActiveDirectory | |
-| Get-ADUser | ActiveDirectory | |
 | Get-ADComputer | ActiveDirectory | |
-| Compress-Archive | Archive | Requires .NET 4.5+ |
-| Expand-Archive | Archive | Requires .NET 4.5+ |
+| Get-ADUser | ActiveDirectory | |
 | Get-Whoami | Additional | whoami.exe /ALL is not implemented yet |
 | Get-RemoteSmbShare | Additional | |
-| Get-Command | Core | |
-| Get-Help | Core | |
+| Expand-Archive | Archive | Requires .NET 4.5+ |
+| Compress-Archive | Archive | Requires .NET 4.5+ |
 | Where-Object | Core | |
+| Get-Help | Core | |
+| Get-Command | Core | |
 | Resolve-DnsName | DnsClient | |
-| Get-LocalGroup | LocalAccounts | |
 | Get-LocalGroupMember | LocalAccounts | |
+| Get-LocalGroup | LocalAccounts | |
 | Get-LocalUser | LocalAccounts | |
-| Copy-Item | Management | |
-| Get-ChildItem | Management | |
+| Get-PSDrive | Management | |
 | Get-Content | Management | |
-| Get-ItemProperty | Management | |
+| Get-HotFix | Management | |
+| Get-ChildItem | Management | |
+| Get-WmiObject | Management | |
 | Get-Process | Management | |
 | Stop-Process | Management | |
-| Get-PSDrive | Management | |
-| Get-WmiObject | Management | |
-| Get-HotFix| Management | |
-| Invoke-WmiMethod | Management | Quick & dirty implementation |
+| Get-ComputerInfo | Management | |
+| Invoke-WmiMethod | Management | |
 | Remove-Item | Management | |
-| Get-ComputerInfo | Management | Few fields still need to be added to mimic systeminfo.exe |
-| Get-NetIPAddress | NetTCPIP | |
-| Get-NetRoute | NetTCPIP | |
+| Get-ItemProperty | Management | |
+| Copy-Item | Management | |
 | Test-NetConnection | NetTCPIP | |
 | Get-NetNeighbor | NetTCPIP | No support for IPv6 yet |
+| Get-NetRoute | NetTCPIP | |
+| Get-NetIPAddress | NetTCPIP | |
+| Get-SmbShare | SmbShare | |
 | Get-SmbMapping | SmbShare | |
-| Format-List | Utility | |
+| Measure-Object | Utility | |
+| Invoke-WebRequest | Utility | |
+| Select-Object | Utility | |
+| Sort-Object | Utility | |
 | Format-Table | Utility | |
-| Invoke-WebRequest | Utility |
-| Measure-Object | Utility |
-| Select-Object | Utility |
+| Format-List | Utility | |
+| Export-Csv | Utility | |
 
 # Acknowledgements
 Various NoPowerShell cmdlets and NoPowerShell DLL include code created by other developers.

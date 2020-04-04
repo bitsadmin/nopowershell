@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 using System.IO;
 
 /*
@@ -58,7 +59,15 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("View contents of a file", "Get-Content C:\\Windows\\WindowsUpdate.log")
+                    new ExampleEntry
+                    (
+                        "View contents of a file",
+                        new List<string>()
+                        {
+                            "Get-Content C:\\Windows\\WindowsUpdate.log",
+                            "cat C:\\Windows\\WindowsUpdate.log"
+                        }
+                    )
                 };
             }
         }

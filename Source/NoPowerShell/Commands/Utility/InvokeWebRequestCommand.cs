@@ -1,6 +1,7 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
@@ -72,7 +73,14 @@ namespace NoPowerShell.Commands.Utility
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Download file from the Internet", "wget http://myserver.me/nc.exe"),
+                    new ExampleEntry(
+                        "Download file from the Internet",
+                        new List<string>()
+                        {
+                            "Invoke-WebRequest http://myserver.me/nc.exe",
+                            "wget http://myserver.me/nc.exe"
+                        }
+                    ),
                     new ExampleEntry("Download file from the Internet specifying the destination", "wget http://myserver.me/nc.exe -OutFile C:\\Tmp\\netcat.exe"),
                 };
             }

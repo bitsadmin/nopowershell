@@ -55,6 +55,15 @@ namespace NoPowerShell.Commands.Core
             PropertyInfo argumentsProperty = command.GetProperty("SupportedArguments", BindingFlags.Static | BindingFlags.Public);
             ArgumentList supportedArguments = (argumentsProperty != null) ? (ArgumentList)argumentsProperty.GetValue(null, null) : null;
 
+            // Hide internal parameters
+            ArgumentList newarguments = new ArgumentList();
+            foreach (Argument arg in supportedArguments)
+            {
+                if (!arg.Name.StartsWith("_"))
+                    newarguments.Add(arg);
+            }
+            supportedArguments = newarguments;
+
             // Synopsis
             PropertyInfo synopsisProperty = command.GetProperty("Synopsis", BindingFlags.Static | BindingFlags.Public);
             string synopsis = (synopsisProperty != null) ? (string)synopsisProperty.GetValue(null, null) : null;
