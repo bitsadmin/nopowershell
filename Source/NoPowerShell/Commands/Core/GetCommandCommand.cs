@@ -124,7 +124,7 @@ namespace NoPowerShell.Commands.Core
             // Generate cheatsheet markdown
             if (cheatsheet)
             {
-                Console.WriteLine("| Action | Command | Alternative |\r\n| - | - | - |");
+                Console.WriteLine("| Action | Command |\r\n| - | - |");
 
                 foreach (ResultRecord r in _results)
                 {
@@ -137,20 +137,29 @@ namespace NoPowerShell.Commands.Core
                         foreach (string ex in example.Examples)
                             examplestrings.Add(ex.Replace("|", "\\|"));
 
-                        // Alternative(s)
-                        string alt = null;
-                        if (examplestrings.Count > 1)
+                        int i = 0;
+                        foreach(string ex in examplestrings)
                         {
-                            //string format = "Alternative: `{0}`";
+                            string desc = string.Empty;
+                            if (i == 0)
+                                desc = example.Description;
+                            else
+                                desc = string.Format("{0} - Alternative", example.Description);
 
-                            //if (examplestrings.Count > 2)
-                            //    format = "Alternatives: `{0}`";
+                            Console.WriteLine("| {0} | `{1}` |", desc, ex);
 
-                            List<string> alternatives = examplestrings.GetRange(1, example.Examples.Count - 1);
-                            alt = string.Format("`{0}`", string.Join("`, `", alternatives.ToArray()));
+                            i++;
                         }
 
-                        Console.WriteLine("| {0} | `{1}` | {2} |", example.Description, examplestrings[0], alt);
+                        // Alternative(s)
+                        //string alt = null;
+                        //if (examplestrings.Count > 1)
+                        //{
+                        //    List<string> alternatives = examplestrings.GetRange(1, example.Examples.Count - 1);
+                        //    alt = string.Format("`{0}`", string.Join("`, `", alternatives.ToArray()));
+                        //}
+
+                        //Console.WriteLine("| {0} | `{1}` | {2} |", example.Description, examplestrings[0], alt);
                     }
                 }
 
