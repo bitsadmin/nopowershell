@@ -65,6 +65,7 @@
     <DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
     <DllExportTimeout>30000</DllExportTimeout>
     <DllExportPeCheck>2</DllExportPeCheck>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
@@ -118,6 +119,7 @@
     <Compile Include="Commands\SmbShare\GetSmbShareCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
     <Compile Include="Commands\TemplateCommand.cs" />
+    <Compile Include="Commands\Utility\ExportCsvCommand.cs" />
     <Compile Include="Commands\Utility\FormatListCommand.cs" />
     <Compile Include="Commands\Utility\FormatTableCommand.cs" />
     <Compile Include="Commands\Management\GetContentCommand.cs" />
