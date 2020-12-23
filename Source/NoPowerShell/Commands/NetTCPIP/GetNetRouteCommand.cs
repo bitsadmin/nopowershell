@@ -18,6 +18,9 @@ namespace NoPowerShell.Commands.NetTCPIP
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Collect the (optional) ComputerName, Username and Password parameters
+            base.Execute();
+
             _results = WmiHelper.ExecuteWmiQuery("Select Caption, Description, Destination, Mask, NextHop From Win32_IP4RouteTable", computername, username, password);
 
             return _results;

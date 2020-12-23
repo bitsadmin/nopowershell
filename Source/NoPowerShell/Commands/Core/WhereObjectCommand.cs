@@ -41,6 +41,7 @@ namespace NoPowerShell.Commands.Core
                 {
                     foundValue = (tablevalue == checkvalue);
                 }
+                // Name -ne "value"
                 else if (ne)
                 {
                     foundValue = (tablevalue != checkvalue);

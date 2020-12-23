@@ -30,10 +30,17 @@ namespace NoPowerShell.HelperClasses
 
             // Compile LDAP connection string
             string ldap = "LDAP://";
-            if(!string.IsNullOrEmpty(server))
+            bool hasServer = !string.IsNullOrEmpty(server);
+            bool hasSearchBase = !string.IsNullOrEmpty(searchBase);
+            if (hasServer)
+            {
                 ldap += server;
-            if (!string.IsNullOrEmpty(searchBase))
-                ldap += "/" + searchBase;
+                
+                if (hasSearchBase)
+                    ldap += "/" + searchBase;
+            }
+            else if (hasSearchBase)
+                ldap += searchBase;
             if (ldap == "LDAP://")
                 ldap = string.Empty;
 
@@ -114,6 +121,7 @@ namespace NoPowerShell.HelperClasses
                             case "lastlogontimestamp":
                             case "badpasswordtime":
                             case "pwdlastset":
+                            case "PasswordLastSet":
                                 DateTime lastlogon = DateTime.FromFileTime((long)objArray[0]);
                                 foundRecord[propertyKey] = lastlogon.ToString();
                                 continue;

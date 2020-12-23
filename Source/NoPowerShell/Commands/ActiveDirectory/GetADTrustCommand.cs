@@ -13,9 +13,9 @@ License: BSD 3-Clause
 
 namespace NoPowerShell.Commands.ActiveDirectory
 {
-    public class GetADTrust : PSCommand
+    public class GetADTrustCommand : PSCommand
     {
-        public GetADTrust(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetADTrustCommand(string[] userArguments) : base(userArguments, SupportedArguments)
         {
         }
 

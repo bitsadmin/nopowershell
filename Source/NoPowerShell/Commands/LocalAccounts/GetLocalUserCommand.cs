@@ -21,12 +21,12 @@ namespace NoPowerShell.Commands.LocalAccounts
             string name = _arguments.Get<StringArgument>("Name").Value;
             string sid = _arguments.Get<StringArgument>("SID").Value;
 
-            string query = "Select Name, Description, Disabled{0} From Win32_UserAccount Where LocalAccount='True'{1}";
+            string query = "Select Name, Description, Disabled{0} From Win32_UserAccount{1}";
 
             if (!string.IsNullOrEmpty(name))
-                query = string.Format(query, ", SID", string.Format(" And Name='{0}'", name));
+                query = string.Format(query, ", SID", string.Format(" Where Name='{0}'", name));
             else if (!string.IsNullOrEmpty(sid))
-                query = string.Format(query, ", SID", string.Format(" And SID='{0}'", sid));
+                query = string.Format(query, ", SID", string.Format(" Where SID='{0}'", sid));
             else
                 query = string.Format(query, string.Empty, string.Empty);
 
