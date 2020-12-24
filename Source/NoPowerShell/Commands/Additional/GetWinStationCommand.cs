@@ -11,11 +11,11 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Additional
 {
-    public class QueryWinStationCommand : PSCommand
+    public class GetWinStationCommand : PSCommand
     {
-        public QueryWinStationCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetWinStationCommand(string[] userArguments) : base(userArguments, SupportedArguments)
         {
         }
 
@@ -90,7 +90,7 @@ namespace NoPowerShell.Commands
 
         public static new CaseInsensitiveList Aliases
         {
-            get { return new CaseInsensitiveList() { "Query-WinStation", "qwinsta", "quser" }; }
+            get { return new CaseInsensitiveList() { "Get-WinStation", "qwinsta", "quser" }; }
         }
 
         public static new ArgumentList SupportedArguments
@@ -115,13 +115,13 @@ namespace NoPowerShell.Commands
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Query sessions on local machine", "Query-WinStation"),
+                    new ExampleEntry("Query sessions on local machine", "Get-WinStation"),
                     new ExampleEntry
                     (
                         "Query sessions on a remote machine",
                         new List<string>()
                         {
-                            "Query-WinStation -Server DC01.domain.local",
+                            "Get-WinStation -Server DC01.domain.local",
                             "qwinsta DC01.domain.local"
                         }
                     )

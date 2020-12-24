@@ -95,7 +95,7 @@
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADObjectCommand.cs" />
     <Compile Include="Commands\Additional\GetRemoteSmbShareCommand.cs" />
-    <Compile Include="Commands\Additional\QueryWinStationCommand.cs" />
+    <Compile Include="Commands\Additional\GetWinStationCommand.cs" />
     <Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
     <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
     <Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
