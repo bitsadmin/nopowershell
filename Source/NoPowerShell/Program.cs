@@ -25,6 +25,7 @@ namespace NoPowerShell
         private static readonly string HELP = " Type 'help' to list all available cmdlets.";
 #endif
 
+        [STAThread] // Required for the *-Clipboard cmdlets
         static int Main(string[] args)
         {
             // Using reflection determine available commands

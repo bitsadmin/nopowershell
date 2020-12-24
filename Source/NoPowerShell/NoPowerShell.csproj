@@ -77,7 +77,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Management" />
-    <Reference Condition="'$(Configuration)' == 'Release DLL' Or '$(Configuration)' == 'Debug DLL'" Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression.FileSystem" />
     <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression" />
@@ -98,6 +98,8 @@
     <Compile Include="Commands\Additional\GetWinStationCommand.cs" />
     <Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
     <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
+    <Compile Include="Commands\Management\SetClipboardCommand.cs" />
+    <Compile Include="Commands\Management\GetClipboardCommand.cs" />
     <Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
     <Compile Include="Commands\Core\GetCommandCommand.cs" />
     <Compile Include="Commands\Core\GetHelpCommand.cs" />
@@ -140,6 +142,7 @@
     <Compile Include="HelperClasses\CaseInsensitiveList.cs" />
     <Compile Include="HelperClasses\CommandResult.cs" />
     <Compile Include="HelperClasses\Exceptions.cs" />
+    <Compile Include="HelperClasses\PipelineHelper.cs" />
     <Compile Include="HelperClasses\ProviderHelper.cs" />
     <Compile Include="HelperClasses\HelpEntries.cs" />
     <Compile Include="HelperClasses\LDAPHelper.cs" />

@@ -22,24 +22,24 @@ namespace NoPowerShell.Commands.Utility
         {
             string filePath = _arguments.Get<StringArgument>("FilePath").Value;
             string encoding = _arguments.Get<StringArgument>("Encoding").Value;
+            bool passthru = _arguments.Get<BoolArgument>("PassThru").Value;
 
             Encoding encodingType = Encoding.GetEncoding(encoding);
 
-            if (pipeIn == null)
+            // Serialize object to string
+            string pipeAsString = PipelineHelper.PipeToString(pipeIn);
+
+            // Ignore if empty
+            if (string.IsNullOrEmpty(pipeAsString))
                 return _results;
 
-            List<string> lines = new List<string>(pipeIn.Count);
-            foreach(ResultRecord r in pipeIn)
-            {
-                string[] arr = new string[r.Values.Count];
-                r.Values.CopyTo(arr, 0);
-                string outline = string.Join(" | ", arr);
-                lines.Add(outline);
-            }
-
-            File.WriteAllLines(filePath, lines.ToArray(), encodingType);
+            // Store in file
+            File.WriteAllText(filePath, pipeAsString, encodingType);
 
             // Empty result because it is written to a file
+            if (passthru)
+                _results = pipeIn;
+
             return _results;
         }
 
@@ -55,7 +55,8 @@ namespace NoPowerShell.Commands.Utility
                 return new ArgumentList()
                 {
                     new StringArgument("FilePath", false),
-                    new StringArgument("Encoding", "UTF-8")
+                    new StringArgument("Encoding", "UTF-8"),
+                    new BoolArgument("PassThru", false)
                 };
             }
         }
