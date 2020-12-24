@@ -88,7 +88,9 @@ namespace NoPowerShell.HelperClasses
                 foreach (string column in columns.Keys)
                 {
                     currentCol++;
-                    string value = row[column.Trim()];
+                    string value = null;
+                    if (row.ContainsKey(column.Trim()))
+                        value = row[column.Trim()];
 
                     if (value == null)
                         value = string.Empty;
@@ -149,6 +151,9 @@ namespace NoPowerShell.HelperClasses
                 // Iterate over columns of reach result
                 foreach (string key in columnNames)
                 {
+                    if (!result.ContainsKey(key))
+                        continue;
+
                     string value = result[key];
                     if (value == null)
                         continue;
