@@ -6,6 +6,12 @@ using System.DirectoryServices.ActiveDirectory;
 using System.Security.Principal;
 using System.Text;
 
+/*
+Author: @bitsadmin
+Website: https://github.com/bitsadmin
+License: BSD 3-Clause
+*/
+
 namespace NoPowerShell.HelperClasses
 {
     class LDAPHelper

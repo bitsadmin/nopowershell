@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
+/*
+Author: @bitsadmin
+Website: https://github.com/bitsadmin
+License: BSD 3-Clause
+*/
+
 namespace NoPowerShell.HelperClasses
 {
     class PipelineHelper

@@ -1,5 +1,11 @@
 ﻿using Microsoft.Win32;
 
+/*
+Author: @bitsadmin
+Website: https://github.com/bitsadmin
+License: BSD 3-Clause
+*/
+
 namespace NoPowerShell.HelperClasses
 {
     class RegistryHelper

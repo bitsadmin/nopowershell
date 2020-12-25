@@ -98,6 +98,7 @@
     <Compile Include="Commands\Additional\GetWinStationCommand.cs" />
     <Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
     <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
+    <Compile Include="Commands\DnsClient\GetDnsClientCacheCommand.cs" />
     <Compile Include="Commands\Management\SetClipboardCommand.cs" />
     <Compile Include="Commands\Management\GetClipboardCommand.cs" />
     <Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Commands\Utility\WriteOutputCommand.cs" />
     <Compile Include="HelperClasses\CaseInsensitiveList.cs" />
     <Compile Include="HelperClasses\CommandResult.cs" />
+    <Compile Include="HelperClasses\DNSHelper.cs" />
     <Compile Include="HelperClasses\Exceptions.cs" />
     <Compile Include="HelperClasses\PipelineHelper.cs" />
     <Compile Include="HelperClasses\ProviderHelper.cs" />
