@@ -84,9 +84,9 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-ADTrust | ActiveDirectory | |
 | Get-WinStation | Additional | |
 | Get-RemoteSmbShare | Additional | |
+| Get-Whoami | Additional | whoami.exe /ALL is not implemented yet |
 | Expand-Archive | Archive | Requires .NET 4.5+ |
 | Compress-Archive | Archive | Requires .NET 4.5+ |
-| Get-Whoami | Additional | whoami.exe /ALL is not implemented yet |
 | Where-Object | Core | |
 | Get-Help | Core | |
 | Get-Command | Core | |
@@ -126,6 +126,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Write-Output | Utility | |
 | Invoke-WebRequest | Utility | |
 | Measure-Object | Utility | |
+Also make sure to check out the [Cheatsheet](https://github.com/bitsadmin/nopowershell/blob/master/CHEATSHEET.md) for examples on how to use these cmdlets.
 
 # Acknowledgements
 Various NoPowerShell cmdlets and NoPowerShell DLL include code created by other developers.
