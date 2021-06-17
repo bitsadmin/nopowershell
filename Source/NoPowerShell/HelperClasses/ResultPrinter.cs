@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 /*
 Author: @bitsadmin
@@ -11,49 +12,47 @@ namespace NoPowerShell.HelperClasses
 {
     public class ResultPrinter
     {
-        public static void OutputResults(CommandResult results)
+        public static string OutputResults(CommandResult results)
         {
             if (results == null)
-                return;
+                return string.Empty;
 
             switch (results.Output)
             {
                 case CommandResult.OutputType.List:
-                    FormatList(results);
-                    break;
+                    return FormatList(results);
                 case CommandResult.OutputType.Table:
-                    FormatTable(results);
-                    break;
+                    return FormatTable(results);
                 default:
-                    AutoFormat(results);
-                    break;
+                    return AutoFormat(results);
             }
         }
 
-        public static void AutoFormat(CommandResult results)
+        public static string AutoFormat(CommandResult results)
         {
             // In case of raw data output without headings
             if (results.Count == 1 && results[0].ContainsKey(string.Empty))
-                FormatRaw(results);
+                return FormatRaw(results);
             // Only single row result
             else if (results.Count == 1)
-                FormatList(results);
+                return FormatList(results);
             // List of results
             else
-                FormatTable(results);
+                return FormatTable(results);
         }
 
-        private static void FormatRaw(CommandResult results)
+        private static string FormatRaw(CommandResult results)
         {
-            string rawOutput = results[0][string.Empty];
-            Console.Write(rawOutput);
+            return results[0][string.Empty];
         }
 
-        public static void FormatTable(CommandResult results)
+        public static string FormatTable(CommandResult results)
         {
+            StringBuilder sb = new StringBuilder();
+
             // No results
             if (results.Count == 0)
-                return;
+                return string.Empty;
 
             Dictionary<string, int> columns = CalcColumnWidths(results);
 
@@ -76,10 +75,10 @@ namespace NoPowerShell.HelperClasses
                 }
                 separator += paddedSeparator;
 
-                Console.Write("{0} ", paddedValue);
+                sb.AppendFormat("{0} ", paddedValue);
             }
-            Console.WriteLine();
-            Console.WriteLine(separator);
+            sb.AppendLine();
+            sb.AppendLine(separator);
 
             // Print data
             foreach (ResultRecord row in results)
@@ -98,17 +97,21 @@ namespace NoPowerShell.HelperClasses
                     if (currentCol == columnCount)
                         paddedValue = value;
 
-                    Console.Write(paddedValue);
+                    sb.Append(paddedValue);
                 }
-                Console.WriteLine();
+                sb.AppendLine();
             }
+
+            return sb.ToString();
         }
 
-        public static void FormatList(CommandResult results)
+        public static string FormatList(CommandResult results)
         {
+            StringBuilder sb = new StringBuilder();
+
             // No results
             if (results.Count == 0)
-                return;
+                return string.Empty;
 
             Dictionary<string, int> columns = CalcColumnWidths(results);
 
@@ -125,10 +128,12 @@ namespace NoPowerShell.HelperClasses
             {
                 foreach (string column in columns.Keys)
                 {
-                    Console.WriteLine("{0} : {1}", column.PadRight(maxColumnLength), result[column]);
+                    sb.AppendFormat("{0} : {1}\r\n", column.PadRight(maxColumnLength), result[column]);
                 }
-                Console.WriteLine();
+                sb.AppendLine();
             }
+
+            return sb.ToString();
         }
 
         private static Dictionary<string, int> CalcColumnWidths(CommandResult results)

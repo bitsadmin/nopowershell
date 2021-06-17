@@ -4,6 +4,9 @@ using NoPowerShell.Commands;
 using NoPowerShell.Commands.Core;
 using NoPowerShell.Commands.Utility;
 using NoPowerShell.HelperClasses;
+#if BOFBUILD
+using BOFNET;
+#endif
 
 /*
 Author: @bitsadmin
@@ -13,20 +16,19 @@ License: BSD 3-Clause
 
 namespace NoPowerShell
 {
+#if BOFBUILD
+    public class Program : BeaconObject
+    {
+        public Program(BeaconApi api) : base(api) { }
+
+        public override void Go(string[] args)
+        {
+#else
     partial class Program
     {
-        public static readonly string VERSION = "1.23";
-        public static readonly string WEBSITE = "https://github.com/bitsadmin";
-#if !DLLBUILD
-        private static readonly string USAGE = "Usage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n";
-        private static readonly string HELP = "\r\nExecute NoPowerShell without parameters to list all available cmdlets.";
-#else
-        private static readonly string USAGE = "";
-        private static readonly string HELP = " Type 'help' to list all available cmdlets.";
-#endif
-
-        static int Main(string[] args)
+        public static void Main(string[] args)
         {
+#endif
             // Using reflection determine available commands
             Dictionary<Type, CaseInsensitiveList> availableCommands = ReflectionHelper.GetCommands();
             List<PSCommand> userCommands = null;
@@ -55,10 +57,13 @@ namespace NoPowerShell
                     error = string.Join("", new string[] { ex.Message, HELP });
                 }
 
-                if(error != null)
+                if (error != null)
                 {
+#if BOFBUILD
+                    BeaconConsole.WriteLine(error);
+#else
                     WriteError(error);
-                    return -1;
+#endif
                 }
             }
 
@@ -89,20 +94,26 @@ namespace NoPowerShell
             catch (NoPowerShellException e)
             {
                 WriteError(string.Format("{0} : {1}", mostRecentCommand.ToString(), e.Message));
-                return -1;
+                return;
             }
             catch (Exception e)
             {
                 WriteError(string.Format("{0} : {1}", mostRecentCommand.ToString(), e.ToString()));
-                return -1;
+                return;
             }
 #endif
 
             // Output to screen
             if (justOutput)
-                ResultPrinter.OutputResults(result);
+            {
+                string output = ResultPrinter.OutputResults(result);
 
-            return 0;
+#if BOFBUILD
+                BeaconConsole.WriteLine(output);
+#else
+                Console.Write(output);
+#endif
+            }
         }
 
         static void WriteError(string error)
@@ -117,5 +128,15 @@ namespace NoPowerShell
             Console.BackgroundColor = BackgroundColor;
             Console.ForegroundColor = ForegroundColor;
         }
+
+        public static readonly string VERSION = "1.23";
+        public static readonly string WEBSITE = "https://github.com/bitsadmin";
+#if !DLLBUILD
+        private static readonly string USAGE = "Usage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n";
+        private static readonly string HELP = "\r\nExecute NoPowerShell without parameters to list all available cmdlets.";
+#else
+        private static readonly string USAGE = "";
+        private static readonly string HELP = " Type 'help' to list all available cmdlets.";
+#endif
     }
 }

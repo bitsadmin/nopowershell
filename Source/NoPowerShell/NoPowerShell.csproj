@@ -14,7 +14,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug DLL' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug DLL' Or '$(Configuration)' == 'Debug BOF' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(Configuration)' == 'Release DLL' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(Configuration)' == 'Release DLL' Or '$(Configuration)' == 'Release BOF' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -35,6 +35,10 @@
     <OutputType>Library</OutputType>
     <DefineConstants>$(DefineConstants);DLLBUILD</DefineConstants>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release BOF' Or '$(Configuration)' == 'Debug BOF' ">
+    <OutputType>Library</OutputType>
+    <DefineConstants>$(DefineConstants);BOFBUILD</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -67,6 +71,12 @@
     <DllExportPeCheck>2</DllExportPeCheck>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BOFNET" Condition=" '$(MajorVersion)' == '3' And '$(MinorVersion)' == '5' ">
+      <HintPath>lib\BOF.NET\net35\BOFNET.dll</HintPath>
+    </Reference>
+    <Reference Include="BOFNET" Condition=" '$(MajorVersion)' == '4' ">
+      <HintPath>lib\BOF.NET\net40\BOFNET.dll</HintPath>
+    </Reference>
     <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
       <HintPath>$(SolutionDir)packages\DllExport.1.6.4\gcache\metalib\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
       <Private>False</Private>

@@ -85,6 +85,9 @@ StyleCopReport.xml
 *.svclog
 *.scc
 
+# Include Cobalt Strike BOF.NET Beacon Object Files (BOFs)
+!Source/NoPowerShell/lib/BOF.NET/*/*.obj
+
 # Chutzpah Test files
 _Chutzpah*
 
