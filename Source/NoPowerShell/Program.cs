@@ -116,7 +116,7 @@ namespace NoPowerShell
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Red;
 
-            Console.Error.WriteLine(error, args);
+            Console.WriteLine(error, args);
 
             // Revert colors
             Console.BackgroundColor = BackgroundColor;
@@ -133,7 +133,7 @@ namespace NoPowerShell
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.DarkYellow;
 
-            Console.Error.WriteLine(warning, args);
+            Console.WriteLine(warning, args);
 
             // Revert colors
             Console.BackgroundColor = BackgroundColor;

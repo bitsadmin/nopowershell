@@ -1,175 +1,163 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <PlatformTarget>$(Platform)</PlatformTarget>
-    <ProjectGuid>{555AD0AC-1FDB-4016-8257-170A74CB2F55}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>NoPowerShell</RootNamespace>
-    <AssemblyName>NoPowerShell</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug DLL' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(Configuration)' == 'Release DLL' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release DLL' Or '$(Configuration)' == 'Debug DLL' ">
-    <OutputType>Library</OutputType>
-    <DefineConstants>$(DefineConstants);DLLBUILD</DefineConstants>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)' == 'x86'">
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)' == 'x64'">
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup>
-    <DotNetVersion>$([System.String]::new('$(TargetFrameworkVersion.Substring(1).Replace(".",""))').PadRight(3,'0'))</DotNetVersion>
-    <MajorVersion>$(DotNetVersion.SubString(0,1))</MajorVersion>
-    <MinorVersion>$(DotNetVersion.SubString(1,1))</MinorVersion>
-    <SubVersion>$(DotNetVersion.SubString(2,1))</SubVersion>
-    <DefineConstants>$(DefineConstants);NET$(DotNetVersion);MAJOR$(MajorVersion);MINOR$(MinorVersion);SUB$(SubVersion)</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
-    <DllExportIdent>10B23DFF-FB7F-4F49-9532-422B3B85598D</DllExportIdent>
-    <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
-    <DllExportNamespace>System.Runtime.InteropServices</DllExportNamespace>
-    <DllExportDDNSCecil>true</DllExportDDNSCecil>
-    <DllExportSkipOnAnyCpu>false</DllExportSkipOnAnyCpu>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
-    <DllExportGenExpLib>false</DllExportGenExpLib>
-    <DllExportOurILAsm>false</DllExportOurILAsm>
-    <DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
-    <DllExportTimeout>30000</DllExportTimeout>
-    <DllExportPeCheck>2</DllExportPeCheck>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
-      <HintPath>$(SolutionDir)packages\DllExport.1.6.4\gcache\metalib\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression.FileSystem" />
-    <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Arguments\Argument.cs" />
-    <Compile Include="Arguments\ArgumentList.cs" />
-    <Compile Include="Arguments\BoolArgument.cs" />
-    <Compile Include="Arguments\IntegerArgument.cs" />
-    <Compile Include="Arguments\StringArgument.cs" />
-    <Compile Include="Commands\ActiveDirectory\GetADComputerCommand.cs" />
-    <Compile Include="Commands\ActiveDirectory\GetADGroupMemberCommand.cs" />
-    <Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
-    <Compile Include="Commands\ActiveDirectory\GetADTrustCommand.cs" />
-    <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
-    <Compile Include="Commands\ActiveDirectory\GetADObjectCommand.cs" />
-    <Compile Include="Commands\Additional\GetRemoteSmbShareCommand.cs" />
-    <Compile Include="Commands\Additional\GetWinStationCommand.cs" />
-    <Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
-    <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
-    <Compile Include="Commands\DnsClient\GetDnsClientCacheCommand.cs" />
-    <Compile Include="Commands\Management\SetClipboardCommand.cs" />
-    <Compile Include="Commands\Management\GetClipboardCommand.cs" />
-    <Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
-    <Compile Include="Commands\Core\GetCommandCommand.cs" />
-    <Compile Include="Commands\Core\GetHelpCommand.cs" />
-    <Compile Include="Commands\DnsClient\ResolveDnsNameCommand.cs" />
-    <Compile Include="Commands\LocalAccounts\GetLocalGroupMemberCommand.cs" />
-    <Compile Include="Commands\LocalAccounts\GetLocalGroupCommand.cs" />
-    <Compile Include="Commands\LocalAccounts\GetLocalUserCommand.cs" />
-    <Compile Include="Commands\Management\GetItemPropertyValueCommand.cs" />
-    <Compile Include="Commands\Management\GetItemPropertyCommand.cs" />
-    <Compile Include="Commands\Management\RemoveItemCommand.cs" />
-    <Compile Include="Commands\Management\InvokeWmiMethodCommand.cs" />
-    <Compile Include="Commands\Management\CopyItemCommand.cs" />
-    <Compile Include="Commands\Management\StopProcessCommand.cs" />
-    <Compile Include="Commands\Management\GetHotFixCommand.cs" />
-    <Compile Include="Commands\Management\GetPSDriveCommand.cs" />
-    <Compile Include="Commands\NetTCPIP\GetNetIPAddressCommand.cs" />
-    <Compile Include="Commands\Management\GetProcessCommand.cs" />
-    <Compile Include="Commands\NetTCPIP\GetNetRouteCommand.cs" />
-    <Compile Include="Commands\NetTCPIP\GetNetNeighborCommand.cs" />
-    <Compile Include="Commands\NetTCPIP\GetNetTCPConnectionCommand.cs" />
-    <Compile Include="Commands\NetTCPIP\TestNetConnectionCommand.cs" />
-    <Compile Include="Commands\SmbShare\GetSmbShareCommand.cs" />
-    <Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
-    <Compile Include="Commands\TemplateCommand.cs" />
-    <Compile Include="Commands\Utility\ExportCsvCommand.cs" />
-    <Compile Include="Commands\Utility\FormatListCommand.cs" />
-    <Compile Include="Commands\Utility\FormatTableCommand.cs" />
-    <Compile Include="Commands\Management\GetContentCommand.cs" />
-    <Compile Include="Commands\Additional\GetWhoamiCommand.cs" />
-    <Compile Include="Commands\Management\GetChildItemCommand.cs" />
-    <Compile Include="Commands\Management\GetWmiObjectCommand.cs" />
-    <Compile Include="Commands\PSCommand.cs" />
-    <Compile Include="Commands\Utility\SortObjectCommand.cs" />
-    <Compile Include="Commands\Utility\SelectObjectCommand.cs" />
-    <Compile Include="Commands\Core\WhereObjectCommand.cs" />
-    <Compile Include="Commands\Utility\InvokeWebRequestCommand.cs" />
-    <Compile Include="Commands\Utility\MeasureObjectCommand.cs" />
-    <Compile Include="Commands\Utility\OutFileCommand.cs" />
-    <Compile Include="Commands\Utility\WriteOutputCommand.cs" />
-    <Compile Include="HelperClasses\CaseInsensitiveList.cs" />
-    <Compile Include="HelperClasses\CommandResult.cs" />
-    <Compile Include="HelperClasses\DNSHelper.cs" />
-    <Compile Include="HelperClasses\Exceptions.cs" />
-    <Compile Include="HelperClasses\PipelineHelper.cs" />
-    <Compile Include="HelperClasses\ProviderHelper.cs" />
-    <Compile Include="HelperClasses\HelpEntries.cs" />
-    <Compile Include="HelperClasses\LDAPHelper.cs" />
-    <Compile Include="HelperClasses\PipeParser.cs" />
-    <Compile Include="HelperClasses\ReflectionHelper.cs" />
-    <Compile Include="HelperClasses\RegistryHelper.cs" />
-    <Compile Include="HelperClasses\ResultRecord.cs" />
-    <Compile Include="HelperClasses\ResultPrinter.cs" />
-    <Compile Include="HelperClasses\WmiHelper.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="ProgramDll.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <ImportGroup Label=".NET DllExport">
-    <Import Project="$(SolutionDir)packages\DllExport.1.6.4\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(SolutionDir)packages\DllExport.1.6.4\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
-  </ImportGroup>
-  <Target Name="DllExportRestorePkg" BeforeTargets="PrepareForBuild">
-    <Error Condition="!Exists('$(SolutionDir)DllExport.bat')" Text="DllExport.bat is not found. Path: '$(SolutionDir)' - https://github.com/3F/DllExport" />
-    <Exec Condition="('$(DllExportModImported)' != 'true' Or !Exists('$(SolutionDir)packages\DllExport.1.6.4\tools\net.r_eg.DllExport.targets')) And Exists('$(SolutionDir)DllExport.bat')" Command="DllExport.bat  -action Restore" WorkingDirectory="$(SolutionDir)" />
-  </Target>
-  <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
-    <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />
-  </Target>
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+		<PlatformTarget>$(Platform)</PlatformTarget>
+		<ProjectGuid>{555AD0AC-1FDB-4016-8257-170A74CB2F55}</ProjectGuid>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>NoPowerShell</RootNamespace>
+		<AssemblyName>NoPowerShell</AssemblyName>
+		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+		<FileAlignment>512</FileAlignment>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<TargetFrameworkProfile />
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug DLL' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(Configuration)' == 'Release DLL' ">
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release\</OutputPath>
+		<DefineConstants>TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release DLL' Or '$(Configuration)' == 'Debug DLL' ">
+		<OutputType>Library</OutputType>
+		<DefineConstants>$(DefineConstants);DLLBUILD</DefineConstants>
+		<Prefer32Bit>false</Prefer32Bit>
+	</PropertyGroup>
+	<PropertyGroup>
+		<StartupObject />
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Platform)' == 'x86'">
+		<PlatformTarget>x86</PlatformTarget>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Platform)' == 'x64'">
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Platform)' == 'Any CPU'">
+		<PlatformTarget>Any CPU</PlatformTarget>
+	</PropertyGroup>
+	<PropertyGroup>
+		<DotNetVersion>$([System.String]::new('$(TargetFrameworkVersion.Substring(1).Replace(".",""))').PadRight(3,'0'))</DotNetVersion>
+		<MajorVersion>$(DotNetVersion.SubString(0,1))</MajorVersion>
+		<MinorVersion>$(DotNetVersion.SubString(1,1))</MinorVersion>
+		<SubVersion>$(DotNetVersion.SubString(2,1))</SubVersion>
+		<DefineConstants>$(DefineConstants);NET$(DotNetVersion);MAJOR$(MajorVersion);MINOR$(MinorVersion);SUB$(SubVersion)</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup>
+		<DllExportIdent>10B23DFF-FB7F-4F49-9532-422B3B85598D</DllExportIdent>
+		<DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
+		<DllExportNamespace>System.Runtime.InteropServices</DllExportNamespace>
+		<DllExportDDNSCecil>true</DllExportDDNSCecil>
+		<DllExportSkipOnAnyCpu>false</DllExportSkipOnAnyCpu>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<DllExportOrdinalsBase>1</DllExportOrdinalsBase>
+		<DllExportGenExpLib>false</DllExportGenExpLib>
+		<DllExportOurILAsm>false</DllExportOurILAsm>
+		<DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
+		<DllExportTimeout>30000</DllExportTimeout>
+		<DllExportPeCheck>2</DllExportPeCheck>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="System" />
+		<Reference Include="System.Data" />
+		<Reference Include="System.DirectoryServices" />
+		<Reference Include="System.Management" />
+		<Reference Include="System.Windows.Forms" />
+		<Reference Include="System.Xml" />
+		<Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression.FileSystem" />
+		<Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="Arguments\Argument.cs" />
+		<Compile Include="Arguments\ArgumentList.cs" />
+		<Compile Include="Arguments\BoolArgument.cs" />
+		<Compile Include="Arguments\IntegerArgument.cs" />
+		<Compile Include="Arguments\StringArgument.cs" />
+		<Compile Include="Commands\ActiveDirectory\GetADComputerCommand.cs" />
+		<Compile Include="Commands\ActiveDirectory\GetADGroupMemberCommand.cs" />
+		<Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
+		<Compile Include="Commands\ActiveDirectory\GetADTrustCommand.cs" />
+		<Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
+		<Compile Include="Commands\ActiveDirectory\GetADObjectCommand.cs" />
+		<Compile Include="Commands\Additional\GetRemoteSmbShareCommand.cs" />
+		<Compile Include="Commands\Additional\GetWinStationCommand.cs" />
+		<Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
+		<Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
+		<Compile Include="Commands\DnsClient\GetDnsClientCacheCommand.cs" />
+		<Compile Include="Commands\Management\SetClipboardCommand.cs" />
+		<Compile Include="Commands\Management\GetClipboardCommand.cs" />
+		<Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
+		<Compile Include="Commands\Core\GetCommandCommand.cs" />
+		<Compile Include="Commands\Core\GetHelpCommand.cs" />
+		<Compile Include="Commands\DnsClient\ResolveDnsNameCommand.cs" />
+		<Compile Include="Commands\LocalAccounts\GetLocalGroupMemberCommand.cs" />
+		<Compile Include="Commands\LocalAccounts\GetLocalGroupCommand.cs" />
+		<Compile Include="Commands\LocalAccounts\GetLocalUserCommand.cs" />
+		<Compile Include="Commands\Management\GetItemPropertyValueCommand.cs" />
+		<Compile Include="Commands\Management\GetItemPropertyCommand.cs" />
+		<Compile Include="Commands\Management\RemoveItemCommand.cs" />
+		<Compile Include="Commands\Management\InvokeWmiMethodCommand.cs" />
+		<Compile Include="Commands\Management\CopyItemCommand.cs" />
+		<Compile Include="Commands\Management\StopProcessCommand.cs" />
+		<Compile Include="Commands\Management\GetHotFixCommand.cs" />
+		<Compile Include="Commands\Management\GetPSDriveCommand.cs" />
+		<Compile Include="Commands\NetTCPIP\GetNetIPAddressCommand.cs" />
+		<Compile Include="Commands\Management\GetProcessCommand.cs" />
+		<Compile Include="Commands\NetTCPIP\GetNetRouteCommand.cs" />
+		<Compile Include="Commands\NetTCPIP\GetNetNeighborCommand.cs" />
+		<Compile Include="Commands\NetTCPIP\GetNetTCPConnectionCommand.cs" />
+		<Compile Include="Commands\NetTCPIP\TestNetConnectionCommand.cs" />
+		<Compile Include="Commands\SmbShare\GetSmbShareCommand.cs" />
+		<Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
+		<Compile Include="Commands\TemplateCommand.cs" />
+		<Compile Include="Commands\Utility\ExportCsvCommand.cs" />
+		<Compile Include="Commands\Utility\FormatListCommand.cs" />
+		<Compile Include="Commands\Utility\FormatTableCommand.cs" />
+		<Compile Include="Commands\Management\GetContentCommand.cs" />
+		<Compile Include="Commands\Additional\GetWhoamiCommand.cs" />
+		<Compile Include="Commands\Management\GetChildItemCommand.cs" />
+		<Compile Include="Commands\Management\GetWmiObjectCommand.cs" />
+		<Compile Include="Commands\PSCommand.cs" />
+		<Compile Include="Commands\Utility\SortObjectCommand.cs" />
+		<Compile Include="Commands\Utility\SelectObjectCommand.cs" />
+		<Compile Include="Commands\Core\WhereObjectCommand.cs" />
+		<Compile Include="Commands\Utility\InvokeWebRequestCommand.cs" />
+		<Compile Include="Commands\Utility\MeasureObjectCommand.cs" />
+		<Compile Include="Commands\Utility\OutFileCommand.cs" />
+		<Compile Include="Commands\Utility\WriteOutputCommand.cs" />
+		<Compile Include="HelperClasses\CaseInsensitiveList.cs" />
+		<Compile Include="HelperClasses\CommandResult.cs" />
+		<Compile Include="HelperClasses\DNSHelper.cs" />
+		<Compile Include="HelperClasses\Exceptions.cs" />
+		<Compile Include="HelperClasses\PipelineHelper.cs" />
+		<Compile Include="HelperClasses\ProviderHelper.cs" />
+		<Compile Include="HelperClasses\HelpEntries.cs" />
+		<Compile Include="HelperClasses\LDAPHelper.cs" />
+		<Compile Include="HelperClasses\PipeParser.cs" />
+		<Compile Include="HelperClasses\ReflectionHelper.cs" />
+		<Compile Include="HelperClasses\RegistryHelper.cs" />
+		<Compile Include="HelperClasses\ResultRecord.cs" />
+		<Compile Include="HelperClasses\ResultPrinter.cs" />
+		<Compile Include="HelperClasses\WmiHelper.cs" />
+		<Compile Include="Program.cs" />
+		<Compile Include="ProgramDll.cs" />
+		<Compile Include="Properties\AssemblyInfo.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="App.config" />
+	</ItemGroup>
+	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
