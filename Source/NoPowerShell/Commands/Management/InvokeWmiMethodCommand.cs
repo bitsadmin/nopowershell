@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -62,7 +63,16 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Launch process using WMI", "Invoke-WmiMethod -Class Win32_Process -Name Create \"cmd /c calc.exe\"")
+                    new ExampleEntry("Launch process", "Invoke-WmiMethod -Class Win32_Process -Name Create \"cmd /c calc.exe\""),
+                    new ExampleEntry
+                    (
+                        "Launch process on remote system",
+                        new List<string>()
+                        {
+                            "Invoke-WmiMethod -ComputerName MyServer -Username MyUserName -Password MyPassword -Class Win32_Process -Name Create \"powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA==\"",
+                            "iwmi -ComputerName MyServer -Class Win32_Process -Name Create \"powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA==\""
+                        }
+                    ),
                 };
             }
         }

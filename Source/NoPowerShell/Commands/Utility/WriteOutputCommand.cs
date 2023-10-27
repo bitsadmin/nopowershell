@@ -1,7 +1,7 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System;
 using System.Collections.Generic;
-using System.IO;
 
 /*
 Author: @bitsadmin
@@ -9,23 +9,23 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands.Management
+namespace NoPowerShell.Commands.Utility
 {
-    public class GetContentCommand : PSCommand
+    public class WriteOutputCommand : PSCommand
     {
-        public GetContentCommand(string[] arguments) : base(arguments, SupportedArguments)
+        public WriteOutputCommand(string[] userArguments) : base(userArguments, SupportedArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            string path = _arguments.Get<StringArgument>("Path").Value;
-            string txt = File.ReadAllText(path);
+            string inputObject = _arguments.Get<StringArgument>("InputObject").Value;
 
-            // Create a single ResultRecord with an empty name to simply display raw output
+            // Push input string in pipe
             _results.Add(
-                new ResultRecord() {
-                    { string.Empty, txt }
+                new ResultRecord()
+                {
+                    { string.Empty, inputObject }
                 }
             );
 
@@ -34,7 +34,7 @@ namespace NoPowerShell.Commands.Management
 
         public static new CaseInsensitiveList Aliases
         {
-            get { return new CaseInsensitiveList() { "Get-Content", "gc", "cat", "type" }; }
+            get { return new CaseInsensitiveList() { "Write-Output", "echo", "write" }; }
         }
 
         public static new ArgumentList SupportedArguments
@@ -43,14 +43,14 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Path")
+                    new StringArgument("InputObject", false)
                 };
             }
         }
 
         public static new string Synopsis
         {
-            get { return "Gets the contents of a file."; }
+            get { return "Sends the specified objects to the next command in the pipeline. If the command is the last command in the pipeline, the objects are displayed in the console."; }
         }
 
         public static new ExampleEntries Examples
@@ -61,11 +61,11 @@ namespace NoPowerShell.Commands.Management
                 {
                     new ExampleEntry
                     (
-                        "View contents of a file",
+                        "Echo string to the console",
                         new List<string>()
                         {
-                            "Get-Content C:\\Windows\\WindowsUpdate.log",
-                            "cat C:\\Windows\\WindowsUpdate.log"
+                            "Write-Output \"Hello World!\"",
+                            "echo \"Hello World!\""
                         }
                     )
                 };

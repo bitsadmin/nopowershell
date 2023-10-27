@@ -20,10 +20,12 @@ namespace NoPowerShell.Commands.ActiveDirectory
         public override CommandResult Execute(CommandResult pipeIn)
         {
             // Obtain cmdlet parameters
+            string server = _arguments.Get<StringArgument>("Server").Value;
+            string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
             string filter = _arguments.Get<StringArgument>("Filter").Value;
-            string properties = _arguments.Get<StringArgument>("Properties").Value;
+            CaseInsensitiveList properties = new CaseInsensitiveList(_arguments.Get<StringArgument>("Properties").Value.Split(','));
 
             // Determine filters
             bool filledIdentity = !string.IsNullOrEmpty(identity);
@@ -32,9 +34,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
             // Input checks
             if (filledIdentity && filledLdapFilter)
-                throw new InvalidOperationException("Specify either Identity or LDAPFilter, not both");
+                throw new NoPowerShellException("Specify either Identity or LDAPFilter, not both");
             if (!filledIdentity && !filledLdapFilter && !filledFilter)
-                throw new InvalidOperationException("Specify either Identity, Filter or LDAPFilter");
+                throw new NoPowerShellException("Specify either Identity, Filter or LDAPFilter");
 
             // Build filter
             string filterBase = "(&(objectCategory=user){0})";
@@ -55,13 +57,25 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 // TODO: allow more types of filters
                 if (filter != "*")
-                    throw new InvalidOperationException("Currently only * filter is supported");
+                    throw new NoPowerShellException("Currently only * filter is supported");
 
                 queryFilter = string.Format(filterBase, string.Empty);
             }
 
             // Query
-            _results = LDAPHelper.QueryLDAP(queryFilter, new List<string>(properties.Split(',')));
+            _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, properties, server, username, password);
+
+            // Translate UserAccountControl AD field into whether the account is enabled
+            if (_results.Count > 0 && _results[0].ContainsKey("useraccountcontrol"))
+            {
+                foreach (ResultRecord r in _results)
+                {
+                    string uac = r["useraccountcontrol"];
+                    bool active = LDAPHelper.IsActive(uac);
+                    r["Enabled"] = active.ToString();
+                    //r.Remove("useraccountcontrol");
+                }
+            }
 
             return _results;
         }
@@ -77,6 +91,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("Server", true),
+                    new StringArgument("SearchBase", true),
                     new StringArgument("Identity"),
                     new StringArgument("Filter", true),
                     new StringArgument("LDAPFilter", true),
@@ -100,6 +116,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                     new ExampleEntry("List all Administrative users in domain", "Get-ADUser -LDAPFilter \"(admincount=1)\""),
                     new ExampleEntry("List all users in domain", "Get-ADUser -Filter *"),
                     new ExampleEntry("List specific attributes of user", "Get-ADUser Administrator -Properties SamAccountName,ObjectSID"),
+                    new ExampleEntry("List all users in a specific OU", "Get-ADUser -SearchBase \"CN=Users,DC=MyDomain,DC=local\" -Filter *")
                 };
             }
         }

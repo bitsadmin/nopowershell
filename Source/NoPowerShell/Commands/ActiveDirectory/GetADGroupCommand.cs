@@ -20,6 +20,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
         public override CommandResult Execute(CommandResult pipeIn)
         {
             // Obtain cmdlet parameters
+            string server = _arguments.Get<StringArgument>("Server").Value;
+            string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
             string filter = _arguments.Get<StringArgument>("Filter").Value;
@@ -32,9 +34,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
             // Input checks
             if (filledIdentity && filledLdapFilter)
-                throw new InvalidOperationException("Specify either Identity or LDAPFilter, not both");
+                throw new NoPowerShellException("Specify either Identity or LDAPFilter, not both");
             if (!filledIdentity && !filledLdapFilter && !filledFilter)
-                throw new InvalidOperationException("Specify either Identity, Filter or LDAPFilter");
+                throw new NoPowerShellException("Specify either Identity, Filter or LDAPFilter");
 
             // Build filter
             string filterBase = "(&(objectCategory=group){0})";
@@ -57,13 +59,13 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 // TODO: allow more types of filters
                 if (filter != "*")
-                    throw new InvalidOperationException("Currently only * filter is supported");
+                    throw new NoPowerShellException("Currently only * filter is supported");
 
                 queryFilter = string.Format(filterBase, string.Empty);
             }
 
             // Query
-            _results = LDAPHelper.QueryLDAP(queryFilter, new List<string>(properties.Split(',')));
+            _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, new List<string>(properties.Split(',')), server, username, password);
 
             return _results;
         }
@@ -79,6 +81,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("Server", true),
+                    new StringArgument("SearchBase", true),
                     new StringArgument("Identity"),
                     new StringArgument("Filter"),
                     new StringArgument("LDAPFilter"),

@@ -13,7 +13,7 @@ License: BSD 3-Clause
 
 // Most of this source originates from https://stackoverflow.com/a/1148861 by Rex Logan
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.NetTCPIP
 {
     public class GetNetNeighborCommand : PSCommand
     {

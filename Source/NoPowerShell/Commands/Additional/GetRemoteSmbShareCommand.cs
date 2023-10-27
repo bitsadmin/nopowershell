@@ -13,15 +13,19 @@ License: BSD 3-Clause
 
 namespace NoPowerShell.Commands.Additional
 {
-    public class GetRemoteSmbShare : PSCommand
+    public class GetRemoteSmbShareCommand : PSCommand
     {
-        public GetRemoteSmbShare(string[] arguments) : base(arguments, SupportedArguments)
+        public GetRemoteSmbShareCommand(string[] arguments) : base(arguments, SupportedArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
             string server = _arguments.Get<StringArgument>("Server").Value;
+
+            if (string.IsNullOrEmpty(server))
+                throw new NoPowerShellException("Mandatory -Server argument missing");
+            
             server = server.Replace(@"\\", "");
 
             GetNetShares gns = new GetNetShares();

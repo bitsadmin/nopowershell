@@ -172,6 +172,7 @@ namespace NoPowerShell
             int index = 0;
             int cursorLeft = Console.CursorLeft;
             int cursorCurrent = cursorLeft;
+            int cursorTop = Console.CursorTop;
             bool insertMode = true;
             Console.TreatControlCAsInput = true;
 
@@ -198,15 +199,35 @@ namespace NoPowerShell
                 // Handle Backspace
                 if (keyInfo.Key == ConsoleKey.Backspace)
                 {
-                    if (index > 0)
+                    if (index <= 0)
+                        continue;
+
+                    // Update string
+                    int length = s.Length;
+                    s = s.Remove(index - 1, 1);
+                    index--;
+
+                    // Rewrite screen
+                    Console.CursorTop = cursorTop;
+                    Console.CursorLeft = cursorLeft;
+                    Console.Out.Write(s.PadRight(length));
+
+                    // Update cursor position
+                    if (Console.CursorTop > cursorTop)
                     {
-                        int length = s.Length;
-                        s = s.Remove(index - 1, 1);
-                        index--;
-                        cursorCurrent = Console.CursorLeft;
-                        Console.CursorLeft = cursorLeft;
-                        Console.Out.Write(s.PadRight(length));
-                        Console.CursorLeft = cursorCurrent - 1;
+                        if (Console.CursorLeft > 0)
+                        {
+                            Console.CursorLeft--;
+                        }
+                        else
+                        {
+                            Console.CursorTop--;
+                            Console.CursorLeft = Console.BufferWidth - 1;
+                        }
+                    }
+                    else if (Console.CursorLeft > cursorLeft)
+                    {
+                        Console.CursorLeft--;
                     }
 
                     continue;
@@ -215,15 +236,19 @@ namespace NoPowerShell
                 // Handle Delete
                 if (keyInfo.Key == ConsoleKey.Delete || (keyInfo.Key == ConsoleKey.D && keyInfo.Modifiers == ConsoleModifiers.Control))
                 {
-                    if (index < s.Length)
-                    {
-                        int length = s.Length;
-                        s = s.Remove(index, 1);
-                        cursorCurrent = Console.CursorLeft;
-                        Console.CursorLeft = cursorLeft;
-                        Console.Out.Write(s.PadRight(length));
-                        Console.CursorLeft = cursorCurrent;
-                    }
+                    if (index >= s.Length)
+                        continue;
+
+                    // Update string
+                    int length = s.Length;
+                    s = s.Remove(index, 1);
+                    cursorCurrent = Console.CursorLeft;
+
+                    // Update screen
+                    Console.CursorTop = cursorTop; // TODO: Still some bug where pressing delete when end of line will cause the cursor to be on the next line
+                    Console.CursorLeft = cursorLeft;
+                    Console.Out.Write(s.PadRight(length));
+                    Console.CursorLeft = cursorCurrent;
 
                     continue;
                 }
@@ -231,11 +256,24 @@ namespace NoPowerShell
                 // Handle Left arrow
                 if (keyInfo.Key == ConsoleKey.LeftArrow || (keyInfo.Key == ConsoleKey.B && keyInfo.Modifiers == ConsoleModifiers.Control))
                 {
-                    if (Console.CursorLeft > cursorLeft)
+                    if (Console.CursorTop > cursorTop)
+                    {
+                        if (Console.CursorLeft > 0)
+                        {
+                            Console.CursorLeft--;
+                        }
+                        else
+                        {
+                            Console.CursorTop--;
+                            Console.CursorLeft = Console.BufferWidth - 1;
+                        }
+                    }
+                    else if (Console.CursorLeft > cursorLeft)
                     {
                         Console.CursorLeft--;
-                        index--;
                     }
+
+                    index--;
 
                     continue;
                 }
@@ -243,17 +281,26 @@ namespace NoPowerShell
                 // Handle Right arrow
                 if (keyInfo.Key == ConsoleKey.RightArrow || (keyInfo.Key == ConsoleKey.F && keyInfo.Modifiers == ConsoleModifiers.Control))
                 {
-                    if (Console.CursorLeft < cursorLeft + s.Length)
+                    if (cursorLeft + s.Length % Console.BufferWidth == Console.CursorLeft)
+                        continue;
+
+                    if (Console.CursorLeft < Console.BufferWidth - 1)
                     {
                         Console.CursorLeft++;
-                        index++;
                     }
+                    else
+                    {
+                        Console.CursorTop++;
+                        Console.CursorLeft = 0;
+                    }
+
+                    index++;
 
                     continue;
                 }
 
                 // Handle Up arrow
-                if(keyInfo.Key == ConsoleKey.UpArrow)
+                if (keyInfo.Key == ConsoleKey.UpArrow)
                 {
                     if (historyIndex > 0)
                     {
@@ -261,8 +308,9 @@ namespace NoPowerShell
                         int length = s.Length;
                         s = history[historyIndex];
                         Console.CursorLeft = cursorLeft;
+                        Console.CursorTop = cursorTop;
                         Console.Write(s.PadRight(length));
-                        Console.CursorLeft = cursorLeft + s.Length;
+                        Console.CursorLeft = (cursorLeft + s.Length) % Console.BufferWidth;
                         index = s.Length;
                     }
 
@@ -278,8 +326,9 @@ namespace NoPowerShell
                         int length = s.Length;
                         s = history[historyIndex];
                         Console.CursorLeft = cursorLeft;
+                        Console.CursorTop = cursorTop;
                         Console.Write(s.PadRight(length));
-                        Console.CursorLeft = cursorLeft + s.Length;
+                        Console.CursorLeft = (cursorLeft + s.Length) % Console.BufferWidth;
                         index = s.Length;
                     }
 
@@ -296,6 +345,7 @@ namespace NoPowerShell
                 if (keyInfo.Key == ConsoleKey.Home || (keyInfo.Key == ConsoleKey.A && keyInfo.Modifiers == ConsoleModifiers.Control))
                 {
                     Console.CursorLeft = cursorLeft;
+                    Console.CursorTop = cursorTop;
                     index = 0;
                     continue;
                 }
@@ -303,7 +353,11 @@ namespace NoPowerShell
                 // Handle End
                 if (keyInfo.Key == ConsoleKey.End || (keyInfo.Key == ConsoleKey.E && keyInfo.Modifiers == ConsoleModifiers.Control))
                 {
-                    Console.CursorLeft = cursorLeft + s.Length;
+                    int lines = (cursorLeft + s.Length) / Console.BufferWidth;
+                    int left = s.Length - (Console.BufferWidth * lines);
+
+                    Console.CursorTop = cursorTop + lines;
+                    Console.CursorLeft = cursorLeft + left;
                     index = s.Length;
                     continue;
                 }
@@ -316,10 +370,12 @@ namespace NoPowerShell
                 if (keyInfo.Key == ConsoleKey.Escape)
                 {
                     Console.CursorLeft = cursorLeft;
+                    Console.CursorTop = cursorTop;
                     index = s.Length;
                     s = string.Empty;
                     Console.Write(s.PadRight(index));
                     Console.CursorLeft = cursorLeft;
+                    Console.CursorTop = cursorTop;
                     continue;
                 }
 
@@ -354,9 +410,10 @@ namespace NoPowerShell
                 // Redisplay string
                 cursorCurrent = Console.CursorLeft;
                 Console.CursorLeft = cursorLeft;
+                Console.CursorTop = cursorTop;
                 Console.Out.Write(s);
-                Console.CursorLeft = cursorCurrent + 1;
-                // TODO: Fix line wrap in small window: gwmi "Select ProcessId,Name,CommandLine From Win32_Process" | ? Name -Like *PowerShell* | select ProcessId,CommandLine
+                Console.CursorTop = cursorTop + ((cursorLeft + index) / Console.BufferWidth);
+                Console.CursorLeft = (cursorCurrent + 1) % Console.BufferWidth;
             }
             while (true);
         }

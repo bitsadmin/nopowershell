@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 using System.IO;
 
 /*
@@ -110,6 +111,15 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ExampleEntries()
                 {
+                    new ExampleEntry
+                    (
+                        "Delete a file",
+                        new List<string>()
+                        {
+                            "Remove-Item C:\\tmp\\MyFile.txt",
+                            "rm C:\\tmp\\MyFile.txt"
+                        }
+                    ),
                     new ExampleEntry("Delete a read-only file", "Remove-Item -Force C:\\Tmp\\MyFile.txt"),
                     new ExampleEntry("Recursively delete a folder", "Remove-Item -Recurse C:\\Tmp\\MyTools\\")
                 };

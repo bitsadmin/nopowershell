@@ -1,7 +1,8 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Windows.Forms;
 
 /*
 Author: @bitsadmin
@@ -11,21 +12,21 @@ License: BSD 3-Clause
 
 namespace NoPowerShell.Commands.Management
 {
-    public class GetContentCommand : PSCommand
+    public class GetClipboardCommand : PSCommand
     {
-        public GetContentCommand(string[] arguments) : base(arguments, SupportedArguments)
+        public GetClipboardCommand(string[] userArguments) : base(userArguments, SupportedArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            string path = _arguments.Get<StringArgument>("Path").Value;
-            string txt = File.ReadAllText(path);
+            // Obtain cmdlet parameters
+            //bool showHistory = _arguments.Get<BoolArgument>("History").Value;
 
-            // Create a single ResultRecord with an empty name to simply display raw output
             _results.Add(
-                new ResultRecord() {
-                    { string.Empty, txt }
+                new ResultRecord()
+                {
+                    { "Data", Clipboard.GetText() }
                 }
             );
 
@@ -34,7 +35,7 @@ namespace NoPowerShell.Commands.Management
 
         public static new CaseInsensitiveList Aliases
         {
-            get { return new CaseInsensitiveList() { "Get-Content", "gc", "cat", "type" }; }
+            get { return new CaseInsensitiveList() { "Get-Clipboard", "gcb" }; }
         }
 
         public static new ArgumentList SupportedArguments
@@ -43,14 +44,14 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Path")
+                    //new BoolArgument("History")
                 };
             }
         }
 
         public static new string Synopsis
         {
-            get { return "Gets the contents of a file."; }
+            get { return "Gets the current Windows clipboard entry."; }
         }
 
         public static new ExampleEntries Examples
@@ -61,11 +62,11 @@ namespace NoPowerShell.Commands.Management
                 {
                     new ExampleEntry
                     (
-                        "View contents of a file",
+                        "Show text contents of clipboard",
                         new List<string>()
                         {
-                            "Get-Content C:\\Windows\\WindowsUpdate.log",
-                            "cat C:\\Windows\\WindowsUpdate.log"
+                            "Get-Clipboard",
+                            "gcb"
                         }
                     )
                 };

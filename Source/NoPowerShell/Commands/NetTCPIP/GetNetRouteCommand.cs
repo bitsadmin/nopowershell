@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -17,6 +18,9 @@ namespace NoPowerShell.Commands.NetTCPIP
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Collect the (optional) ComputerName, Username and Password parameters
+            base.Execute();
+
             _results = WmiHelper.ExecuteWmiQuery("Select Caption, Description, Destination, Mask, NextHop From Win32_IP4RouteTable", computername, username, password);
 
             return _results;
@@ -54,7 +58,24 @@ namespace NoPowerShell.Commands.NetTCPIP
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Show the IP routing table", "Get-NetRoute")
+                    new ExampleEntry
+                    (
+                        "Show the IP routing table",
+                        new List<string>()
+                        {
+                            "Get-NetRoute",
+                            "route"
+                        }
+                    ),
+                    new ExampleEntry
+                    (
+                        "Show the IP routing table on a remote machine using WMI",
+                        new List<string>()
+                        {
+                            "Get-NetRoute -ComputerName MyServer -Username MyUser -Password MyPassword",
+                            "route -ComputerName MyServer"
+                        }
+                    )
                 };
             }
         }

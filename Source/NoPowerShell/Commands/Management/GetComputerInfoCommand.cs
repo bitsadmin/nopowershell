@@ -171,8 +171,25 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Show information about the system", "systeminfo"),
-                    new ExampleEntry("Show information about the system not listing patches", "systeminfo -Simple")
+                    new ExampleEntry
+                    (
+                        "Show information about the system",
+                        new List<string>()
+                        {
+                            "Get-ComputerInfo",
+                            "systeminfo"
+                        }
+                    ),
+                    new ExampleEntry("Show information about the system not listing patches", "systeminfo -Simple"),
+                    new ExampleEntry
+                    (
+                        "Show information about a remote machine using WMI",
+                        new List<string>()
+                        {
+                            "Get-ComputerInfo -ComputerName MyServer -Username MyUser -Password MyPassword",
+                            "Get-ComputerInfo -ComputerName MyServer"
+                        }
+                    ),
                 };
             }
         }

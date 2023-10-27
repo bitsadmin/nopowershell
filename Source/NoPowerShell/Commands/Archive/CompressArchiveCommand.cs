@@ -4,6 +4,8 @@
 using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 
 /*
@@ -29,7 +31,7 @@ namespace NoPowerShell.Commands.Archive
             CompressionLevel cl = CompressionLevel.Optimal;
 
             // Determine compression level
-            switch(compressionLevel.ToLowerInvariant())
+            switch (compressionLevel.ToLowerInvariant())
             {
                 case "optimal":
                     cl = CompressionLevel.Optimal;
@@ -44,8 +46,26 @@ namespace NoPowerShell.Commands.Archive
                     throw new ArgumentException(string.Format("Unknown compression level: {0}. Possible options: Optimal, NoCompression, Fastest.", compressionLevel));
             }
 
-            // Compress
-            ZipFile.CreateFromDirectory(path, destinationPath, cl, false);
+            // Determine whether input is file or directory
+            FileAttributes attr = File.GetAttributes(path);
+
+            // Compress directory
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                ZipFile.CreateFromDirectory(path, destinationPath, cl, false);
+            }
+
+            // Compress file
+            else
+            {
+                FileInfo fi = new FileInfo(path);
+
+                using (FileStream fs = new FileStream(destinationPath, FileMode.Create))
+                using (ZipArchive arch = new ZipArchive(fs, ZipArchiveMode.Create))
+                {
+                    arch.CreateEntryFromFile(path, fi.Name);
+                }
+            }
 
             // Return resulting filename
             _results.Add(
@@ -93,7 +113,15 @@ namespace NoPowerShell.Commands.Archive
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Compress folder to zip", "Compress-Archive -Path C:\\MyFolder -DestinationPath C:\\MyFolder.zip"),
+                    new ExampleEntry
+                    (
+                        "Compress folder to zip",
+                        new List<string>()
+                        {
+                            "Compress-Archive -Path C:\\MyFolder -DestinationPath C:\\MyFolder.zip",
+                            "zip C:\\MyFolder C:\\MyFolder.zip"
+                        }
+                    )
                 };
             }
         }

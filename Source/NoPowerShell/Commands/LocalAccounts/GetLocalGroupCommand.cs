@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -63,7 +64,16 @@ namespace NoPowerShell.Commands.LocalAccounts
                 return new ExampleEntries()
                 {
                     new ExampleEntry("List all local groups", "Get-LocalGroup"),
-                    new ExampleEntry("List details of a specific group", "Get-LocalGroup Administrators")
+                    new ExampleEntry("List details of a specific group", "Get-LocalGroup Administrators"),
+                    new ExampleEntry
+                    (
+                        "List members of Administrators group on a remote computer using WMI",
+                        new List<string>()
+                        {
+                            "Get-LocalGroup -ComputerName Myserver -Username MyUser -Password MyPassword -Name Administrators",
+                            "Get-LocalGroup -ComputerName Myserver -Name Administrators"
+                        }
+                    )
                 };
             }
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 
 /*
 Author: @bitsadmin
@@ -9,13 +8,13 @@ License: BSD 3-Clause
 
 namespace NoPowerShell.HelperClasses
 {
-    class ProviderHelper
+    class RegistryHelper
     {
-        public static RegistryKey GetRegistryKey(ref string path)
+        public static RegistryKey GetRoot(ref string path)
         {
             RegistryKey root = null;
-            path = path.ToUpperInvariant();
 
+            path = path.ToUpperInvariant();
             if (path.StartsWith("HKLM:"))
             {
                 root = Registry.LocalMachine;
@@ -36,11 +35,20 @@ namespace NoPowerShell.HelperClasses
                 root = Registry.Users;
                 path = path.Replace("HKU:", string.Empty);
             }
+            else
+                throw new NoPowerShellException("Unknown registry path: \"{0}\"", path);
 
-            if (root != null && path.StartsWith(@"\"))
+            if (path.StartsWith(@"\"))
                 path = path.Substring(1);
 
             return root;
+        }
+
+        public static bool IsRegistryPath(string path)
+        {
+            string checkPath = path.ToUpperInvariant();
+
+            return checkPath.StartsWith("HKLM:") || checkPath.StartsWith("HKCU:") || checkPath.StartsWith("HKCR:") || checkPath.StartsWith("HKU:");
         }
     }
 }

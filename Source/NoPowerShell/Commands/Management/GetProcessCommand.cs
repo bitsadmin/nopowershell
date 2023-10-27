@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 using System.Text;
 
 /*
@@ -88,8 +89,24 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List processes", "Get-Process"),
-                    new ExampleEntry("List processes on remote host", "Get-Process -ComputerName dc01.corp.local -Username Administrator -Password P4ssw0rd!")
+                    new ExampleEntry
+                    (
+                        "List processes",
+                        new List<string>()
+                        {
+                            "Get-Process",
+                            "ps"
+                        }
+                    ),
+                    new ExampleEntry
+                    (
+                        "List processes on remote host using WMI",
+                        new List<string>()
+                        {
+                            "Get-Process -ComputerName dc01.corp.local -Username Administrator -Password P4ssw0rd!",
+                            "ps -ComputerName dc01.corp.local"
+                        }
+                    )
                 };
             }
         }

@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -20,12 +21,12 @@ namespace NoPowerShell.Commands.LocalAccounts
             string name = _arguments.Get<StringArgument>("Name").Value;
             string sid = _arguments.Get<StringArgument>("SID").Value;
 
-            string query = "Select Name, Description, Disabled{0} From Win32_UserAccount Where LocalAccount='True'{1}";
+            string query = "Select Name, Description, Disabled{0} From Win32_UserAccount{1}";
 
             if (!string.IsNullOrEmpty(name))
-                query = string.Format(query, ", SID", string.Format(" And Name='{0}'", name));
+                query = string.Format(query, ", SID", string.Format(" Where Name='{0}'", name));
             else if (!string.IsNullOrEmpty(sid))
-                query = string.Format(query, ", SID", string.Format(" And SID='{0}'", sid));
+                query = string.Format(query, ", SID", string.Format(" Where SID='{0}'", sid));
             else
                 query = string.Format(query, string.Empty, string.Empty);
 
@@ -63,7 +64,24 @@ namespace NoPowerShell.Commands.LocalAccounts
                 return new ExampleEntries()
                 {
                     new ExampleEntry("List all local users", "Get-LocalUser"),
-                    new ExampleEntry("List details of a specific user", "Get-LocalUser Administrator")
+                    new ExampleEntry
+                    (
+                        "List details of a specific user",
+                        new List<string>()
+                        {
+                            "Get-LocalUser -Name Administrator",
+                            "Get-LocalUser Administrator"
+                        }
+                    ),
+                    new ExampleEntry
+                    (
+                        "List details of a specific user on a remote machine using WMI",
+                        new List<string>()
+                        {
+                            "Get-LocalUser -ComputerName MyServer -Username MyUser -Password MyPassword -Name Administrator",
+                            "Get-LocalUser -ComputerName MyServer Administrator"
+                        }
+                    )
                 };
             }
         }

@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 using System.IO;
 
 /*
@@ -104,7 +105,15 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Copy file from one location to another", "copy C:\\Tmp\\nc.exe C:\\Windows\\System32\\nc.exe"),
+                    new ExampleEntry
+                    (
+                        "Copy file from one location to another",
+                        new List<string>()
+                        {
+                            "Copy-Item C:\\Tmp\\nc.exe C:\\Windows\\System32\\nc.exe",
+                            "copy C:\\Tmp\\nc.exe C:\\Windows\\System32\\nc.exe",
+                        }
+                    ),
                     new ExampleEntry("Copy folder", "copy C:\\Tmp\\MyFolder C:\\Tmp\\MyFolderBackup")
                 };
             }

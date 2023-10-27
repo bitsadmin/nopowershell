@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -79,7 +80,15 @@ namespace NoPowerShell.Commands.Utility
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Format output as a table", "Get-Process | ft"),
+                    new ExampleEntry
+                    (
+                        "Format output as a table",
+                        new List<string>()
+                        {
+                            "Get-Process | Format-Table",
+                            "Get-Process | ft"
+                        }
+                    ),
                     new ExampleEntry("Format output as a table showing only specific attributes", "Get-Process | ft ProcessId,Name"),
                 };
             }

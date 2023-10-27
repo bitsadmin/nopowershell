@@ -59,6 +59,12 @@ namespace NoPowerShell.Commands.NetTCPIP
 
         private static string ResolveIP(string computerName)
         {
+            // If IP is already provided, not required to resolve
+            IPAddress ip_addr;
+            if (IPAddress.TryParse(computerName, out ip_addr))
+                return ip_addr.ToString();
+
+            // In case it is a hostname, resolve it
             IPHostEntry ip = null;
             try
             {
@@ -223,7 +229,7 @@ namespace NoPowerShell.Commands.NetTCPIP
                 return new CaseInsensitiveList()
                 {
                     "Test-NetConnection",
-                    "TNC",
+                    "tnc",
                     "ping" // Not official
                 };
             }
@@ -257,8 +263,17 @@ namespace NoPowerShell.Commands.NetTCPIP
             {
                 return new ExampleEntries()
                 {
+                    new ExampleEntry
+                    (
+                        "Send ICMP request to host",
+                        new List<string>()
+                        {
+                            "Test-NetConnection 1.1.1.1",
+                            "tnc 1.1.1.1"
+                        }
+                    ),
                     new ExampleEntry("Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout", "Test-NetConnection -Count 2 -Timeout 500 1.1.1.1"),
-                    new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 google.com"),
+                    new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 bitsadm.in"),
                     new ExampleEntry("Perform ping with maximum TTL specified", "ping -TTL 32 1.1.1.1"),
                     new ExampleEntry("Check for open port", "tnc bitsadm.in -Port 80")
                 };

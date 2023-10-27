@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System;
 using System.Collections.Generic;
 
 /*
@@ -8,27 +9,33 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands.SmbShare
+namespace NoPowerShell.Commands.NetTCPIP
 {
-    public class GetSmbMapping : PSCommand
+    public class GetNetTCPConnectionCommand : PSCommand
     {
-        public GetSmbMapping(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetNetTCPConnectionCommand(string[] userArguments) : base(userArguments, SupportedArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            _results = WmiHelper.ExecuteWmiQuery(@"ROOT\Microsoft\Windows\SMB", "Select LocalPath,RemotePath From MSFT_SmbMapping", computername, username, password);
+            // Collect the (optional) ComputerName, Username and Password parameters
+            base.Execute();
+
+            // Perform query
+            _results = WmiHelper.ExecuteWmiQuery("Root\\StandardCimv2", "Select LocalAddress, LocalPort, OwningProcess, RemoteAddress, RemotePort, State From MSFT_NetTCPConnection", computername, username, password);
+
             return _results;
         }
 
         public static new CaseInsensitiveList Aliases
         {
-            get {
+            get
+            {
                 return new CaseInsensitiveList()
                 {
-                    "Get-SmbMapping",
-                    "netuse" // Not official
+                    "Get-GetNetTCPConnection",
+                    "netstat" // unofficial
                 };
             }
         }
@@ -45,7 +52,7 @@ namespace NoPowerShell.Commands.SmbShare
 
         public static new string Synopsis
         {
-            get { return "Retrieves the SMB client directory mappings created for a server."; }
+            get { return "Gets TCP connections."; }
         }
 
         public static new ExampleEntries Examples
@@ -56,13 +63,14 @@ namespace NoPowerShell.Commands.SmbShare
                 {
                     new ExampleEntry
                     (
-                        "List network shares on the local machine that are exposed to the network",
+                        "Show TCP connections on the local machine",
                         new List<string>()
                         {
-                            "Get-SmbMapping",
-                            "netuse"
+                            "Get-NetTCPConnection",
+                            "netstat"
                         }
-                    )
+                    ),
+                    new ExampleEntry("Show TCP connections on a remote machine", "Get-NetTCPConnection -ComputerName MyServer"),
                 };
             }
         }

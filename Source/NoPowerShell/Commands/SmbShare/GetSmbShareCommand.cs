@@ -1,6 +1,5 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
-using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -10,15 +9,15 @@ License: BSD 3-Clause
 
 namespace NoPowerShell.Commands.SmbShare
 {
-    public class GetSmbMapping : PSCommand
+    public class GetSmbShareCommand : PSCommand
     {
-        public GetSmbMapping(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetSmbShareCommand(string[] userArguments) : base(userArguments, SupportedArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            _results = WmiHelper.ExecuteWmiQuery(@"ROOT\Microsoft\Windows\SMB", "Select LocalPath,RemotePath From MSFT_SmbMapping", computername, username, password);
+            _results = WmiHelper.ExecuteWmiQuery("Select * From Win32_Share", computername, username, password);
             return _results;
         }
 
@@ -27,8 +26,8 @@ namespace NoPowerShell.Commands.SmbShare
             get {
                 return new CaseInsensitiveList()
                 {
-                    "Get-SmbMapping",
-                    "netuse" // Not official
+                    "Get-SmbShare",
+                    "netshare" // Not official
                 };
             }
         }
@@ -45,7 +44,7 @@ namespace NoPowerShell.Commands.SmbShare
 
         public static new string Synopsis
         {
-            get { return "Retrieves the SMB client directory mappings created for a server."; }
+            get { return "Retrieves the SMB shares on the computer."; }
         }
 
         public static new ExampleEntries Examples
@@ -54,15 +53,7 @@ namespace NoPowerShell.Commands.SmbShare
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry
-                    (
-                        "List network shares on the local machine that are exposed to the network",
-                        new List<string>()
-                        {
-                            "Get-SmbMapping",
-                            "netuse"
-                        }
-                    )
+                    new ExampleEntry("List SMB shares on the computer", "Get-SmbShare"),
                 };
             }
         }

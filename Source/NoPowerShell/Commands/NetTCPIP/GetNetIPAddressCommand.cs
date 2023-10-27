@@ -77,7 +77,24 @@ namespace NoPowerShell.Commands.NetTCPIP
                             "ifconfig"
                         }
                     ),
-                    new ExampleEntry("Show all network interfaces", "Get-NetIPAddress -All")
+                    new ExampleEntry
+                    (
+                        "Show all network interfaces",
+                        new List<string>()
+                        {
+                            "Get-NetIPAddress -All",
+                            "ipconfig -All"
+                        }
+                    ),
+                    new ExampleEntry
+                    (
+                        "Show all network interfaces on a remote machine using WMI",
+                        new List<string>()
+                        {
+                            "Get-NetIPAddress -All -ComputerName MyServer -Username MyUser -Password MyPassword",
+                            "Get-NetIPAddress -All -ComputerName MyServer"
+                        }
+                    )
                 };
             }
         }

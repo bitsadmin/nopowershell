@@ -22,7 +22,7 @@ namespace NoPowerShell.Commands.Management
             // Collect parameters for remote execution
             base.Execute();
 
-            CommandResult wmiHotfixes = WmiHelper.ExecuteWmiQuery("Select CSName,Description,HotFixID,InstalledBy,InstalledOn From Win32_QuickFixEngineering", computername, username,password);
+            CommandResult wmiHotfixes = WmiHelper.ExecuteWmiQuery("Select CSName,Description,HotFixID,InstalledBy,InstalledOn From Win32_QuickFixEngineering", computername, username, password);
             foreach (ResultRecord hotfix in wmiHotfixes)
             {
                 _results.Add(
@@ -66,20 +66,14 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ExampleEntries()
                 {
+                    new ExampleEntry("Get all hotfixes on the local computer", "Get-HotFix"),
                     new ExampleEntry
                     (
-                        "Get all hotfixes on the local computer",
+                        "Get all hotfixes from a remote computer using WMI",
                         new List<string>()
                         {
-                            "Get-HotFix"
-                        }
-                    ),
-                    new ExampleEntry
-                    (
-                        "Get all hotfixes from a remote computer",
-                        new List<string>()
-                        {
-                            "Get-HotFix -ComputerName MyServer -Username Administrator -Password Pa$$w0rd"
+                            "Get-HotFix -ComputerName MyServer -Username Administrator -Password Pa$$w0rd",
+                            "Get-HotFix -ComputerName MyServer"
                         }
                     )
                 };
