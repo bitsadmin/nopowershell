@@ -27,10 +27,22 @@ Reasons to use NoPowerShell:
 ## Examples
 See [CHEATSHEET.md](https://github.com/bitsadmin/nopowershell/blob/master/CHEATSHEET.md).
 
-## Install in Cobalt Strike
-1. Copy both `NoPowerShell.exe` and `NoPowerShell.cna` to the **scripts** subfolder of Cobalt Strike
-2. Launch Cobalt Strike and load the `NoPowerShell.cna` script in the Script Manager
-3. Interact with a beacon and execute commands using the `nps` command
+## Use in Cobalt Strike via execute-assembly
+Use Cobalt Strike's `execute-assembly` command to launch the `NoPowerShell.exe`. For example `execute-assembly /path/to/NoPowerShell.exe Get-Command`.
+Optionally `NoPowerShell.cna` can be used to add the `nps` alias to Cobalt Strike.
+
+## Use in Cobalt Strike via BOF.NET
+1. Install the BOF.NET BOF from [https://github.com/CCob/BOF.NET]
+2. Load the BOF.NET runtime: `bofnet_init`
+3. Load the NoPowerShell module: `bofnet_load /path/to/NoPowerShell.dll`
+4. Execute NoPowerShell cmdlets: `bofnet_execute NoPowerShell.Program Get-Command`
+
+## Use in Cobalt Strike using @williamknows fork of BOF.NET
+This fork allows running regular .NET executables
+1. Obtain and compile @williamknows' fork of the BOF.NET from [https://github.com/williamknows/BOF.NET]
+2. Load the BOF.NET runtime: `bofnet_init`
+3. Load the NoPowerShell module: `bofnet_load /path/to/NoPowerShell.exe`
+4. Execute NoPowerShell cmdlets: `bofnet_executeassembly NoPowerShell Get-Command`
 
 ## Launch via rundll32
 1. Create a new shortcut to `NoPowerShell.dll` file (drag using right click -> Create shortcuts here)

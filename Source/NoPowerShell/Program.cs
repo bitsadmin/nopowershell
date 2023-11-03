@@ -64,6 +64,7 @@ namespace NoPowerShell
                     BeaconConsole.WriteLine(error);
 #else
                     WriteError(error);
+                    return;
 #endif
                 }
             }
@@ -151,8 +152,8 @@ namespace NoPowerShell
             Console.ForegroundColor = ForegroundColor;
         }
 
-        public static readonly string VERSION = "1.23";
-        public static readonly string WEBSITE = "https://github.com/bitsadmin";
+        public static readonly string VERSION = "1.25";
+        public static readonly string WEBSITE = "https://github.com/bitsadmin/nopowershell";
 #if !DLLBUILD
         private static readonly string USAGE = "Usage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n";
         private static readonly string HELP = "\r\nExecute NoPowerShell without parameters to list all available cmdlets.";

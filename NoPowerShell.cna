@@ -8,7 +8,7 @@
 #		        	https://github.com/bitsadmin
 #
 
-$binary = "scripts/NoPowerShell.exe";
+$binary = "NoPowerShell.exe";
 $help = "Execute a command via the reflective NoPowerShell commandline";
 beacon_command_register("nps", $help, "Use: nps [command]\n\n$help");
 
