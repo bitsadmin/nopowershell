@@ -32,14 +32,14 @@ Use Cobalt Strike's `execute-assembly` command to launch the `NoPowerShell.exe`.
 Optionally `NoPowerShell.cna` can be used to add the `nps` alias to Cobalt Strike.
 
 ## Use in Cobalt Strike via BOF.NET
-1. Install the BOF.NET BOF from [https://github.com/CCob/BOF.NET]
+1. Install the BOF.NET BOF from https://github.com/CCob/BOF.NET
 2. Load the BOF.NET runtime: `bofnet_init`
 3. Load the NoPowerShell module: `bofnet_load /path/to/NoPowerShell.dll`
 4. Execute NoPowerShell cmdlets: `bofnet_execute NoPowerShell.Program Get-Command`
 
 ## Use in Cobalt Strike using @williamknows fork of BOF.NET
 This fork allows running regular .NET executables
-1. Obtain and compile @williamknows' fork of the BOF.NET from [https://github.com/williamknows/BOF.NET]
+1. Obtain and compile @williamknows' fork of the BOF.NET from https://github.com/CCob/BOF.NET
 2. Load the BOF.NET runtime: `bofnet_init`
 3. Load the NoPowerShell module: `bofnet_load /path/to/NoPowerShell.exe`
 4. Execute NoPowerShell cmdlets: `bofnet_executeassembly NoPowerShell Get-Command`
@@ -138,6 +138,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Write-Output | Utility | |
 | Invoke-WebRequest | Utility | |
 | Measure-Object | Utility | |
+
 Also make sure to check out the [Cheatsheet](https://github.com/bitsadmin/nopowershell/blob/master/CHEATSHEET.md) for examples on how to use these cmdlets.
 
 # Acknowledgements
