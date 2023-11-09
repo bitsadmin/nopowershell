@@ -126,7 +126,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-NetIPAddress | NetTCPIP | |
 | Get-NetNeighbor | NetTCPIP | No support for IPv6 yet |
 | Test-NetConnection | NetTCPIP | |
-| Get-GetNetTCPConnection | NetTCPIP | |
+| Get-NetTCPConnection | NetTCPIP | |
 | Get-SmbShare | SmbShare | |
 | Get-SmbMapping | SmbShare | |
 | Format-Table | Utility | |
