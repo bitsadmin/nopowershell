@@ -97,6 +97,7 @@
     <Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
     <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
     <Compile Include="Commands\DnsClient\GetDnsClientCacheCommand.cs" />
+    <Compile Include="Commands\Diagnostics\GetWinEventCommand.cs" />
     <Compile Include="Commands\Management\GetClipboardCommand.cs" />
     <Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
     <Compile Include="Commands\Core\GetCommandCommand.cs" />

@@ -34,7 +34,7 @@ namespace NoPowerShell.Commands.NetTCPIP
             {
                 return new CaseInsensitiveList()
                 {
-                    "Get-GetNetTCPConnection",
+                    "Get-NetTCPConnection",
                     "netstat" // unofficial
                 };
             }
