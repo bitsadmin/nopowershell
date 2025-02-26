@@ -62,6 +62,10 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 queryFilter = string.Format(filterBase, string.Empty);
             }
 
+            // Obtain search base if not specified
+            if (string.IsNullOrWhiteSpace(searchBase))
+                searchBase = LDAPHelper.GetDistinguishedName(server, username, password);
+
             // Query
             _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, properties, server, username, password);
 
@@ -76,6 +80,10 @@ namespace NoPowerShell.Commands.ActiveDirectory
                     //r.Remove("useraccountcontrol");
                 }
             }
+
+            // Display error message if no results and identity is specified
+            if (_results.Count == 0 && !string.IsNullOrEmpty(identity))
+                Console.WriteLine($"{Aliases[0]}: Cannot find an object with identity: '{identity}' under '{searchBase}'.");
 
             return _results;
         }
