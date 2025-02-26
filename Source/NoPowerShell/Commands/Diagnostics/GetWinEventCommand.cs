@@ -95,7 +95,7 @@ namespace NoPowerShell.Commands
                     if (maxEvents != -1 && numEvents >= maxEvents)
                         break;
 
-                    string timeCreated = eventRecord.TimeCreated.ToString();
+                    string timeCreated = eventRecord.TimeCreated.HasValue ? eventRecord.TimeCreated.Value.ToFormattedString() : "N/A";
                     string id = eventRecord.Id.ToString();
                     string levelDisplayName;
                     try
