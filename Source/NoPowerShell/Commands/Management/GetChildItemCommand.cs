@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Win32;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 /*
 Author: @bitsadmin
@@ -35,16 +36,19 @@ namespace NoPowerShell.Commands.Management
             //     HKCU:\
             //     HKCR:\
             //     HKU:\
-            RegistryKey root = ProviderHelper.GetRegistryKey(ref path);
-            if (root != null)
+            string registryPattern = @"^(HKLM|HKCU|HKCR|HKU):.*$";
+            Regex registryRegex = new Regex(registryPattern);
+            if (registryRegex.IsMatch(path))
+            {
+                RegistryKey root = ProviderHelper.GetRegistryKey(ref path);
                 _results = BrowseRegistry(root, path, includeHidden);
-
+            }
             // Environment
             //     env:
             //     env:systemroot
             else if (path.ToUpperInvariant().StartsWith("ENV"))
                 _results = BrowseEnvironment(path);
-            
+
             // Filesystem:
             //     \
             //     ..\
@@ -167,7 +171,7 @@ namespace NoPowerShell.Commands.Management
                 ResultRecord currentDir = new ResultRecord()
                 {
                     { "Mode", GetModeFlags(dir) },
-                    { "LastWriteTime", dir.LastWriteTime.ToString() },
+                    { "LastWriteTime", dir.LastWriteTime.ToFormattedString() },
                     { "Length", string.Empty },
                     { "Name", dir.Name }
                 };
@@ -188,7 +192,7 @@ namespace NoPowerShell.Commands.Management
                 ResultRecord currentFile = new ResultRecord()
                 {
                     { "Mode", GetModeFlags(file) },
-                    { "LastWriteTime", file.LastWriteTime.ToString() },
+                    { "LastWriteTime", file.LastWriteTime.ToFormattedString() },
                     { "Length", file.Length.ToString() },
                     { "Name", file.Name }
                 };
