@@ -19,7 +19,7 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect the (optional) ComputerName, Username and Password parameters
+            // Collect the (optional) ComputerName, Username and Password parameters and Verbose and WhatIf flags
             base.Execute();
 
             // Obtain cmdlet parameters

@@ -27,6 +27,10 @@ namespace NoPowerShell.Commands
         protected string username;
         protected string password;
 
+        // Default parameters
+        protected bool verbose = false;
+        protected bool whatif = false;
+
         /// <summary>
         /// Construct a new PSCommand parsing the provided arguments using the provided list of arguments supported by this cmdlet
         /// </summary>
@@ -40,7 +44,9 @@ namespace NoPowerShell.Commands
             {
                 new StringArgument("ComputerName", ".", true),
                 new StringArgument("Username", true),
-                new StringArgument("Password", true)
+                new StringArgument("Password", true),
+                new BoolArgument("Verbose", false),
+                new BoolArgument("WhatIf", false)
             });
 
             _arguments = ParseArguments(userArguments, supportedArguments);
@@ -176,7 +182,7 @@ namespace NoPowerShell.Commands
                         if (!onlyArgument)
                             i++;
 
-                        aCasted.Value = strargs;
+                        aCasted.Value = UnescapeString(strargs);
                         assignedValue = true;
                         break;
                     }
@@ -191,6 +197,68 @@ namespace NoPowerShell.Commands
             return supportedArguments;
         }
 
+
+        /// <summary>
+        /// Processes the input string by replacing two consecutive backticks with one backtick,
+        /// replacing a backtick followed by 't' with a tab character, and replacing a backtick
+        /// followed by 'n' with a newline character.
+        /// </summary>
+        /// <param name="input">The input string to process.</param>
+        /// <returns>The processed string.</returns>
+        public static string UnescapeString(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            StringBuilder result = new StringBuilder();
+            int length = input.Length;
+            int i = 0;
+
+            while (i < length)
+            {
+                if (input[i] == '`')
+                {
+                    // Check if there's at least one more character
+                    if (i + 1 < length)
+                    {
+                        if (input[i + 1] == '`')
+                        {
+                            // Replace `` with `
+                            result.Append('`');
+                            i += 2; // Skip both backticks
+                            continue;
+                        }
+                        else if (input[i + 1] == 't')
+                        {
+                            // Replace `t with a tab character
+                            result.Append('\t');
+                            i += 2; // Skip the backtick and 't'
+                            continue;
+                        }
+                        else if(input[i + 1] == 'n')
+                        {
+                            // Replace `n with a newline character
+                            result.Append('\n');
+                            i += 2; // Skip the backtick and 'n'
+                            continue;
+                        }
+                    }
+
+                    // If it's a single backtick without a special pattern, append as is
+                    result.Append(input[i]);
+                    i++;
+                }
+                else
+                {
+                    // Append regular characters
+                    result.Append(input[i]);
+                    i++;
+                }
+            }
+
+            return result.ToString();
+        }
+
         /// <summary>
         /// Implementation of the cmdlet.
         /// When calling the base class, it obtains the values from the ComputerName, Username and Password parameters and populates the corresponding variables.
@@ -203,6 +271,10 @@ namespace NoPowerShell.Commands
             computername = _arguments.Get<StringArgument>("ComputerName").Value;
             username = _arguments.Get<StringArgument>("Username").Value;
             password = _arguments.Get<StringArgument>("Password").Value;
+
+            // Common parameters
+            verbose = _arguments.Get<BoolArgument>("Verbose").Value;
+            whatif = _arguments.Get<BoolArgument>("WhatIf").Value;
 
             return pipeIn;
         }
