@@ -124,13 +124,41 @@ namespace NoPowerShell.HelperClasses
                 if (column.Length > maxColumnLength)
                     maxColumnLength = column.Length;
             }
+            string padding = new string(' ', maxColumnLength + 2); // len(": ") = 2
 
             // Print data
             foreach (ResultRecord result in results)
             {
                 foreach (string column in columns.Keys)
                 {
-                    sb.AppendFormat("{0} : {1}\r\n", column.PadRight(maxColumnLength), result[column]);
+                    // Obtain column value
+                    string columnValue = result[column];
+                    if(string.IsNullOrWhiteSpace(columnValue))
+                        columnValue = string.Empty;
+
+                    // Value without newlines
+                    if (!columnValue.Contains("\n"))
+                    {
+                        sb.AppendFormat("{0} : {1}\n", column.PadRight(maxColumnLength), columnValue);
+                    }
+                    // Make sure padding is correct when newlines are present in value
+                    else
+                    {
+                        string[] splitValue = columnValue.Split('\n');
+                        bool first = true;
+                        foreach (string valueLine in splitValue)
+                        {
+                            if (first)
+                            {
+                                sb.AppendFormat("{0} : {1}\n", column.PadRight(maxColumnLength), valueLine);
+                                first = false;
+                            }
+                            else
+                            {
+                                sb.AppendFormat("{0} {1}\n", padding, valueLine);
+                            }
+                        }
+                    }
                 }
                 sb.AppendLine();
             }
@@ -169,6 +197,14 @@ namespace NoPowerShell.HelperClasses
             }
 
             return columnWidths;
+        }
+    }
+
+    public static class DateTimeExtensions
+    {
+        public static string ToFormattedString(this DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }
