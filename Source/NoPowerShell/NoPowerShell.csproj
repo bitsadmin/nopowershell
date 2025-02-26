@@ -67,6 +67,9 @@
     <DllExportPreProcType>0</DllExportPreProcType>
     <DllExportPostProcType>0</DllExportPostProcType>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BOFNET, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL" Condition=" $(DefineConstants.Contains('BOFBUILD')) ">
       <HintPath>..\packages\BOFNET.1.1.3\lib\net40\BOFNET.dll</HintPath>
@@ -75,6 +78,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression" />
@@ -89,6 +93,7 @@
     <Compile Include="Commands\ActiveDirectory\GetADComputerCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupMemberCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
+    <Compile Include="Commands\ActiveDirectory\GetADReplicationSubnetCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADObjectCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADTrustCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
@@ -121,9 +126,11 @@
     <Compile Include="Commands\NetTCPIP\GetNetNeighborCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetTCPConnectionCommand.cs" />
     <Compile Include="Commands\NetTCPIP\TestNetConnectionCommand.cs" />
+    <Compile Include="Commands\Security\GetAclCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbShareCommand.cs" />
     <Compile Include="Commands\TemplateCommand.cs" />
+    <Compile Include="Commands\Utility\ConvertToCsvCommand.cs" />
     <Compile Include="Commands\Utility\ExportCsvCommand.cs" />
     <Compile Include="Commands\Utility\FormatListCommand.cs" />
     <Compile Include="Commands\Utility\FormatTableCommand.cs" />
@@ -138,6 +145,8 @@
     <Compile Include="Commands\Utility\InvokeWebRequestCommand.cs" />
     <Compile Include="Commands\Utility\MeasureObjectCommand.cs" />
     <Compile Include="Commands\Utility\SortObjectCommand.cs" />
+    <Compile Include="Commands\Utility\ConvertFromSddlStringCommand.cs" />
+    <Compile Include="Commands\Utility\GetFileHashCommand.cs" />
     <Compile Include="Commands\Utility\WriteOutputCommand.cs" />
     <Compile Include="HelperClasses\CaseInsensitiveList.cs" />
     <Compile Include="HelperClasses\CommandResult.cs" />
