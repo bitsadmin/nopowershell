@@ -3,7 +3,8 @@ using NoPowerShell.HelperClasses;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 /*
 Author: @bitsadmin
@@ -22,27 +23,63 @@ namespace NoPowerShell.Commands.Utility
         public override CommandResult Execute(CommandResult pipeIn)
         {
             string uri = _arguments.Get<StringArgument>("URI").Value;
+            string useragent = _arguments.Get<StringArgument>("UserAgent").Value;
             string outfile = _arguments.Get<StringArgument>("OutFile").Value;
 
-            // Try to automatically determine filename
-            if (string.IsNullOrEmpty(outfile))
-            {
-                Uri href = new Uri(uri);
-                outfile = Path.GetFileName(href.LocalPath);
-            }
+            // Add http:// prefix if no protocol is present
+            if (!uri.Contains("://"))
+                uri = "http://" + uri;
 
-            // If still empty, use "out" as filename
-            if (string.IsNullOrEmpty(outfile))
-                outfile = "out";
-
-            // Known issues:
-            // - TLS 1.1+ is not supported by .NET Framework 2, so any site enforcing it will result in a connection error
-            using (WebClient client = new WebClient())
-            {
-                client.DownloadFile(uri, outfile);
-            }
+            _results = MakeRequest(uri, useragent, outfile).GetAwaiter().GetResult();
 
             return _results;
+        }
+
+        static async Task<CommandResult> MakeRequest(string uri, string useragent, string outfile)
+        {
+            CommandResult results = new CommandResult();
+
+            // Create an instance of HttpClient
+            using (HttpClient client = new HttpClient())
+            {
+                // Optionally, specify a user agent
+                if (!string.IsNullOrEmpty(useragent))
+                    client.DefaultRequestHeaders.Add("User-Agent", useragent);
+
+                // Display to console if no outfile is specified
+                if (!string.IsNullOrEmpty(outfile))
+                {
+                    // Send a GET request
+                    HttpResponseMessage response = await client.GetAsync(uri);
+
+                    results.Add(new ResultRecord()
+                    {
+                        { "StatusCode", ((int)response.StatusCode).ToString() },
+                        { "StatusDescription", response.StatusCode.ToString() },
+                        { "Content", await response.Content.ReadAsStringAsync() },
+                        { "Headers", response.Headers.ToString() }
+                    });
+                }
+                // Download file
+                else
+                {
+                    // Send a GET request
+                    HttpResponseMessage response = client.GetAsync(uri).GetAwaiter().GetResult();
+
+                    Console.WriteLine(
+                        "Received HTTP/{0} {1}-byte response of content type {2}",
+                        response.Version,
+                        response.Content.Headers.ContentLength,
+                        response.Content.Headers.ContentType.MediaType);
+
+                    // Write the content to outfile
+                    File.WriteAllBytes(outfile, response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult());
+
+                    Console.WriteLine("File Name: {0}", outfile);
+                }
+            }
+
+            return results;
         }
 
         public static new CaseInsensitiveList Aliases
@@ -57,7 +94,8 @@ namespace NoPowerShell.Commands.Utility
                 return new ArgumentList()
                 {
                     new StringArgument("URI"),
-                    new StringArgument("OutFile", true)
+                    new StringArgument("OutFile", true),
+                    new StringArgument("UserAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko", true)
                 };
             }
         }
@@ -73,6 +111,10 @@ namespace NoPowerShell.Commands.Utility
             {
                 return new ExampleEntries()
                 {
+                    new ExampleEntry(
+                        "View external IP address using custom user agent",
+                        "iwr ifconfig.io/ip -UserAgent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3\""
+                    ),
                     new ExampleEntry(
                         "Download file from the Internet",
                         new List<string>()
