@@ -39,7 +39,7 @@ Optionally `NoPowerShell.cna` can be used to add the `nps` alias to Cobalt Strik
 
 ## Use in Cobalt Strike using @williamknows fork of BOF.NET
 This fork allows running regular .NET executables
-1. Obtain and compile @williamknows' fork of the BOF.NET from https://github.com/CCob/BOF.NET
+1. Obtain and compile @williamknows' fork of the BOF.NET from https://github.com/williamknows/BOF.NET
 2. Load the BOF.NET runtime: `bofnet_init`
 3. Load the NoPowerShell module: `bofnet_load /path/to/NoPowerShell.exe`
 4. Execute NoPowerShell cmdlets: `bofnet_executeassembly NoPowerShell Get-Command`
