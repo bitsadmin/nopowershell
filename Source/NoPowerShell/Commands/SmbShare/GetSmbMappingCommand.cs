@@ -56,7 +56,7 @@ namespace NoPowerShell.Commands.SmbShare
                 {
                     new ExampleEntry
                     (
-                        "List network shares on the local machine that are exposed to the network",
+                        "List mapped network drives",
                         new List<string>()
                         {
                             "Get-SmbMapping",

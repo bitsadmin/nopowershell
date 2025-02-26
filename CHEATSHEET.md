@@ -127,8 +127,8 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | Show all network interfaces on a remote machine using WMI | `Get-NetIPAddress -All -ComputerName MyServer -Username MyUser -Password MyPassword` |
 | Show all network interfaces on a remote machine using WMI - Alternative | `Get-NetIPAddress -All -ComputerName MyServer` |
 | List SMB shares on the computer | `Get-SmbShare` |
-| List network shares on the local machine that are exposed to the network | `Get-SmbMapping` |
-| List network shares on the local machine that are exposed to the network - Alternative | `netuse` |
+| List mapped network drives | `Get-SmbMapping` |
+| List mapped network drives - Alternative | `netuse` |
 | Echo string to the console | `Write-Output "Hello World!"` |
 | Echo string to the console - Alternative | `echo "Hello World!"` |
 | Echo string to the console | `echo "Hello Console!"` |
