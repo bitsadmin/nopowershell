@@ -2,6 +2,8 @@
 using NoPowerShell.HelperClasses;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
@@ -51,22 +53,83 @@ namespace NoPowerShell.Commands.Additional
                 WINSTATIONINFORMATIONW wsInfo = new WINSTATIONINFORMATIONW();
                 string domain = null;
                 string username = null;
+                DateTime connectTime = DateTime.MinValue;
+                DateTime disconnectTime = DateTime.MinValue;
+                DateTime logonTime = DateTime.MinValue;
+                DateTime lastInputTime = DateTime.MinValue;
+                DateTime currentTime = DateTime.MinValue;
+
                 if (WinStationQueryInformationW(hServer, sessions[i].ID, WINSTATIONINFOCLASS.WinStationInformation, ref wsInfo, Marshal.SizeOf(typeof(WINSTATIONINFORMATIONW)), ref returnLength) != 0)
                 {
                     domain = wsInfo.Domain;
                     username = wsInfo.UserName;
+
+                    // ConnectTime
+                    long connectTimeTicks = ((long)wsInfo.ConnectTime.dwHighDateTime << 32) + wsInfo.ConnectTime.dwLowDateTime;
+                    connectTime = DateTime.FromFileTime(connectTimeTicks).ToUniversalTime();
+
+                    // DisconnectTime
+                    long disconnectTimeTicks = ((long)wsInfo.DisconnectTime.dwHighDateTime << 32) + wsInfo.DisconnectTime.dwLowDateTime;
+                    disconnectTime = DateTime.FromFileTime(disconnectTimeTicks).ToUniversalTime();
+
+                    // LogonTime
+                    long logonTimeTicks = ((long)wsInfo.LoginTime.dwHighDateTime << 32) + wsInfo.LoginTime.dwLowDateTime;
+                    logonTime = DateTime.FromFileTime(logonTimeTicks).ToUniversalTime();
+
+                    // LastInputTime
+                    long lastInputTimeTicks = ((long)wsInfo.LastInputTime.dwHighDateTime << 32) + wsInfo.LastInputTime.dwLowDateTime;
+                    lastInputTime = DateTime.FromFileTime(lastInputTimeTicks).ToUniversalTime();
+
+                    // CurrentTime
+                    long currentTimeTicks = ((long)wsInfo.CurrentTime.dwHighDateTime << 32) + wsInfo.CurrentTime.dwLowDateTime;
+                    currentTime = DateTime.FromFileTime(currentTimeTicks).ToUniversalTime();
+                }
+
+                // Locked state
+                bool locked = false;
+                string locked_str = "Unknown";
+                if (WinStationQueryInformationW(hServer, sessions[i].ID, WINSTATIONINFOCLASS.WinStationLockedState, ref locked, Marshal.SizeOf(typeof(bool)), ref returnLength) != 0)
+                {
+                    if (locked)
+                        locked_str = "Yes";
+                    else
+                        locked_str = "No";
+                }
+
+                // Remote address
+                WINSTATIONREMOTEADDRESS address = new WINSTATIONREMOTEADDRESS();
+                IPAddress remoteIP = null;
+                if (WinStationQueryInformationW(hServer, sessions[i].ID, WINSTATIONINFOCLASS.WinStationRemoteAddress, ref address, Marshal.SizeOf(typeof(WINSTATIONREMOTEADDRESS)), ref returnLength) != 0)
+                {
+                    remoteIP = ExtractIPAddress(address.Family, address.Address);
                 }
 
                 // Store in results
                 SESSIONIDW currentSession = sessions[i];
-                _results.Add(CompileResultRecord(currentSession.WinStationName, domain, username, currentSession.ID, currentSession.State));
+                _results.Add(
+                    CompileResultRecord(
+                        currentSession.WinStationName,
+                        domain, username,
+                        connectTime, disconnectTime, logonTime, lastInputTime, currentTime,
+                        locked_str,
+                        remoteIP,
+                        currentSession.ID, currentSession.State
+                    )
+                );
             }
 
             // Always return the results so the output can be used by the next command in the pipeline
             return _results;
         }
 
-        private static ResultRecord CompileResultRecord(string sessionname, string domain, string username, uint id, WINSTATIONSTATECLASS state)
+        private static ResultRecord CompileResultRecord(
+            string sessionname,
+            string domain, string username,
+            DateTime connectTime, DateTime disconnectTime, DateTime logonTime, DateTime lastInputTime, DateTime currentTime,
+            string locked,
+            IPAddress remoteIP,
+            uint id, WINSTATIONSTATECLASS state
+        )
         {
             string domainUser = string.Empty;
             if(!string.IsNullOrEmpty(domain))
@@ -79,12 +142,21 @@ namespace NoPowerShell.Commands.Additional
                 domainUser = username;
             }
 
+            DateTime minValue = new DateTime(1601, 1, 1);
+
             return new ResultRecord()
             {
                 { "SessionName", sessionname },
                 { "Username", domainUser },
                 { "ID", id.ToString() },
-                { "State", state.ToString() }
+                { "State", state.ToString() },
+                { "Connected", connectTime != minValue ? connectTime.ToFormattedString() : string.Empty },
+                { "Disconnected", disconnectTime != minValue ? disconnectTime.ToFormattedString() : string.Empty },
+                { "LogonTime", logonTime != minValue ? logonTime.ToFormattedString() : string.Empty },
+                { "LastInputTime", lastInputTime != minValue ? lastInputTime.ToFormattedString() : string.Empty },
+                { "CurrentTime", currentTime != minValue ? currentTime.ToFormattedString() : string.Empty },
+                { "Locked", locked },
+                { "RemoteIP", remoteIP != null ? remoteIP.ToString() : string.Empty }
             };
         }
 
@@ -268,6 +340,36 @@ namespace NoPowerShell.Commands.Additional
             public FILETIME CurrentTime;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct WINSTATIONREMOTEADDRESS
+        {
+            public AddressFamily Family;
+            public short Port;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+            public byte[] Address;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+            public byte[] Reserved;
+        }
+
+        public static IPAddress ExtractIPAddress(AddressFamily family, byte[] rawAddress)
+        {
+            switch (family)
+            {
+                case AddressFamily.InterNetwork:
+                    byte[] v4Address = new byte[4];
+                    Array.Copy(rawAddress, 2, v4Address, 0, 4);
+                    return new IPAddress(v4Address);
+                case AddressFamily.InterNetworkV6:
+                    byte[] v6Address = new byte[16];
+                    Array.Copy(rawAddress, 2, v6Address, 0, 16);
+                    return new IPAddress(v6Address);
+            }
+
+            return null;
+        }
+
         // extern HANDLE WINAPI WinStationOpenServerW(IN PWSTR ServerName);
         [DllImport("winsta.dll", CharSet = CharSet.Auto)]
         static extern IntPtr WinStationOpenServerW(string ServerName);
@@ -279,5 +381,11 @@ namespace NoPowerShell.Commands.Additional
         // extern BOOLEAN WINAPI WinStationQueryInformationW(IN HANDLE hServer, IN ULONG SessionId, IN WINSTATIONINFOCLASS WinStationInformationClass, OUT PVOID pWinStationInformation, IN ULONG WinStationInformationLength, OUT PULONG pReturnLength);
         [DllImport("winsta.dll", CharSet = CharSet.Auto)]
         static extern uint WinStationQueryInformationW(IntPtr hServer, uint SessionId, WINSTATIONINFOCLASS WinStationInformationClass, ref WINSTATIONINFORMATIONW pWinStationInformation, int WinStationInformationLength, ref int pReturnLength);
+        
+        [DllImport("winsta.dll", CharSet = CharSet.Auto)]
+        static extern uint WinStationQueryInformationW(IntPtr hServer, uint SessionId, WINSTATIONINFOCLASS WinStationLockedState, ref bool locked, int WinStationLockedStateLength, ref int pReturnLength);
+
+        [DllImport("winsta.dll", CharSet = CharSet.Auto)]
+        static extern uint WinStationQueryInformationW(IntPtr hServer, uint SessionId, WINSTATIONINFOCLASS WinStationRemoteAddress, ref WINSTATIONREMOTEADDRESS address, int WinStationRemoteAddressLength, ref int pReturnLength);
     }
 }
