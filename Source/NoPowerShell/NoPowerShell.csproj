@@ -74,6 +74,7 @@
     <Reference Include="BOFNET, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL" Condition=" $(DefineConstants.Contains('BOFBUILD')) ">
       <HintPath>..\packages\BOFNET.1.1.3\lib\net40\BOFNET.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
@@ -99,6 +100,7 @@
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
     <Compile Include="Commands\Additional\GetRemoteSmbShareCommand.cs" />
     <Compile Include="Commands\Additional\GetWinStationCommand.cs" />
+    <Compile Include="Commands\Additional\NewShortcutCommand.cs" />
     <Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
     <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
     <Compile Include="Commands\DnsClient\GetDnsClientCacheCommand.cs" />
