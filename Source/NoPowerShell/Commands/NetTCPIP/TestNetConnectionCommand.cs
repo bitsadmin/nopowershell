@@ -273,9 +273,9 @@ namespace NoPowerShell.Commands.NetTCPIP
                         }
                     ),
                     new ExampleEntry("Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout", "Test-NetConnection -Count 2 -Timeout 500 1.1.1.1"),
-                    new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 bitsadm.in"),
+                    new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 bitsadmin.com"),
                     new ExampleEntry("Perform ping with maximum TTL specified", "ping -TTL 32 1.1.1.1"),
-                    new ExampleEntry("Check for open port", "tnc bitsadm.in -Port 80")
+                    new ExampleEntry("Check for open port", "tnc bitsadmin.com -Port 80")
                 };
             }
         }
