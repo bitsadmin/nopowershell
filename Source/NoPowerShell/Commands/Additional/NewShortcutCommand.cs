@@ -23,8 +23,7 @@ namespace NoPowerShell.Commands
             // Collect the (optional) ComputerName, Username and Password parameters and Verbose and WhatIf flags
             base.Execute();
 
-            // Obtain cmdlet parameters
-            // Will contain all of the arguments from the 'ArgumentList Arguments' below
+            // Obtain parameters
             string path = _arguments.Get<StringArgument>("Path").Value;
             string targetPath = _arguments.Get<StringArgument>("TargetPath").Value;
             string arguments = _arguments.Get<StringArgument>("Arguments").Value;
