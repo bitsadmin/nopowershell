@@ -36,12 +36,12 @@ namespace NoPowerShell.Commands.Additional
             uint ret = WinStationEnumerateW(hServer, ref sessionsPtr, ref count);
             int error = Marshal.GetLastWin32Error();
             if (ret != 1)
-                throw new NoPowerShellException("WinStationEnumerateW failed, error 0x{0:X8}", error);
+                throw new NoPowerShellException("WinStationEnumerateW failed: Error 0x{0:X8} connecting to server \"{1}\"", error, serverName);
 
             // Unmarshal result
             int structsize = Marshal.SizeOf(typeof(SESSIONIDW));
             SESSIONIDW[] sessions = new SESSIONIDW[count];
-            
+
             //PrintLine("SESSIONNAME", null, "USERNAME", "ID", "STATE");
             for (int i = 0; i < count; i++)
             {
@@ -59,6 +59,8 @@ namespace NoPowerShell.Commands.Additional
                 DateTime lastInputTime = DateTime.MinValue;
                 DateTime currentTime = DateTime.MinValue;
 
+
+                // Winstation information
                 if (WinStationQueryInformationW(hServer, sessions[i].ID, WINSTATIONINFOCLASS.WinStationInformation, ref wsInfo, Marshal.SizeOf(typeof(WINSTATIONINFORMATIONW)), ref returnLength) != 0)
                 {
                     domain = wsInfo.Domain;
@@ -84,6 +86,10 @@ namespace NoPowerShell.Commands.Additional
                     long currentTimeTicks = ((long)wsInfo.CurrentTime.dwHighDateTime << 32) + wsInfo.CurrentTime.dwLowDateTime;
                     currentTime = DateTime.FromFileTime(currentTimeTicks).ToUniversalTime();
                 }
+                else
+                {
+                    Program.WriteWarning("Error fetching winstation information for session {0}: 0x{1:X8}", sessions[i].ID, Marshal.GetLastWin32Error());
+                }
 
                 // Locked state
                 bool locked = false;
@@ -95,6 +101,10 @@ namespace NoPowerShell.Commands.Additional
                     else
                         locked_str = "No";
                 }
+                else
+                {
+                    Program.WriteWarning("Error fetching lockedstate information for session {0}: 0x{1:X8}", sessions[i].ID, Marshal.GetLastWin32Error());
+                }
 
                 // Remote address
                 WINSTATIONREMOTEADDRESS address = new WINSTATIONREMOTEADDRESS();
@@ -102,6 +112,10 @@ namespace NoPowerShell.Commands.Additional
                 if (WinStationQueryInformationW(hServer, sessions[i].ID, WINSTATIONINFOCLASS.WinStationRemoteAddress, ref address, Marshal.SizeOf(typeof(WINSTATIONREMOTEADDRESS)), ref returnLength) != 0)
                 {
                     remoteIP = ExtractIPAddress(address.Family, address.Address);
+                }
+                else
+                {
+                    Program.WriteWarning("Error fetching remoteaddress information for session {0}: 0x{1:X8}", sessions[i].ID, Marshal.GetLastWin32Error());
                 }
 
                 // Store in results
@@ -132,12 +146,12 @@ namespace NoPowerShell.Commands.Additional
         )
         {
             string domainUser = string.Empty;
-            if(!string.IsNullOrEmpty(domain))
+            if (!string.IsNullOrEmpty(domain))
             {
                 if (!string.IsNullOrEmpty(username))
                     domainUser = string.Format("{0}\\{1}", domain, username);
             }
-            else if(!string.IsNullOrEmpty(username))
+            else if (!string.IsNullOrEmpty(username))
             {
                 domainUser = username;
             }
@@ -381,7 +395,7 @@ namespace NoPowerShell.Commands.Additional
         // extern BOOLEAN WINAPI WinStationQueryInformationW(IN HANDLE hServer, IN ULONG SessionId, IN WINSTATIONINFOCLASS WinStationInformationClass, OUT PVOID pWinStationInformation, IN ULONG WinStationInformationLength, OUT PULONG pReturnLength);
         [DllImport("winsta.dll", CharSet = CharSet.Auto)]
         static extern uint WinStationQueryInformationW(IntPtr hServer, uint SessionId, WINSTATIONINFOCLASS WinStationInformationClass, ref WINSTATIONINFORMATIONW pWinStationInformation, int WinStationInformationLength, ref int pReturnLength);
-        
+
         [DllImport("winsta.dll", CharSet = CharSet.Auto)]
         static extern uint WinStationQueryInformationW(IntPtr hServer, uint SessionId, WINSTATIONINFOCLASS WinStationLockedState, ref bool locked, int WinStationLockedStateLength, ref int pReturnLength);
 
