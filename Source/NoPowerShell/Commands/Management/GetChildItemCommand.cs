@@ -54,7 +54,13 @@ namespace NoPowerShell.Commands.Management
             //     ..\
             //     D:\
             else
+            {
+                // Add \\?\ prefix to support long paths
+                //if (!path.StartsWith(@"\\?\"))
+                //    path = @"\\?\" + path;
+
                 _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPatterns);
+            }
 
             return _results;
         }
@@ -148,12 +154,12 @@ namespace NoPowerShell.Commands.Management
             }
             catch (UnauthorizedAccessException)
             {
-                Program.WriteError("Access to the path '{0}' is denied.", path);
+                Program.WriteError("Access to the path '{0}' is denied.", path.Replace(@"\\?\", ""));
                 return results;
             }
 
             List<FileInfo> files = new List<FileInfo>();
-            foreach(string pattern in searchPatterns)
+            foreach (string pattern in searchPatterns)
             {
                 files.AddRange(gciDir.GetFiles(pattern));
             }
@@ -173,12 +179,12 @@ namespace NoPowerShell.Commands.Management
                     { "Mode", GetModeFlags(dir) },
                     { "LastWriteTime", dir.LastWriteTime.ToFormattedString() },
                     { "Length", string.Empty },
-                    { "Name", dir.Name }
+                    { "Name", dir.Name.Replace(@"\\?\","") }
                 };
 
                 // If recursive, also the directory name is needed
                 if (recurse)
-                    currentDir.Add("Directory", dir.FullName);
+                    currentDir.Add("Directory", dir.FullName.Replace(@"\\?\", ""));
 
                 results.Add(currentDir);
             }
@@ -194,12 +200,12 @@ namespace NoPowerShell.Commands.Management
                     { "Mode", GetModeFlags(file) },
                     { "LastWriteTime", file.LastWriteTime.ToFormattedString() },
                     { "Length", file.Length.ToString() },
-                    { "Name", file.Name }
+                    { "Name", file.Name.Replace(@"\\?\","") }
                 };
 
                 // If recursive, also the directory name is needed
                 if (recurse)
-                    currentFile.Add("Directory", file.Directory.FullName);
+                    currentFile.Add("Directory", file.Directory.FullName.Replace(@"\\?\", ""));
 
                 results.Add(currentFile);
             }
