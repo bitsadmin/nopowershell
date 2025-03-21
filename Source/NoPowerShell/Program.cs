@@ -49,13 +49,17 @@ namespace NoPowerShell
                 {
                     userCommands = PipeParser.ParseArguments(args, availableCommands);
                 }
-                catch (ParameterBindingException ex)
+                catch (CommandNotFoundException ex) when (ex is ParameterBindingException || ex is DuplicateParameterException)
                 {
                     error = ex.Message;
                 }
                 catch (CommandNotFoundException ex)
                 {
                     error = string.Join("", new string[] { ex.Message, HELP });
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
                 }
 
                 if (error != null)
@@ -143,9 +147,9 @@ namespace NoPowerShell
 
             // Change color to error text
             Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.ForegroundColor = ConsoleColor.Yellow;
 
-            Console.WriteLine(warning, args);
+            Console.WriteLine("WARNING: " + warning, args);
 
             // Revert colors
             Console.BackgroundColor = BackgroundColor;
