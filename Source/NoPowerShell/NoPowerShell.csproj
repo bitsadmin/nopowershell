@@ -91,6 +91,7 @@
     <Compile Include="Arguments\BoolArgument.cs" />
     <Compile Include="Arguments\IntegerArgument.cs" />
     <Compile Include="Arguments\StringArgument.cs" />
+    <Compile Include="Commands\ActiveDirectory\GetADDomainControllerCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADComputerCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupMemberCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
     <Compile Include="Commands\DnsClient\GetDnsClientCacheCommand.cs" />
     <Compile Include="Commands\Diagnostics\GetWinEventCommand.cs" />
+    <Compile Include="Commands\Additional\ResolveAdiDnsNameCommand.cs" />
     <Compile Include="Commands\Management\GetClipboardCommand.cs" />
     <Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
     <Compile Include="Commands\Core\GetCommandCommand.cs" />

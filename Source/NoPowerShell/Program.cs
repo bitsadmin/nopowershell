@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NoPowerShell.Commands;
 using NoPowerShell.Commands.Core;
 using NoPowerShell.Commands.Utility;
@@ -30,6 +31,10 @@ namespace NoPowerShell
         public static void Main(string[] args)
         {
 #endif
+            // Display commandline arguments if verbose output is enabled
+            if (args.Any(x => x.Equals("-Verbose", StringComparison.InvariantCultureIgnoreCase)))
+                Console.WriteLine("Commandline: '{0}'", string.Join("' '", args));
+
             // Using reflection determine available commands
             Dictionary<Type, CaseInsensitiveList> availableCommands = ReflectionHelper.GetCommands();
             List<PSCommand> userCommands = null;
@@ -124,39 +129,45 @@ namespace NoPowerShell
 
         public static void WriteError(string error, params object[] args)
         {
-            // Save existing color
-            ConsoleColor BackgroundColor = Console.BackgroundColor;
-            ConsoleColor ForegroundColor = Console.ForegroundColor;
-
-            // Change color to error text
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Red;
-
-            Console.WriteLine(error, args);
-
-            // Revert colors
-            Console.BackgroundColor = BackgroundColor;
-            Console.ForegroundColor = ForegroundColor;
+            WriteColored(null, ConsoleColor.Black, ConsoleColor.Red, error, args);
         }
 
         public static void WriteWarning(string warning, params object[] args)
+        {
+            WriteColored("WARNING", ConsoleColor.Black, ConsoleColor.Yellow, warning, args);
+        }
+
+        public static void WriteVerbose(string warning, params object[] args)
+        {
+            WriteColored("VERBOSE", ConsoleColor.Black, ConsoleColor.Yellow, warning, args);
+        }
+
+        public static void WriteColored(string prefix, ConsoleColor background, ConsoleColor foreground, string message, params object[] args)
         {
             // Save existing color
             ConsoleColor BackgroundColor = Console.BackgroundColor;
             ConsoleColor ForegroundColor = Console.ForegroundColor;
 
             // Change color to error text
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.BackgroundColor = background;
+            Console.ForegroundColor = foreground;
 
-            Console.WriteLine("WARNING: " + warning, args);
+            // Compose message
+            string line = null;
+            if (!string.IsNullOrEmpty(prefix))
+                line = string.Format("{0}: {1}", prefix, message);
+            else
+                line = message;
+
+            // Display message
+            Console.WriteLine(line, args);
 
             // Revert colors
             Console.BackgroundColor = BackgroundColor;
             Console.ForegroundColor = ForegroundColor;
         }
 
-        public static readonly string VERSION = "1.25";
+        public static readonly string VERSION = "1.26";
         public static readonly string WEBSITE = "https://github.com/bitsadmin/nopowershell";
 #if !DLLBUILD
         private static readonly string USAGE = "Usage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n";

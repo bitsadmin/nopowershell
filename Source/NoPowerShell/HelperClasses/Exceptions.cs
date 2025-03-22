@@ -47,6 +47,17 @@ namespace NoPowerShell.HelperClasses
         }
     }
 
+    class DuplicateParameterException : CommandNotFoundException
+    {
+        public string Parameter { get; set; }
+        public override string Message => string.Format("{0} : Cannot bind parameter because parameter '{1}' is specified more than once. To provide multiple values to parameters that can accept multiple values, use the array syntax. For example, \"-parameter value1, value2, value3\"", Command, Parameter);
+
+        public DuplicateParameterException(string command, string parameter) : base(command)
+        {
+            Parameter = parameter;
+        }
+    }
+
     class ItemNotFoundException : NoPowerShellException
     {
         public string Path { get; set; }

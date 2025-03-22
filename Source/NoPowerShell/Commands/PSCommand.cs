@@ -142,6 +142,8 @@ namespace NoPowerShell.Commands
                     }
                     else if(a.GetType() == typeof(IntegerArgument))
                     {
+                        // TODO: Currently simply overwrites the value if it is already set
+                        // Example: Get-ChildItem -Depth 1 -Depth 2
                         ((IntegerArgument)a).Value = Convert.ToInt32(userArguments[++i]);
                         assignedValue = true;
                         break;
@@ -150,7 +152,7 @@ namespace NoPowerShell.Commands
                     {
                         StringArgument aCasted = (StringArgument)a;
                         if (aCasted.Value != null && !aCasted.IsDefaultValue)
-                            continue;
+                            continue; // throw new DuplicateParameterException(this.ToString(), cleanInputArg);
 
                         // Optional StringArgument which requires a value
                         // For example Get-WmiObject -Namespace root\cimv2 -Query "Select CommandLine From Win32_Process"
@@ -189,7 +191,7 @@ namespace NoPowerShell.Commands
                 }
 
                 if (!assignedValue)
-                    throw new Exception("Failed to assign value to parameter");
+                    throw new Exception("Failed to assign value to parameter. This can possibly be because of duplicate arguments or a missing pipe (' | ').");
 
                 i++;
             }
@@ -221,26 +223,22 @@ namespace NoPowerShell.Commands
                     // Check if there's at least one more character
                     if (i + 1 < length)
                     {
-                        if (input[i + 1] == '`')
+                        char next = input[i + 1];
+
+                        switch(next)
                         {
-                            // Replace `` with `
-                            result.Append('`');
-                            i += 2; // Skip both backticks
-                            continue;
-                        }
-                        else if (input[i + 1] == 't')
-                        {
-                            // Replace `t with a tab character
-                            result.Append('\t');
-                            i += 2; // Skip the backtick and 't'
-                            continue;
-                        }
-                        else if(input[i + 1] == 'n')
-                        {
-                            // Replace `n with a newline character
-                            result.Append('\n');
-                            i += 2; // Skip the backtick and 'n'
-                            continue;
+                            case '`':
+                                result.Append('`');
+                                i += 2; // Skip both backticks
+                                continue;
+                            case 't':
+                                result.Append('\t');
+                                i += 2; // Skip the backtick and 't'
+                                continue;
+                            case 'n':
+                                result.Append('\n');
+                                i += 2; // Skip the backtick and 'n'
+                                continue;
                         }
                     }
 

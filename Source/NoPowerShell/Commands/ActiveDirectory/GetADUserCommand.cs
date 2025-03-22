@@ -75,8 +75,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 foreach (ResultRecord r in _results)
                 {
                     string uac = r["useraccountcontrol"];
-                    bool active = LDAPHelper.IsActive(uac);
-                    r["Enabled"] = active.ToString();
+                    r["Enabled"] = LDAPHelper.IsEnabled(uac).ToString();
                     //r.Remove("useraccountcontrol");
                 }
             }

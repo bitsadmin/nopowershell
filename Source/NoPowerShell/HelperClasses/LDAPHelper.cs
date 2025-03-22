@@ -18,8 +18,8 @@ namespace NoPowerShell.HelperClasses
         public static string GetDistinguishedName(string server, string username, string password)
         {
             CommandResult result = LDAPHelper.QueryLDAP(null, SearchScope.Base, "(objectClass=*)", new List<string>() { "distinguishedname" }, 1, server, username, password);
-            
-            if(result.Count == 0)
+
+            if (result.Count == 0)
                 return string.Empty;
 
             return result[0]["distinguishedname"];
@@ -50,7 +50,7 @@ namespace NoPowerShell.HelperClasses
             if (hasServer)
             {
                 ldap += server;
-                
+
                 if (hasSearchBase)
                     ldap += "/" + searchBase;
             }
@@ -98,11 +98,11 @@ namespace NoPowerShell.HelperClasses
                     //foreach (string property in properties)
                     //    if (!ciProperties.Contains(property))
                     //        throw new NoPowerShellException(string.Format("Column {0} not available in results", property));
-                    
+
                     // Create template
                     // This makes sure the order of columns is in the order the user specified
                     recordTemplate = new ResultRecord(properties.Count);
-                    foreach(string property in properties)
+                    foreach (string property in properties)
                         recordTemplate.Add(property, null);
                 }
 
@@ -153,11 +153,29 @@ namespace NoPowerShell.HelperClasses
                                 DateTime lastlogon = DateTime.FromFileTime((long)objArray[0]);
                                 foundRecord[propertyKey] = lastlogon.ToFormattedString();
                                 continue;
+                            case "accountexpires":
+                                long accountExpires = (long)objArray[0];
+                                // Account never expires
+                                if (accountExpires == 0x7FFFFFFFFFFFFFFF)
+                                    foundRecord[propertyKey] = "Never";
+                                else
+                                    DateTime.FromFileTime(accountExpires).ToFormattedString();
+                                continue;
                             // This attribute is automatically added
                             case "adspath":
                                 if (!properties.Contains(propertyKey))
                                     continue;
                                 break;
+                            case "dnsrecord":
+                                string[] nodes = new string[objArray.Count];
+                                int nodeCounter = 0;
+                                foreach (byte[] record in objArray)
+                                {
+                                    nodes[nodeCounter] = new AdiDnsNode(record).ToString();
+                                    nodeCounter++;
+                                }
+                                foundRecord[propertyKey] = string.Join("\n", nodes);
+                                continue;
                         }
 
                         // Convert objects to string
@@ -179,7 +197,8 @@ namespace NoPowerShell.HelperClasses
             return _results;
         }
 
-        public static bool IsActive(string bits)
+        // https://learn.microsoft.com/en-us/troubleshoot/windows-server/active-directory/useraccountcontrol-manipulate-account-properties
+        public static bool IsEnabled(string bits)
         {
             if (string.IsNullOrEmpty(bits))
                 return true;
