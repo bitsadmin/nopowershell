@@ -1,10 +1,7 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
-using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
-using System.Linq;
-using static NoPowerShell.HelperClasses.DnsHelper;
 
 /*
 Author: @bitsadmin
@@ -108,6 +105,7 @@ namespace NoPowerShell.Commands.Additional
             {
                 return new ExampleEntries()
                 {
+                    new ExampleEntry("List DNS zones", "Get-ADObject -SearchBase \"CN=MicrosoftDNS,DC=DomainDnsZones,DC=AD,DC=bitsadmin,DC=com\" -LDAPFilter \"(ObjectClass=dnsZone)\" -SearchScope OneLevel"),
                     new ExampleEntry("Obtain IP address of host W11", "Resolve-AdiDnsName -ZoneName ad.bitsadmin.com -Name W11"),
                     new ExampleEntry("Obtain LDAP servers in domain", "Resolve-AdiDnsName -ZoneName ad.bitsadmin.com -Name _ldap._tcp")
                 };
