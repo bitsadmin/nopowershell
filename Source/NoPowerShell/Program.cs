@@ -33,7 +33,7 @@ namespace NoPowerShell
 #endif
             // Display commandline arguments if verbose output is enabled
             if (args.Any(x => x.Equals("-Verbose", StringComparison.InvariantCultureIgnoreCase)))
-                Console.WriteLine("Commandline: '{0}'", string.Join("' '", args));
+                WriteVerbose("Commandline: '{0}'", string.Join("' '", args));
 
             // Using reflection determine available commands
             Dictionary<Type, CaseInsensitiveList> availableCommands = ReflectionHelper.GetCommands();
@@ -137,9 +137,9 @@ namespace NoPowerShell
             WriteColored("WARNING", ConsoleColor.Black, ConsoleColor.Yellow, warning, args);
         }
 
-        public static void WriteVerbose(string warning, params object[] args)
+        public static void WriteVerbose(string verbose, params object[] args)
         {
-            WriteColored("VERBOSE", ConsoleColor.Black, ConsoleColor.Yellow, warning, args);
+            WriteColored("VERBOSE", ConsoleColor.Black, ConsoleColor.Yellow, verbose, args);
         }
 
         public static void WriteColored(string prefix, ConsoleColor background, ConsoleColor foreground, string message, params object[] args)
