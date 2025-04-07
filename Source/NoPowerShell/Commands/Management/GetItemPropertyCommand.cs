@@ -49,26 +49,32 @@ namespace NoPowerShell.Commands.Management
 
         private CommandResult BrowseRegistry(string path, CaseInsensitiveList attributeNames)
         {
-            RegistryKey root = RegistryHelper.GetRoot(ref path);
+            RegistryHive root = RegistryHelper.GetRoot(ref path);
 
-            RegistryKey key = root.OpenSubKey(path);
-            foreach (string valueName in key.GetValueNames())
+            // Open the base key with the desired view
+            using (RegistryKey baseKey = RegistryKey.OpenBaseKey(root, RegistryView.Registry64))
             {
-                string valueKind = key.GetValueKind(valueName).ToString();
-                string value = Convert.ToString(key.GetValue(valueName));
-
-                // Skip if -Names parameter is provided and current attribute is not in the list
-                if (attributeNames != null && !attributeNames.Contains(valueName))
-                    continue;
-
-                _results.Add(
-                    new ResultRecord()
+                using (RegistryKey key = baseKey.OpenSubKey(path))
+                {
+                    foreach (string valueName in key.GetValueNames())
                     {
-                        { "Name", valueName },
-                        { "Kind", valueKind },
-                        { "Value", value }
+                        string valueKind = key.GetValueKind(valueName).ToString();
+                        string value = Convert.ToString(key.GetValue(valueName));
+
+                        // Skip if -Names parameter is provided and current attribute is not in the list
+                        if (attributeNames != null && !attributeNames.Contains(valueName))
+                            continue;
+
+                        _results.Add(
+                            new ResultRecord()
+                            {
+                                { "Name", valueName },
+                                { "Kind", valueKind },
+                                { "Value", value }
+                            }
+                        );
                     }
-                );
+                }
             }
 
             return _results;
