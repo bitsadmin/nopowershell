@@ -76,6 +76,7 @@ namespace NoPowerShell.HelperClasses
                 ds.SearchScope = scope;
                 ds.SizeLimit = resultSetSize;
                 ds.SecurityMasks = SecurityMasks.Dacl | SecurityMasks.Group | SecurityMasks.Owner; // Required to obtain nTSecurityDescriptor
+                //ds.ReferralChasing = ReferralChasingOption.All;
 
                 // Filter
                 ds.Filter = queryFilter;
