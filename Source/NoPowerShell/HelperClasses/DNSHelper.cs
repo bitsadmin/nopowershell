@@ -360,7 +360,7 @@ namespace NoPowerShell.HelperClasses
         }
 
         /// <summary>
-        /// See http://msdn.microsoft.com/en-us/library/windows/desktop/cc982162(v=vs.85).aspx
+        /// See https://learn.microsoft.com/en-us/windows/win32/dns/dns-constants
         /// Also see http://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml
         /// </summary>
         public enum DnsRecordType
@@ -974,8 +974,8 @@ namespace NoPowerShell.HelperClasses
 
             // Parse dnsRecord
             // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/6912b338-5472-4f59-b912-0edb536b6ed8
-            using (var stream = new System.IO.MemoryStream(dnsrecordBytes))
-            using (var reader = new System.IO.BinaryReader(stream))
+            using (var stream = new MemoryStream(dnsrecordBytes))
+            using (var reader = new BinaryReader(stream))
             {
                 // Unpack the data using BinaryReader for the first 24 bytes
                 ushort dataLength = reader.ReadUInt16();
@@ -991,8 +991,8 @@ namespace NoPowerShell.HelperClasses
 
                 // Parse data element
                 byte[] data = reader.ReadBytes(dataLength);
-                using (var datastream = new System.IO.MemoryStream(data))
-                using (var datareader = new System.IO.BinaryReader(datastream))
+                using (var datastream = new MemoryStream(data))
+                using (var datareader = new BinaryReader(datastream))
                 {
                     // DNS_RPC_RECORD_A
                     // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/117c2ff9-9094-45b2-83c2-5e44518e0bac
@@ -1014,8 +1014,8 @@ namespace NoPowerShell.HelperClasses
 
                         // Iterate over DNS name parts
                         string dnsNameString;
-                        using (var dnsNameStream = new System.IO.MemoryStream(dnsName))
-                        using (var dnsNameReader = new System.IO.BinaryReader(dnsNameStream))
+                        using (var dnsNameStream = new MemoryStream(dnsName))
+                        using (var dnsNameReader = new BinaryReader(dnsNameStream))
                         {
                             byte partCount = dnsNameReader.ReadByte();
                             string[] dnsNameParts = new string[partCount];
@@ -1031,6 +1031,13 @@ namespace NoPowerShell.HelperClasses
 
                         RecordData = string.Format("[{0}][{1}][{2}][{3}]", priority, weight, port, dnsNameString);
                     }
+                    // DNS_TYPE_NS / DNS_RPC_NAME
+                    // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/8f986756-f151-4f5b-bfcf-0d85be8b0d7e
+                    // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/3fd41adc-c69e-407b-979e-721251403132
+                    //else if (RecordType == DnsHelper.DnsRecordType.DNS_TYPE_NS)
+                    //{
+                    //    // TODO
+                    //}
                     else
                     {
                         Program.WriteWarning("Record type \"{0}\" is not yet supported. Limited details will be returned.", RecordType.ToString().Replace("DNS_TYPE_",""));
