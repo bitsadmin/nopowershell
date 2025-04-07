@@ -57,7 +57,7 @@ namespace NoPowerShell.Arguments
             set { _value = value; }
         }
 
-        public bool IsDefaultValue
+        public override bool IsDefaultValue
         {
             get { return string.Equals(_value, _defaultValue, System.StringComparison.InvariantCultureIgnoreCase); }
         }

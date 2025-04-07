@@ -41,6 +41,11 @@ namespace NoPowerShell.Arguments
             get { return this._isOptionalArgument; }
         }
 
+        public virtual bool IsDefaultValue
+        {
+            get { return false; }
+        }
+
         /// <summary>
         /// Optional StringArgument which requires a value
         /// </summary>

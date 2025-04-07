@@ -48,7 +48,7 @@ namespace NoPowerShell.Arguments
             set { _value = value; }
         }
 
-        public bool IsDefaultValue
+        public override bool IsDefaultValue
         {
             get { return _value == _defaultValue; }
         }

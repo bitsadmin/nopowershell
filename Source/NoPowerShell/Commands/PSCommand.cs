@@ -122,7 +122,8 @@ namespace NoPowerShell.Commands
                         throw new ParameterBindingException(
                             this.ToString(),
                             string.Format(
-                                "Parameter cannot be processed because the parameter name '{0}' is ambiguous. Possible matches include: -{1}.",
+                                "Parameter cannot be processed because the parameter name '{1}' is ambiguous. Possible matches include: -{2}.",
+                                this,
                                 cleanInputArg,
                                 string.Join(" -", paramNames)
                             )
@@ -191,9 +192,23 @@ namespace NoPowerShell.Commands
                 }
 
                 if (!assignedValue)
-                    throw new Exception("Failed to assign value to parameter. This can possibly be because of duplicate arguments or a missing pipe (' | ').");
+                    throw new Exception(
+                        string.Format(
+                            "{0}: Failed to assign value to parameter. This can possibly be because of duplicate arguments or a missing pipe (' | ').",
+                            this
+                        )
+                    );
 
                 i++;
+            }
+
+            // Validate if all mandatory arguments have been assigned
+            foreach(Argument arg in supportedArguments)
+            {
+                if(arg.IsDefaultValue && !arg.IsOptionalArgument)
+                {
+                    throw new Exception(string.Format("{0}: Mandatory parameter '{1}' is missing.", this, arg.Name));
+                }
             }
 
             return supportedArguments;
