@@ -31,6 +31,10 @@ namespace NoPowerShell.Commands.Management
             int depth = _arguments.Get<IntegerArgument>("Depth").Value;
             string[] searchPatterns = _arguments.Get<StringArgument>("Include").Value.Split(new char[] { ',' });
 
+            // If Depth is specified, it implies recursion
+            if (depth != int.MaxValue)
+                recurse = true;
+
             // Registry:
             //     HKLM:\
             //     HKCU:\
@@ -138,6 +142,10 @@ namespace NoPowerShell.Commands.Management
             // TODO: Follow symlinks. Skipping them for now
             if ((gciDir.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
                 return results;
+
+            // Display directory name
+            if (!recurse)
+                Console.WriteLine("\r\n    Directory: {0}\r\n", gciDir.FullName);
 
             List<DirectoryInfo> directories = new List<DirectoryInfo>();
             try
