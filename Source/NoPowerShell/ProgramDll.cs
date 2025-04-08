@@ -100,6 +100,10 @@ namespace NoPowerShell
                     case "clear":
                         Console.Clear();
                         break;
+                    case "help":
+                    case "?":
+                        Program.DllMain(new string[] { "Get-Command" });
+                        break;
                     case "history":
                         Console.WriteLine("  Id CommandLine");
                         Console.WriteLine("  -- -----------");

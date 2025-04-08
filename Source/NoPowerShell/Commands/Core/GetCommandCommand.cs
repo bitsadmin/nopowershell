@@ -138,7 +138,7 @@ namespace NoPowerShell.Commands.Core
                             examplestrings.Add(ex.Replace("|", "\\|"));
 
                         int i = 0;
-                        foreach(string ex in examplestrings)
+                        foreach (string ex in examplestrings)
                         {
                             string desc = string.Empty;
                             if (i == 0)
@@ -195,11 +195,7 @@ namespace NoPowerShell.Commands.Core
         {
             get
             {
-                return new CaseInsensitiveList()
-                {
-                    "Get-Command",
-                    "help" // Unofficial
-                };
+                return new CaseInsensitiveList() { "Get-Command" };
             }
         }
 
@@ -211,7 +207,7 @@ namespace NoPowerShell.Commands.Core
                 {
                     new BoolArgument ("_Included"),
                     new BoolArgument ("_Cheatsheet"),
-                    new StringArgument ("Module"),
+                    new StringArgument ("Module", true),
                 };
             }
         }
