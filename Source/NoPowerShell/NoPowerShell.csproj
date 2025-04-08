@@ -133,6 +133,7 @@
     <Compile Include="Commands\Security\GetAclCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbShareCommand.cs" />
+    <Compile Include="Commands\SQLPS\InvokeSqlcmdCommand.cs" />
     <Compile Include="Commands\TemplateCommand.cs" />
     <Compile Include="Commands\Utility\ConvertToCsvCommand.cs" />
     <Compile Include="Commands\Utility\ExportCsvCommand.cs" />
