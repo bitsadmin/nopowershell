@@ -179,12 +179,13 @@ namespace NoPowerShell.Commands.Management
                     { "Mode", GetModeFlags(dir) },
                     { "LastWriteTime", dir.LastWriteTime.ToFormattedString() },
                     { "Length", string.Empty },
-                    { "Name", dir.Name.Replace(@"\\?\","") }
                 };
 
-                // If recursive, also the directory name is needed
+                // If -Recurse is set, show the full path, otherwise the name
                 if (recurse)
-                    currentDir.Add("Directory", dir.FullName.Replace(@"\\?\", ""));
+                    currentDir.Add("FullName", dir.FullName.Replace(@"\\?\", ""));
+                else
+                    currentDir.Add("Name", dir.Name.Replace(@"\\?\", ""));
 
                 results.Add(currentDir);
             }
@@ -199,13 +200,14 @@ namespace NoPowerShell.Commands.Management
                 {
                     { "Mode", GetModeFlags(file) },
                     { "LastWriteTime", file.LastWriteTime.ToFormattedString() },
-                    { "Length", file.Length.ToString() },
-                    { "Name", file.Name.Replace(@"\\?\","") }
+                    { "Length", file.Length.ToString() }
                 };
 
-                // If recursive, also the directory name is needed
+                // If -Recurse is set, show the full path, otherwise the name
                 if (recurse)
-                    currentFile.Add("Directory", file.Directory.FullName.Replace(@"\\?\", ""));
+                    currentFile.Add("FullName", file.FullName.Replace(@"\\?\", ""));
+                else
+                    currentFile.Add("Name", file.Name.Replace(@"\\?\", ""));
 
                 results.Add(currentFile);
             }
