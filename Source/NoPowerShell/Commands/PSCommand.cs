@@ -194,7 +194,10 @@ namespace NoPowerShell.Commands
                 if (!assignedValue)
                     throw new Exception(
                         string.Format(
-                            "{0}: Failed to assign value to parameter. This can possibly be because of duplicate arguments or a missing pipe (' | ').",
+                            @"{0}: Failed to assign value to parameter. This can be because of:
+- A missing parameter name (e.g. 'MyValue' was used instead of '-Name MyValue')
+- Duplicate arguments (e.g. '-Name MyValue -Name MyValue2')
+- A missing pipe (' | ')",
                             this
                         )
                     );
