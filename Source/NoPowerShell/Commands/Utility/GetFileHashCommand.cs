@@ -25,7 +25,7 @@ namespace NoPowerShell.Commands.Utility
             // Obtain cmdlet parameters
             string path = _arguments.Get<StringArgument>("Path").Value;
             string[] algorithms = _arguments.Get<StringArgument>("Algorithm").Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            List<string> supportedAlgorithms = new List<string>() { "MD5", "SHA1", "SHA256", "SHA384", "SHA512", "RIPEMD160", "All", "Common" }; //"MACTripleDES", 
+            List<string> supportedAlgorithms = new List<string>() { "MD5", "SHA1", "SHA256", "SHA384", "SHA512", "RIPEMD160", "*", "Common" }; //"MACTripleDES", 
             bool wildcardPath = path.Contains("*") || path.Contains("?");
 
             // Set default algorithm if not specified
@@ -46,7 +46,7 @@ namespace NoPowerShell.Commands.Utility
                     throw new NoPowerShellException($"Value {algorithm} not in list of supported values: {string.Join(",", supportedAlgorithms)}");
 
                 // Unofficial "All" value for -Algorithm
-                if (algorithm.ToUpperInvariant() == "ALL")
+                if (algorithm == "*")
                 {
                     enabledAlgorithms = supportedAlgorithms.GetRange(0, supportedAlgorithms.Count - 2);
                     break;
@@ -190,7 +190,7 @@ namespace NoPowerShell.Commands.Utility
                     ),
                     new ExampleEntry("Calculate SHA256 hash of a file", "Get-FileHash -Path C:\\Windows\\explorer.exe -Algorithm SHA256"),
                     new ExampleEntry("Calculate specific hashes for file", "Get-FileHash C:\\file.bin -Algorithm MD5,SHA1"),
-                    new ExampleEntry("Calculate all supported hashes (MD5,SHA1,SHA256,SHA384,SHA512,RIPEMD160) for file", "Get-FileHash C:\\file.bin -Algorithm All")
+                    new ExampleEntry("Calculate all supported hashes (MD5,SHA1,SHA256,SHA384,SHA512,RIPEMD160) for file", "Get-FileHash C:\\file.bin -Algorithm *")
                 };
             }
         }
