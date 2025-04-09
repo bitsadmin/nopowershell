@@ -74,117 +74,19 @@ namespace NoPowerShell.Commands.Security
 
                 // Owner
                 if (securityDescriptor.Owner != null)
-                {
-                    IdentityReference ownerSid = securityDescriptor.Owner;
-                    try
-                    {
-                        NTAccount aceAccount = (NTAccount)ownerSid.Translate(typeof(NTAccount));
-                        ownerAccountString = aceAccount.Value;
-                    }
-                    catch (IdentityNotMappedException)
-                    {
-                        ownerAccountString = ownerSid.ToString();
-                    }
-                }
+                    ownerAccountString = GetAccountName(securityDescriptor.Owner);
 
                 // Group
                 if (securityDescriptor.Group != null)
-                {
-                    IdentityReference groupSid = securityDescriptor.Owner;
-                    try
-                    {
-                        NTAccount aceAccount = (NTAccount)groupSid.Translate(typeof(NTAccount));
-                        groupAccountString = aceAccount.Value;
-                    }
-                    catch (IdentityNotMappedException)
-                    {
-                        groupAccountString = groupSid.ToString();
-                    }
-                }
+                    groupAccountString = GetAccountName(securityDescriptor.Group);
 
-                // DiscretionaryAcl (Permissions)
+                // DACL
                 if (securityDescriptor.DiscretionaryAcl != null)
-                {
-                    foreach (object ace in securityDescriptor.DiscretionaryAcl)
-                    {
-                        // Common ACE
-                        if (ace is CommonAce commonAce)
-                        {
-                            string aceAccountName;
-                            try
-                            {
-                                NTAccount aceAccount = (NTAccount)commonAce.SecurityIdentifier.Translate(typeof(NTAccount));
-                                aceAccountName = aceAccount.Value;
-                            }
-                            catch (IdentityNotMappedException)
-                            {
-                                aceAccountName = commonAce.SecurityIdentifier.ToString();
-                            }
-                            ActiveDirectoryRights rights = (ActiveDirectoryRights)commonAce.AccessMask;
-                            accessRuleStrings.Add($"{aceAccountName}: {commonAce.AceType} ({rights.ToString().Replace(" | ", ", ")})");
-                        }
-                        // Object ACE
-                        else if (ace is ObjectAce objectAce)
-                        {
-                            // Attempt to resolve SID to account name
-                            string aceAccountName;
-                            try
-                            {
-                                NTAccount aceAccount = (NTAccount)objectAce.SecurityIdentifier.Translate(typeof(NTAccount));
-                                aceAccountName = aceAccount.Value;
-                            }
-                            catch (IdentityNotMappedException)
-                            {
-                                aceAccountName = objectAce.SecurityIdentifier.ToString();
-                            }
-                            ActiveDirectoryRights rights = (ActiveDirectoryRights)objectAce.AccessMask;
-                            accessRuleStrings.Add($"{aceAccountName}: {objectAce.AceType} ({rights.ToString().Replace(" | ", ", ")})");
-                        }
-                    }
-                }
+                    accessRuleStrings = ProcessAces(securityDescriptor.DiscretionaryAcl);
 
-                // SystemAcl (Auditing and Logging)
+                // System ACL
                 if (securityDescriptor.SystemAcl != null)
-                {
-                    foreach (object ace in securityDescriptor.SystemAcl)
-                    {
-                        // Common ACE
-                        if (ace is CommonAce commonAce)
-                        {
-                            string aceAccountName;
-                            try
-                            {
-                                NTAccount aceAccount = (NTAccount)commonAce.SecurityIdentifier.Translate(typeof(NTAccount));
-                                aceAccountName = aceAccount.Value;
-                            }
-                            catch (IdentityNotMappedException)
-                            {
-                                aceAccountName = commonAce.SecurityIdentifier.ToString();
-                            }
-                            ActiveDirectoryRights rights = (ActiveDirectoryRights)commonAce.AccessMask;
-                            auditRuleStrings.Add($"{aceAccountName}: {commonAce.AceType} ({rights.ToString().Replace(" | ", ", ")})");
-                        }
-                        // Object ACE
-                        else if (ace is ObjectAce objectAce)
-                        {
-                            // Attempt to resolve SID to account name
-                            string aceAccountName;
-                            try
-                            {
-                                NTAccount aceAccount = (NTAccount)objectAce.SecurityIdentifier.Translate(typeof(NTAccount));
-                                aceAccountName = aceAccount.Value;
-                            }
-                            catch (IdentityNotMappedException)
-                            {
-                                aceAccountName = objectAce.SecurityIdentifier.ToString();
-                            }
-                            ActiveDirectoryRights rights = (ActiveDirectoryRights)objectAce.AccessMask;
-                            auditRuleStrings.Add($"{aceAccountName}: {objectAce.AceType} ({rights.ToString().Replace(" | ", ", ")})");
-                        }
-                    }
-                }
-
-                //throw new NoPowerShellException("AD objects are not implemented yet");
+                    auditRuleStrings = ProcessAces(securityDescriptor.SystemAcl);
             }
             // Filesystem
             else
@@ -205,8 +107,8 @@ namespace NoPowerShell.Commands.Security
                     ownerAccount = (NTAccount)directorySecurity.GetOwner(typeof(NTAccount));
 
                     // Access/Audit rules
-                    accessRules = directorySecurity.GetAccessRules(true, true, typeof(System.Security.Principal.NTAccount));
-                    auditRules = directorySecurity.GetAuditRules(true, true, typeof(System.Security.Principal.NTAccount));
+                    accessRules = directorySecurity.GetAccessRules(true, true, typeof(NTAccount));
+                    auditRules = directorySecurity.GetAuditRules(true, true, typeof(NTAccount));
                 }
                 // File
                 else if (File.Exists(path))
@@ -224,8 +126,8 @@ namespace NoPowerShell.Commands.Security
                     groupAccount = (NTAccount)fileSecurity.GetGroup(typeof(NTAccount));
 
                     // Access/Audit rules
-                    accessRules = fileSecurity.GetAccessRules(true, true, typeof(System.Security.Principal.NTAccount));
-                    auditRules = fileSecurity.GetAuditRules(true, true, typeof(System.Security.Principal.NTAccount));
+                    accessRules = fileSecurity.GetAccessRules(true, true, typeof(NTAccount));
+                    auditRules = fileSecurity.GetAuditRules(true, true, typeof(NTAccount));
                 }
 
                 // Owner
@@ -265,6 +167,49 @@ namespace NoPowerShell.Commands.Security
             return _results;
         }
 
+        private static List<string> ProcessAces(CommonAcl aces)
+        {
+            List<string> accessRuleStrings = new List<string>();
+
+            foreach (object ace in aces)
+            {
+                string aceAccountName;
+                ActiveDirectoryRights rights;
+
+                // Check for Common ACE
+                if (ace is CommonAce commonAce)
+                {
+                    aceAccountName = GetAccountName(commonAce.SecurityIdentifier);
+                    rights = (ActiveDirectoryRights)commonAce.AccessMask;
+                    accessRuleStrings.Add($"{aceAccountName}: {commonAce.AceType} ({rights.ToString().Replace(" | ", ", ")})");
+                }
+                // Check for Object ACE
+                else if (ace is ObjectAce objectAce)
+                {
+                    aceAccountName = GetAccountName(objectAce.SecurityIdentifier);
+                    rights = (ActiveDirectoryRights)objectAce.AccessMask;
+                    accessRuleStrings.Add($"{aceAccountName}: {objectAce.AceType} ({rights.ToString().Replace(" | ", ", ")})");
+                }
+            }
+
+            return accessRuleStrings;
+        }
+
+        private static string GetAccountName(SecurityIdentifier securityIdentifier)
+        {
+            string accountName;
+            try
+            {
+                NTAccount account = (NTAccount)securityIdentifier.Translate(typeof(NTAccount));
+                accountName = account.Value;
+            }
+            catch (IdentityNotMappedException)
+            {
+                accountName = securityIdentifier.ToString();
+            }
+            return accountName;
+        }
+
         public static new CaseInsensitiveList Aliases
         {
             get { return new CaseInsensitiveList() { "Get-Acl" }; }
@@ -277,7 +222,7 @@ namespace NoPowerShell.Commands.Security
                 return new ArgumentList()
                 {
                     new StringArgument("Path"),
-                    new StringArgument("Server", true) // Just used in case Get-Acl is used outside of a domain
+                    new StringArgument("Server", true) // Just used in case Get-Acl is used on an AD object from outside of the domain
                 };
             }
         }
@@ -302,7 +247,8 @@ namespace NoPowerShell.Commands.Security
                             "Get-Acl -Path C:\\Windows\\explorer.exe"
                         }
                     ),
-                    new ExampleEntry("List ACLs of directory", "Get-Acl C:\\Windows")
+                    new ExampleEntry("List ACLs of directory", "Get-Acl C:\\Windows"),
+                    new ExampleEntry("List ACLs of AD Object", "Get-Acl \"AD:\\CN=User One,CN=Users,DC=ad,DC=bitsadmin,DC=com\"")
                 };
             }
         }
