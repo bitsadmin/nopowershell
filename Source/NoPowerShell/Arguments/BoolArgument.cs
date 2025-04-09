@@ -11,22 +11,13 @@ namespace NoPowerShell.Arguments
         private bool _value;
 
         /// <summary>
-        /// Create a new boolean argument including its default value. Bool arguments are always optional.
+        /// Create a new boolean argument. Bool arguments are always optional.
         /// </summary>
         /// <param name="argumentName">Name of the parameter</param>
-        /// <param name="defaultValue">Default value of the argument</param>
-        public BoolArgument(string argumentName, bool defaultValue) : base(argumentName)
+        public BoolArgument(string argumentName) : base(argumentName)
         {
-            this._value = defaultValue;
+            this._value = false;
             this._isOptionalArgument = true;
-        }
-
-        /// <summary>
-        /// Create new boolean argument with false as its default value. Bool arguments are always optional.
-        /// </summary>
-        /// <param name="argumentName">Name of the parameter</param>
-        public BoolArgument(string argumentName) : this(argumentName, false)
-        {
         }
 
         public bool Value

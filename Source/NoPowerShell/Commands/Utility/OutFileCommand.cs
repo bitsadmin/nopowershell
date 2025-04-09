@@ -56,7 +56,7 @@ namespace NoPowerShell.Commands.Utility
                 {
                     new StringArgument("FilePath", false),
                     new StringArgument("Encoding", "UTF-8"),
-                    new BoolArgument("PassThru", false)
+                    new BoolArgument("PassThru")
                 };
             }
         }

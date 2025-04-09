@@ -257,7 +257,7 @@ namespace NoPowerShell.Commands.NetTCPIP
             {
                 return new ArgumentList()
                 {
-                    new BoolArgument("TraceRoute", false),
+                    new BoolArgument("TraceRoute"),
                     new StringArgument("ComputerName"),
                     new IntegerArgument("Count", 1, true),      // Unofficial parameter
                     new IntegerArgument("Timeout", 5000, true), // Unofficial parameter

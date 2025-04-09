@@ -133,7 +133,7 @@ namespace NoPowerShell.Commands
                     new StringArgument("WorkingDirectory", string.Empty, true),
                     new StringArgument("WindowStyle", "Normal", true),
                     new StringArgument("Hotkey", string.Empty, true),
-                    new BoolArgument("Force", false)
+                    new BoolArgument("Force")
                 };
             }
         }

@@ -81,8 +81,8 @@ namespace NoPowerShell.Commands.Management
                 return new ArgumentList()
                 {
                     new StringArgument("Value"),
-                    new BoolArgument("Append", false),
-                    new BoolArgument("PassThru", false)
+                    new BoolArgument("Append"),
+                    new BoolArgument("PassThru")
                 };
             }
         }

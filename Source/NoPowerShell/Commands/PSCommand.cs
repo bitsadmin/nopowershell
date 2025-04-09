@@ -45,8 +45,8 @@ namespace NoPowerShell.Commands
                 new StringArgument("ComputerName", ".", true),
                 new StringArgument("Username", true),
                 new StringArgument("Password", true),
-                new BoolArgument("Verbose", false),
-                new BoolArgument("WhatIf", false)
+                new BoolArgument("Verbose"),
+                new BoolArgument("WhatIf")
             });
 
             _arguments = ParseArguments(userArguments, supportedArguments);

@@ -115,8 +115,8 @@ namespace NoPowerShell.Commands.Utility
                 return new ArgumentList()
                 {
                     new StringArgument("Property"),
-                    new BoolArgument("Descending", false),
-                    new BoolArgument("Unique", false)
+                    new BoolArgument("Descending"),
+                    new BoolArgument("Unique")
                 };
             }
         }
