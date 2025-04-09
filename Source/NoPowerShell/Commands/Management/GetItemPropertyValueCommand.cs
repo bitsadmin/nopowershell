@@ -1,9 +1,8 @@
-﻿using NoPowerShell.Arguments;
+﻿using Microsoft.Win32;
+using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
-using Microsoft.Win32;
 using System.Collections.Generic;
-using System.Text;
 
 /*
 Author: @bitsadmin

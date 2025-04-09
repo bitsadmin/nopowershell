@@ -1,6 +1,5 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
-using System;
 using System.Collections.Generic;
 
 /*

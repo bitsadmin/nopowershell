@@ -1,7 +1,7 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 
 /*
 Author: @bitsadmin

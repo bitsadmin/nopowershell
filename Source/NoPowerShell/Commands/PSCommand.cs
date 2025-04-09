@@ -1,9 +1,9 @@
-﻿using System;
-using System.Text;
+﻿using NoPowerShell.Arguments;
+using NoPowerShell.HelperClasses;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using NoPowerShell.Arguments;
-using NoPowerShell.HelperClasses;
+using System.Text;
 
 /*
 Author: @bitsadmin

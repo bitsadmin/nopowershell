@@ -2,9 +2,9 @@
 using NoPowerShell.HelperClasses;
 using System;
 using System.Collections.Generic;
+using System.DirectoryServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.DirectoryServices;
 
 /*
 Author: @bitsadmin

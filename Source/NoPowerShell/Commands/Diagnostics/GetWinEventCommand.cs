@@ -3,7 +3,6 @@ using NoPowerShell.HelperClasses;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
-using System.Linq;
 using System.Security;
 
 /*
