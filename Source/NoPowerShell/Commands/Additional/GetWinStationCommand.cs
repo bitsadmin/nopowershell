@@ -185,7 +185,7 @@ namespace NoPowerShell.Commands.Additional
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Server")
+                    new StringArgument("Server", true)
                 };
             }
         }

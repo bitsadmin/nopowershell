@@ -91,10 +91,10 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 {
                     new StringArgument("Server", true),
                     new StringArgument("SearchBase", true),
-                    new StringArgument("Identity"),
-                    new StringArgument("Filter"),
-                    new StringArgument("LDAPFilter"),
-                    new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID", true)
+                    new StringArgument("Identity", true),
+                    new StringArgument("Filter", true),
+                    new StringArgument("LDAPFilter", true),
+                    new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID")
                 };
             }
         }

@@ -259,10 +259,10 @@ namespace NoPowerShell.Commands.NetTCPIP
                 {
                     new BoolArgument("TraceRoute"),
                     new StringArgument("ComputerName"),
-                    new IntegerArgument("Count", 1, true),      // Unofficial parameter
-                    new IntegerArgument("Timeout", 5000, true), // Unofficial parameter
-                    new IntegerArgument("TTL", 128, true),      // Unofficial parameter
-                    new IntegerArgument("Hops", 30, true),
+                    new IntegerArgument("Count", 1),      // Unofficial parameter
+                    new IntegerArgument("Timeout", 5000), // Unofficial parameter
+                    new IntegerArgument("TTL", 128),      // Unofficial parameter
+                    new IntegerArgument("Hops", 30),
                     new IntegerArgument("Port", -1)
                 };
             }

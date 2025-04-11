@@ -163,7 +163,7 @@ namespace NoPowerShell.Commands.Utility
                 return new ArgumentList()
                 {
                     new StringArgument("Path"),
-                    new StringArgument("Algorithm", string.Empty, true),
+                    new StringArgument("Algorithm", string.Empty),
                 };
             }
         }

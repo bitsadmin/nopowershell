@@ -44,7 +44,7 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Namespace", @"root\cimv2", true),
+                    new StringArgument("Namespace", @"root\cimv2"),
                     new StringArgument("Class"),
                     new StringArgument("Name"),
                     new StringArgument("ArgumentList")

@@ -190,7 +190,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                     new StringArgument("Server", true),
                     new StringArgument("Properties", true),
                     new StringArgument("LDAPFilter"),
-                    new IntegerArgument("Depth", 1, true) // Unofficial parameter
+                    new IntegerArgument("Depth", 1) // Unofficial parameter
                 };
             }
         }

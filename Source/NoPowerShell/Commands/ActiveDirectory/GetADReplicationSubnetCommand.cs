@@ -60,7 +60,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                     //new StringArgument("SearchBase"),
                     new StringArgument("Identity"),
                     //new StringArgument("LDAPFilter"),
-                    new StringArgument("Properties", "DistinguishedName,Location,Name,ObjectClass,ObjectGUID,Site", true)
+                    new StringArgument("Properties", "DistinguishedName,Location,Name,ObjectClass,ObjectGUID,Site")
                 };
             }
         }

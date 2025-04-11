@@ -92,7 +92,7 @@ namespace NoPowerShell.Commands.Management
                 {
                     new StringArgument("Path", "."),
                     new BoolArgument("Force") ,
-                    new StringArgument("Include", "*", true),
+                    new StringArgument("Include", "*"),
                     new StringArgument("Name", true)
                 };
             }

@@ -128,11 +128,11 @@ namespace NoPowerShell.Commands
                 {
                     new StringArgument("Path"),
                     new StringArgument("TargetPath"),
-                    new StringArgument("Arguments", string.Empty, true),
-                    new StringArgument("IconLocation", string.Empty, true),
-                    new StringArgument("WorkingDirectory", string.Empty, true),
-                    new StringArgument("WindowStyle", "Normal", true),
-                    new StringArgument("Hotkey", string.Empty, true),
+                    new StringArgument("Arguments", string.Empty),
+                    new StringArgument("IconLocation", string.Empty),
+                    new StringArgument("WorkingDirectory", string.Empty),
+                    new StringArgument("WindowStyle", "Normal"),
+                    new StringArgument("Hotkey", string.Empty),
                     new BoolArgument("Force")
                 };
             }

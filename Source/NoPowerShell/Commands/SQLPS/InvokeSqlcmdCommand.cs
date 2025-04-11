@@ -126,9 +126,9 @@ namespace NoPowerShell.Commands.SQLPS
                 return new ArgumentList()
                 {
                     new StringArgument("Query"),
-                    new StringArgument("ServerInstance", ".", true),
+                    new StringArgument("ServerInstance", "."),
                     new StringArgument("Database", true),
-                    new IntegerArgument("Timeout", 30, true),
+                    new IntegerArgument("Timeout", 30),
                     new BoolArgument("EncryptConnection"),
                     new StringArgument("ConnectionString", true)
                 };

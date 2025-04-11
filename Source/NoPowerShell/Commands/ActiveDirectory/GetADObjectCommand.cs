@@ -98,12 +98,12 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 return new ArgumentList()
                 {
                     new StringArgument("Server", true),
-                    new StringArgument("SearchBase"),
-                    new StringArgument("SearchScope", string.Empty, true),
+                    new StringArgument("SearchBase", true),
+                    new StringArgument("SearchScope", string.Empty),
                     new IntegerArgument("ResultSetSize"),
-                    new StringArgument("Identity"),
-                    new StringArgument("LDAPFilter"),
-                    new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID", true)
+                    new StringArgument("Identity", true),
+                    new StringArgument("LDAPFilter", true),
+                    new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID")
                 };
             }
         }

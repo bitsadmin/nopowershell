@@ -42,7 +42,7 @@ namespace NoPowerShell.Commands
             // It is up to the command whether it makes use of these optional parameters
             supportedArguments.AddRange(new List<Argument>()
             {
-                new StringArgument("ComputerName", ".", true),
+                new StringArgument("ComputerName", "."),
                 new StringArgument("Username", true),
                 new StringArgument("Password", true),
                 new BoolArgument("Verbose"),

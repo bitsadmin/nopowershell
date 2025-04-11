@@ -63,7 +63,7 @@ namespace NoPowerShell.Commands.DnsClient
                 return new ArgumentList()
                 {
                     new StringArgument("Name"),
-                    new StringArgument("Type", "A", true)
+                    new StringArgument("Type", "A")
                     // TODO:
                     //new StringArgument("Server", true),
                 };

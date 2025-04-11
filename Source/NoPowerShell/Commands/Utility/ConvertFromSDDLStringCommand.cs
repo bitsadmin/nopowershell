@@ -213,7 +213,7 @@ namespace NoPowerShell.Commands.Utility
                 return new ArgumentList()
                 {
                     new StringArgument("Sddl"),
-                    new StringArgument("Type", "FileSystemRights", true)
+                    new StringArgument("Type", "FileSystemRights")
                 };
             }
         }

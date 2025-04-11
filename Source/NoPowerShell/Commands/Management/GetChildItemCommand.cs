@@ -265,8 +265,8 @@ namespace NoPowerShell.Commands.Management
                     new StringArgument("Path", "."),
                     new BoolArgument("Force") ,
                     new BoolArgument("Recurse"),
-                    new IntegerArgument("Depth", int.MaxValue, true),
-                    new StringArgument("Include", "*", true)
+                    new IntegerArgument("Depth", int.MaxValue),
+                    new StringArgument("Include", "*")
                 };
             }
         }

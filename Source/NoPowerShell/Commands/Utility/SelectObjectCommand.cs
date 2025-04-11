@@ -99,8 +99,8 @@ namespace NoPowerShell.Commands.Utility
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Property", "*", false),
-                    new IntegerArgument("First", 0, true)
+                    new StringArgument("Property", "*"),
+                    new IntegerArgument("First", 0)
                 };
             }
         }

@@ -78,7 +78,7 @@ namespace NoPowerShell.Commands
                 return new ArgumentList()
                 {
                     new BoolArgument("MyFlag"),
-                    new IntegerArgument("MyInteger", 5, true),
+                    new IntegerArgument("MyInteger", 5),
                     new StringArgument("MyString", "Hello World")
                 };
             }

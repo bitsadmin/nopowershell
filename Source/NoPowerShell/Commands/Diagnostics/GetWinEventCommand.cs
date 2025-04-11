@@ -146,7 +146,7 @@ namespace NoPowerShell.Commands
                 {
                     new StringArgument("LogName"),
                     new StringArgument("FilterXPath", "*"),
-                    new IntegerArgument("MaxEvents", 100, true),
+                    new IntegerArgument("MaxEvents", 100),
                     new BoolArgument("Oldest")
                 };
             }

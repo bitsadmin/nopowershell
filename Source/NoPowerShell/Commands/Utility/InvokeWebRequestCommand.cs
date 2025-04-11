@@ -194,8 +194,8 @@ namespace NoPowerShell.Commands.Utility
                 {
                     new StringArgument("URI"),
                     new StringArgument("OutFile", true),
-                    new StringArgument("UserAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko", true), // Internet Explorer on Windows 10 User Agent
-                    new StringArgument("Method", "GET", true),
+                    new StringArgument("UserAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"), // Internet Explorer on Windows 10 User Agent
+                    new StringArgument("Method", "GET"),
                     new StringArgument("Proxy", true),
                     new StringArgument("ProxyCredential", true),
                     new BoolArgument("ProxyUseDefaultCredentials"),
