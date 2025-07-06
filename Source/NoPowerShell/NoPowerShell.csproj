@@ -80,6 +80,7 @@
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression" />
@@ -99,6 +100,7 @@
     <Compile Include="Commands\ActiveDirectory\GetADObjectCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADTrustCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
+    <Compile Include="Commands\Additional\CopyAclCommand.cs" />
     <Compile Include="Commands\Additional\GetRemoteSmbShareCommand.cs" />
     <Compile Include="Commands\Additional\GetWinStationCommand.cs" />
     <Compile Include="Commands\Additional\NewShortcutCommand.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="Commands\LocalAccounts\GetLocalUserCommand.cs" />
     <Compile Include="Commands\Management\GetItemPropertyCommand.cs" />
     <Compile Include="Commands\Management\GetItemPropertyValueCommand.cs" />
+    <Compile Include="Commands\Management\GetServiceCommand.cs" />
     <Compile Include="Commands\Management\RemoveItemCommand.cs" />
     <Compile Include="Commands\Management\InvokeWmiMethodCommand.cs" />
     <Compile Include="Commands\Management\CopyItemCommand.cs" />
