@@ -24,6 +24,7 @@ namespace NoPowerShell.Commands.Core
             // Obtain parameters
             bool included = _arguments.Get<BoolArgument>("_Included").Value;
             bool cheatsheet = _arguments.Get<BoolArgument>("_Cheatsheet").Value;
+            bool tsv = _arguments.Get<BoolArgument>("_Tsv").Value;
             string moduleFilter = _arguments.Get<StringArgument>("Module").Value;
 
             // Get all commands
@@ -124,7 +125,10 @@ namespace NoPowerShell.Commands.Core
             // Generate cheatsheet markdown
             if (cheatsheet)
             {
-                Console.WriteLine("| Action | Command |\r\n| - | - |");
+                if (tsv)
+                    Console.WriteLine("Action\tCommand");
+                else
+                    Console.WriteLine("| Action | Command |\r\n| - | - |");
 
                 foreach (ResultRecord r in _results)
                 {
@@ -133,9 +137,17 @@ namespace NoPowerShell.Commands.Core
 
                     foreach (ExampleEntry example in examples)
                     {
-                        List<string> examplestrings = new List<string>(example.Examples.Count);
-                        foreach (string ex in example.Examples)
-                            examplestrings.Add(ex.Replace("|", "\\|"));
+                        List<string> examplestrings;
+                        if (tsv)
+                        {
+                            examplestrings = example.Examples;
+                        }
+                        else
+                        {
+                            examplestrings = new List<string>(example.Examples.Count);
+                            foreach (string ex in example.Examples)
+                                examplestrings.Add(ex.Replace("|", "\\|"));
+                        }
 
                         int i = 0;
                         foreach (string ex in examplestrings)
@@ -146,7 +158,10 @@ namespace NoPowerShell.Commands.Core
                             else
                                 desc = string.Format("{0} - Alternative", example.Description);
 
-                            Console.WriteLine("| {0} | `{1}` |", desc, ex);
+                            if(tsv)
+                                Console.WriteLine("{0}\t{1}", desc, ex);
+                            else
+                                Console.WriteLine("| {0} | `{1}` |", desc, ex);
 
                             i++;
                         }
@@ -207,7 +222,8 @@ namespace NoPowerShell.Commands.Core
                 {
                     new BoolArgument ("_Included"),
                     new BoolArgument ("_Cheatsheet"),
-                    new StringArgument ("Module", true),
+                    new BoolArgument ("_Tsv"),
+                    new StringArgument ("Module", true)
                 };
             }
         }
