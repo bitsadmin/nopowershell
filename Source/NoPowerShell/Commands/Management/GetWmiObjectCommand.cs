@@ -1,6 +1,8 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System;
 using System.Collections.Generic;
+using System.Management;
 
 /*
 Author: @bitsadmin
@@ -27,17 +29,28 @@ namespace NoPowerShell.Commands.Management
             string wmiClass = _arguments.Get<StringArgument>("Class").Value;
             string wmiFilter = _arguments.Get<StringArgument>("Filter").Value;
 
+            // Validate parameters
+            if (string.IsNullOrEmpty(wmiQuery) && string.IsNullOrEmpty(wmiClass))
+                throw new ArgumentException("Either the -Query or the -Class parameter needs to be provided");
+
             // If no query is specified, assume a class is specified
             if (wmiQuery != null && !wmiQuery.ToUpperInvariant().Contains("SELECT"))
                 wmiClass = wmiQuery;
 
-            if (wmiClass != null)
+            if (!string.IsNullOrEmpty(wmiClass))
                 wmiQuery = string.Format("Select * From {0}", wmiClass);
-            if (wmiFilter != null)
+            if (!string.IsNullOrEmpty(wmiFilter))
                 wmiQuery += string.Format(" Where {0}", wmiFilter);
 
-            // Execute user provided WMI query
-            _results = WmiHelper.ExecuteWmiQuery(wmiNamespace, wmiQuery, computername, username, password);
+            // Execute WMI query
+            try
+            {
+                _results = WmiHelper.ExecuteWmiQuery(wmiNamespace, wmiQuery, computername, username, password);
+            }
+            catch(ManagementException ex)
+            {
+                throw new NoPowerShellException("{0} - {1}: {2}", wmiNamespace, wmiQuery, ex.Message);
+            }
 
             return _results;
         }
@@ -54,8 +67,8 @@ namespace NoPowerShell.Commands.Management
                 return new ArgumentList()
                 {
                     new StringArgument("Namespace", @"ROOT\CIMV2"),
-                    new StringArgument("Query"),
-                    new StringArgument("Class", true),
+                    new StringArgument("Query", true),
+                    new StringArgument("Class", string.Empty, false),
                     new StringArgument("Filter", true)
                 };
             }
@@ -90,7 +103,8 @@ namespace NoPowerShell.Commands.Management
                             "gwmi \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName dc01.corp.local | ? Name -Like *PowerShell* | select ProcessId,CommandLine"
                         }
                     ),
-                    new ExampleEntry("View details about a certain service", "Get-WmiObject -Class Win32_Service -Filter \"Name = 'WinRM'\"")
+                    new ExampleEntry("View details about a certain service", "Get-WmiObject -Class Win32_Service -Filter \"Name = 'WinRM'\""),
+                    new ExampleEntry("List installed antivirus products (on non-server OS)", "Get-WmiObject -Namespace root\\SecurityCenter2 -Class AntiVirusProduct")
                 };
             }
         }
