@@ -44,8 +44,8 @@ namespace NoPowerShell.Commands.Management
             Regex registryRegex = new Regex(registryPattern);
             if (registryRegex.IsMatch(path))
             {
-                RegistryKey root = ProviderHelper.GetRegistryKey(ref path);
-                _results = BrowseRegistry(root, path, includeHidden);
+                RegistryHive root = RegistryHelper.GetRoot(ref path);
+                _results = BrowseRegistry(root, path);
             }
             // Environment
             //     env:
@@ -69,19 +69,24 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        private static CommandResult BrowseRegistry(RegistryKey root, string path, bool includeHidden)
+        private static CommandResult BrowseRegistry(RegistryHive root, string path)
         {
             CommandResult results = new CommandResult();
 
-            RegistryKey key = root.OpenSubKey(path);
-            foreach (string subkey in key.GetSubKeyNames())
+            using (RegistryKey baseKey = RegistryKey.OpenBaseKey(root, RegistryView.Registry64))
             {
-                results.Add(
-                    new ResultRecord()
+                using (RegistryKey key = baseKey.OpenSubKey(path))
+                {
+                    foreach (string subkey in key.GetSubKeyNames())
                     {
-                        { "Name", subkey }
+                        results.Add(
+                            new ResultRecord()
+                            {
+                                { "Name", subkey }
+                            }
+                        );
                     }
-                );
+                }
             }
 
             return results;
@@ -262,7 +267,7 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Path", "."),
+                    new StringArgument("Path", ".", false),
                     new BoolArgument("Force") ,
                     new BoolArgument("Recurse"),
                     new IntegerArgument("Depth", int.MaxValue),
@@ -291,7 +296,7 @@ namespace NoPowerShell.Commands.Management
                             "ls -Recurse -Force C:\\Users\\ -Include *.kdbx"
                         }
                     ),
-                    new ExampleEntry("List the keys under the SOFTWARE key in the registry", "ls HKLM:\\SOFTWARE"),
+                    new ExampleEntry("List autoruns", "ls HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
                     new ExampleEntry("Search for files which can contain sensitive data on the C-drive", "ls -Recurse -Force C:\\ -Include *.cmd,*.bat,*.ps1,*.psm1,*.psd1"),
                 };
             }
