@@ -18,6 +18,9 @@ namespace NoPowerShell.Commands.LocalAccounts
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             string name = _arguments.Get<StringArgument>("Name").Value;
             string sid = _arguments.Get<StringArgument>("SID").Value;
 

@@ -19,6 +19,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
             string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
@@ -89,7 +92,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 {
                     new StringArgument("Server", true),
                     new StringArgument("SearchBase", true),
-                    new StringArgument("Identity", true),
+                    new StringArgument("Identity", string.Empty, false),
                     new StringArgument("Filter", true),
                     new StringArgument("LDAPFilter", true),
                     new StringArgument("Properties", "DistinguishedName,DNSHostName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,UserPrincipalName")

@@ -20,6 +20,7 @@ namespace NoPowerShell.Commands.SQLPS
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
             base.Execute();
 
             // Obtain cmdlet parameters

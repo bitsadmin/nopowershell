@@ -19,6 +19,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
             string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
