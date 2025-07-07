@@ -194,7 +194,7 @@ namespace NoPowerShell.Commands.LocalAccounts
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List all active members of the Administrators group", "Get-LocalGroupMember -Group Administrators | ? Disabled -eq False")
+                    new ExampleEntry("List members of the Administrators group", "Get-LocalGroupMember -Group Administrators")
                 };
             }
         }
