@@ -30,21 +30,26 @@ namespace NoPowerShell.Commands
             // Obtain cmdlet parameters
             string name = _arguments.Get<StringArgument>("Name").Value;
             string displayName = _arguments.Get<StringArgument>("DisplayName").Value;
-            string[] include = _arguments.Get<StringArgument>("Include").Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            string[] exclude = _arguments.Get<StringArgument>("Exclude").Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            string computerName = _arguments.Get<StringArgument>("ComputerName").Value;
+            string includeString = _arguments.Get<StringArgument>("Include").Value;
+            string[] include = new string[0];
+            if (!string.IsNullOrEmpty(includeString))
+                include = includeString.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            string excludeString = _arguments.Get<StringArgument>("Exclude").Value;
+            string[] exclude = new string[0];
+            if (!string.IsNullOrEmpty(excludeString))
+                exclude = excludeString.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             try
             {
                 // Use ServiceController to get services
                 ServiceController[] services;
-                if (string.IsNullOrEmpty(computerName) || computerName.Equals("localhost", StringComparison.OrdinalIgnoreCase))
+                if (IsLocalhost(computername))
                 {
                     services = ServiceController.GetServices();
                 }
                 else
                 {
-                    services = ServiceController.GetServices(computerName);
+                    services = ServiceController.GetServices(computername);
                 }
 
                 // Filter services based on parameters
@@ -97,9 +102,9 @@ namespace NoPowerShell.Commands
                         };
 
                         // Add ComputerName if specified
-                        if (!string.IsNullOrEmpty(computerName))
+                        if (!IsLocalhost(computername))
                         {
-                            record.Add("ComputerName", computerName);
+                            record.Add("ComputerName", computername);
                         }
 
                         _results.Add(record);
@@ -129,6 +134,13 @@ namespace NoPowerShell.Commands
             }
 
             return _results;
+        }
+
+        private bool IsLocalhost(string computername)
+        {
+            return string.IsNullOrWhiteSpace(computername) ||
+                computername.Equals("localhost", StringComparison.OrdinalIgnoreCase) ||
+                computername.Equals(".");
         }
 
         // Helper method to get service start type
@@ -174,11 +186,10 @@ namespace NoPowerShell.Commands
             {
                 return new ArgumentList
                 {
-                    new StringArgument("Name"),
-                    new StringArgument("DisplayName"),
-                    new StringArgument("Include"),
-                    new StringArgument("Exclude"),
-                    new StringArgument("ComputerName")
+                    new StringArgument("Name", true),
+                    new StringArgument("DisplayName", true),
+                    new StringArgument("Include", true),
+                    new StringArgument("Exclude", true)
                 };
             }
         }
@@ -197,14 +208,15 @@ namespace NoPowerShell.Commands
                     new ExampleEntry("Get all services on the local computer", "Get-Service"),
                     new ExampleEntry("Get a specific service by name", "Get-Service -Name wuauserv"),
                     new ExampleEntry("Get services by display name", "Get-Service -DisplayName \"Windows Update\""),
-                    new ExampleEntry("Get services on a remote computer",
-                        "Get-Service -ComputerName Server01"),
-                    new ExampleEntry("Filter services using Include and Exclude",
+                    new ExampleEntry("Get services on a remote computer", "Get-Service -ComputerName MyServer"),
+                    new ExampleEntry(
+                        "Filter services using Include and Exclude",
                         new List<string>
                         {
-                            "Get-Service -Include \"Win*\"",
+                            "Get-Service -Include \"Win\"",
                             "Get-Service -Exclude \"WinRM\""
-                        })
+                        }
+                    )
                 };
             }
         }
