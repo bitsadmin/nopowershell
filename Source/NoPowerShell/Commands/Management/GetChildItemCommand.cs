@@ -267,7 +267,7 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Path", ".", false),
+                    new StringArgument("Path", "."),
                     new BoolArgument("Force") ,
                     new BoolArgument("Recurse"),
                     new IntegerArgument("Depth", int.MaxValue),
