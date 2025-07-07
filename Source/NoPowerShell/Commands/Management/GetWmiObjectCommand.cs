@@ -66,9 +66,9 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Namespace", @"ROOT\CIMV2"),
                     new StringArgument("Query", true),
-                    new StringArgument("Class", string.Empty, false),
+                    new StringArgument("Class", true),
+                    new StringArgument("Namespace", @"ROOT\CIMV2"),
                     new StringArgument("Filter", true)
                 };
             }
