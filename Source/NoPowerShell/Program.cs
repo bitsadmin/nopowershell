@@ -114,17 +114,33 @@ namespace NoPowerShell
             }
 #endif
 
-            // Output to screen
+            // Collect output from the result
+            string output = null;
             if (justOutput)
             {
-                string output = ResultPrinter.OutputResults(result);
-
-#if BOFBUILD
-                BeaconConsole.WriteLine(output);
-#else
-                Console.Write(output);
-#endif
+                output = ResultPrinter.OutputResults(result);
             }
+            // Obtain output in case in the commandline explicitly Format-* is called
+            // In that case results are stored in the ResultRecord with key "Output"
+            else
+            {
+                if (result.Count == 1)
+                {
+                    // If only one result is returned, output it directly
+                    ResultRecord record = result[0];
+                    if (record.ContainsKey("Output"))
+                    {
+                        output = record["Output"];
+                    }
+                }
+            }
+
+            // Display output
+#if BOFBUILD
+            BeaconConsole.WriteLine(output);
+#else
+            Console.Write(output);
+#endif
         }
 
         public static void WriteError(string error, params object[] args)
