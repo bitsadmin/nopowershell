@@ -24,6 +24,9 @@ namespace NoPowerShell.Commands.Core
             bool like = _arguments.Get<BoolArgument>("Like").Value;
             string value = _arguments.Get<StringArgument>("Value").Value;
 
+            if (pipeIn == null)
+                return _results;
+
             // Iterate over output lines of previous command in pipe
             foreach (ResultRecord result in pipeIn)
             {
