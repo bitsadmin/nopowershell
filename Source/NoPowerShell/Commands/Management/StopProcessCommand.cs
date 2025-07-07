@@ -1,6 +1,7 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 /*
@@ -19,23 +20,39 @@ namespace NoPowerShell.Commands.Management
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Process IDs
             string Ids = _arguments.Get<StringArgument>("Id").Value;
             string[] processIds = null;
             if (Ids != null)
                 processIds = Ids.Split(',');
+
+            // Process Names
+            //string Names = _arguments.Get<StringArgument>("ProcessName").Value;
+            //string[] processNames = null;
+            //if (Ids != null)
+            //    processNames = Names.Split(',');
+            
+
+            // Force flag
             bool force = _arguments.Get<BoolArgument>("Force").Value;
 
-            // If no IDs are provided via the commandline, check incoming pipe
+            // If no IDs/Names are provided via the commandline, check incoming pipe
             // In this case Get-Process can be used
-            if(processIds == null)
+            if (processIds == null)// && processNames == null)
             {
                 processIds = new string[pipeIn.Count];
                 int i = 0;
-                foreach(ResultRecord r in pipeIn)
+                foreach (ResultRecord r in pipeIn)
                 {
                     processIds[i] = r["ProcessId"];
                     i++;
                 }
+            }
+
+            // Stop if no process IDs/Names are provided
+            if ((processIds == null || processIds.Length == 0))// && (processNames == null || processNames.Length == 0))
+            {
+                throw new NoPowerShellException("No process IDs provided nor input from the input pipe received.");
             }
 
             // Convert string array to int array
@@ -44,12 +61,43 @@ namespace NoPowerShell.Commands.Management
             // Shutdown/kill processes
             foreach (int processId in processIdsInt)
             {
-                Process processToKill = Process.GetProcessById(processId);
+                string processName = null;
 
-                if (force)
-                    processToKill.Kill();
-                else
-                    processToKill.CloseMainWindow();
+                try
+                {
+                    Process processToKill = Process.GetProcessById(processId);
+                    processName = processToKill.ProcessName;
+
+                    // If process does not have a window, use Kill method
+                    if (processToKill.MainWindowHandle == IntPtr.Zero)
+                    {
+                        processToKill.Kill();
+                    }
+                    // Process has a window
+                    else
+                    {
+                        if (force)
+                            processToKill.Kill();
+                        else
+                            processToKill.CloseMainWindow();
+                    }
+                }
+                catch (ArgumentException ex)
+                {
+                    // Process already exited
+                    if (ex.Message.Contains("is not running"))
+                    {
+                        Program.WriteError("Stop-Process: Cannot find a process with the process identifier {0}.", processId);
+                    }
+                    else
+                    {
+                        Program.WriteError("Stop-Process: Cannot stop process \"{0} ({1})\" because of the following error: {2}", processName, processId, ex.Message);
+                    }
+                }
+                catch (Win32Exception ex)
+                {
+                    Program.WriteError("Stop-Process: Cannot stop process \"{0} ({1})\" because of the following error: {2}", processName, processId, ex.Message);
+                }
             }
 
             return null;
@@ -66,7 +114,8 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Id"),
+                    new StringArgument("Id", true),
+                    new StringArgument("ProcessName", true),
                     new BoolArgument("Force")
                 };
             }
