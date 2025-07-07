@@ -80,7 +80,7 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Value"),
+                    new StringArgument("Value", true),
                     new BoolArgument("Append"),
                     new BoolArgument("PassThru")
                 };
@@ -107,7 +107,7 @@ namespace NoPowerShell.Commands.Management
                             "scb \"You have been PWNED!\""
                         }
                     ),
-                    new ExampleEntry("Clear the clipboard", "Set-Clipboard"),
+                    new ExampleEntry("Clear the clipboard", "Set-Clipboard \"\""),
                     new ExampleEntry("Place output of command on clipboard", "Get-Process | Set-Clipboard")
                 };
             }
