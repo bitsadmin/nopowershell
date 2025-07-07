@@ -142,8 +142,7 @@ namespace NoPowerShell.Commands.Utility
                     ResultRecord result = new ResultRecord()
                     {
                         { "StatusCode", ((int)response.StatusCode).ToString() },
-                        { "StatusDescription", response.StatusCode.ToString() },
-                        { "Headers", response.Headers.ToString().Trim() }
+                        { "StatusDescription", response.StatusCode.ToString() }
                     };
 
                     // Display HTTP response content or the filename in case -OutFile is specified
@@ -151,6 +150,9 @@ namespace NoPowerShell.Commands.Utility
                         result.Add("Content", await response.Content.ReadAsStringAsync());
                     else
                         result.Add("File Name", outfile);
+
+                    // Add headers
+                    result.Add("Headers", response.Headers.ToString().Trim());
 
                     results.Add(result);
                 }
@@ -224,11 +226,11 @@ namespace NoPowerShell.Commands.Utility
                         "Download file from the Internet",
                         new List<string>()
                         {
-                            "Invoke-WebRequest http://myserver.me/nc.exe",
-                            "wget http://myserver.me/nc.exe"
+                            "Invoke-WebRequest http://live.sysinternals.com/psexec.exe",
+                            "wget http://live.sysinternals.com/psexec.exe"
                         }
                     ),
-                    new ExampleEntry("Download file from the Internet specifying the destination", "wget http://myserver.me/nc.exe -OutFile C:\\Tmp\\netcat.exe"),
+                    new ExampleEntry("Download file from the Internet specifying the destination", "wget http://live.sysinternals.com/psexec.exe -OutFile C:\\Tmp\\psexec.exe"),
                     new ExampleEntry("Perform request ignoring invalid TLS certificates", "iwr https://1.2.3.4/file.txt -SkipCertificateCheck")
                 };
             }
