@@ -49,7 +49,7 @@ namespace NoPowerShell.Commands.LocalAccounts
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Name"),
+                    new StringArgument("Name", true),
                     new StringArgument("SID", true)
                 };
             }
