@@ -11,6 +11,10 @@ namespace NoPowerShell.Arguments
         private string _value;
         private readonly string _defaultValue;
 
+        public StringArgument()
+        {
+        }
+
         /// <summary>
         /// Create a new optional string argument including its default value.
         /// </summary>
@@ -30,6 +34,20 @@ namespace NoPowerShell.Arguments
         /// <param name="optionalArgument">True if the argument is optional; False if not</param>
         public StringArgument(string argumentName, bool optionalArgument) : base(argumentName)
         {
+            _defaultValue = null;
+            _isOptionalArgument = optionalArgument;
+        }
+
+        /// <summary>
+        /// Create a new string argument including its default value.
+        /// </summary>
+        /// <param name="argumentName">Name of the parameter</param>
+        /// <param name="defaultValue">Default value of the argument</param>
+        /// <param name="optionalArgument">True if the argument is optional; False if not</param>
+        public StringArgument(string argumentName, string defaultValue, bool optionalArgument) : base(argumentName)
+        {
+            _value = defaultValue;
+            _defaultValue = defaultValue;
             _isOptionalArgument = optionalArgument;
         }
 
@@ -42,10 +60,24 @@ namespace NoPowerShell.Arguments
             _isOptionalArgument = false;
         }
 
+        public new StringArgument Clone()
+        {
+            return new StringArgument(this._name, this._defaultValue, this._isOptionalArgument)
+            {
+                _dashArgumentNameSkipUsed = this._dashArgumentNameSkipUsed,
+                _isSet = this._isSet,
+                _value = this._value
+            };
+        }
+
         public string Value
         {
             get { return _value; }
-            set { _value = value; }
+            set
+            {
+                _isSet = true;
+                _value = value;
+            }
         }
 
         public override bool IsDefaultValue

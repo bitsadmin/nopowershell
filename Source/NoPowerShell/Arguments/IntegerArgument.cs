@@ -32,10 +32,24 @@ namespace NoPowerShell.Arguments
             _isOptionalArgument = false;
         }
 
+        public new IntegerArgument Clone()
+        {
+            return new IntegerArgument(this._name, this._defaultValue)
+            {
+                _dashArgumentNameSkipUsed = this._dashArgumentNameSkipUsed,
+                _isSet = this._isSet,
+                _value = this._value
+            };
+        }
+
         public int Value
         {
             get { return _value; }
-            set { _value = value; }
+            set
+            {
+                _isSet = true;
+                _value = value;
+            }
         }
 
         public override bool IsDefaultValue
