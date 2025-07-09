@@ -1,8 +1,8 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -73,262 +73,302 @@ namespace NoPowerShell.Commands
                 bool isArgFlag = inputArg.StartsWith("-");
                 string cleanInputArg = inputArg.TrimStart('-');
 
-                // Iterate over the arguments that are available for this cmdlet
-                List<Argument> candidates = new List<Argument>(userArguments.Length);
-                foreach (Argument destArg in supportedArguments)
-                {
-                    // Skip arguments which have already been assigned
-                    if (destArg.IsSet)
-                        continue;
+                // Find candidate arguments
+                List<Argument> candidates = FindCandidateArguments(userArguments, supportedArguments, inputArg, isArgFlag, cleanInputArg);
 
-                    // Clone argument
-                    StringArgument clonedStringArg = null;
-                    IntegerArgument clonedIntArg = null;
-                    BoolArgument clonedBoolArg = null;
-                    if (destArg.GetType() == typeof(StringArgument))
-                        clonedStringArg = ((StringArgument)destArg).Clone();
-                    else if (destArg.GetType() == typeof(IntegerArgument))
-                        clonedIntArg = ((IntegerArgument)destArg).Clone();
-                    else if (destArg.GetType() == typeof(BoolArgument))
-                        clonedBoolArg = ((BoolArgument)destArg).Clone();
-                    else
-                        throw new Exception("Unexpected argument type");
-
-                    // Two options:
-                    // 1) Provided argument matches expected argument
-                    //    a) It is an exact match: -ArgName
-                    //    b) It is a partial match -ArgN
-                    // 2) It could be positional argument which doesn't need to be "cmd -ArgName [value]". It can simply be "cmd [value]"
-                    int compareLength = Math.Min(destArg.Name.Length, cleanInputArg.Length);
-                    if (isArgFlag)
-                    {
-                        bool isFound = false;
-                        bool exactMatch = false;
-
-                        // Full match:
-                        // * -ArgName
-                        // * -ArgName [value]
-                        if (destArg.Name.Equals(cleanInputArg, StringComparison.InvariantCultureIgnoreCase))
-                        //if (destArg.Name.Substring(0, compareLength).Equals(cleanInputArg, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            isFound = true;
-                            exactMatch = true;
-                        }
-                        // Partial match
-                        // * -ArgN
-                        // * -ArgN [value]
-                        else if (destArg.Name.Substring(0, compareLength).Equals(cleanInputArg, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            isFound = true;
-                        }
-
-                        // Add to candidates if matching argument is found
-                        if(isFound)
-                        {
-                            if (clonedStringArg != null)
-                                candidates.Add(clonedStringArg);
-                            else if (clonedIntArg != null)
-                                candidates.Add(clonedIntArg);
-                            else if (clonedBoolArg != null)
-                                candidates.Add(clonedBoolArg);
-
-                            if (exactMatch)
-                                break;
-                        }
-
-                        //else
-                        //    throw new Exception("Unknown argument flag error");
-                    }
-                    // Positional argument
-                    // * "Some string" / "aa,bb,cc"
-                    // * 1234
-                    else
-                    {
-                        if (!destArg.IsSet && destArg.GetType() != typeof(BoolArgument))
-                        {
-                            if (clonedStringArg != null)
-                            {
-                                clonedStringArg.DashArgumentNameSkipUsed = true;
-                                candidates.Add(clonedStringArg);
-                            }
-                            else if (clonedIntArg != null)
-                            {
-                                clonedIntArg.DashArgumentNameSkipUsed = true;
-                                candidates.Add(clonedIntArg);
-                            }
-                            else
-                                throw new Exception("Unexpected positional argument type");
-                        }
-                    }
-                }
-
-                // No matching parameter found
+                // Handle no matching parameters
                 if (candidates.Count == 0)
                 {
                     throw new ParameterBindingException(this.ToString(), inputArg);
                 }
-                // Possible ambigous parameters found
-                else if (candidates.Count > 1)
-                {
-                    // Collect all candidates that are not optional and do not have a dash argument name skip used
-                    List<Argument> duplicateCandidates = new List<Argument>(candidates.Count);
-                    foreach (Argument c in candidates)
-                    {
-                        if (!c.DashArgumentNameSkipUsed)
-                            duplicateCandidates.Add(c);
-                    }
 
-                    // Ambiguous parameter name is provided
-                    if (duplicateCandidates.Count > 1)
-                    {
-                        string[] paramNames = new string[duplicateCandidates.Count];
-                        int j = 0;
-                        foreach (Argument dc in duplicateCandidates)
-                            paramNames[j++] = dc.Name;
+                // Handle ambiguous parameters
+                HandleAmbiguousParameters(candidates, cleanInputArg);
 
-                        throw new ParameterBindingException(
-                            this.ToString(),
-                            string.Format(
-                                "Parameter cannot be processed because the parameter name '{1}' is ambiguous. Possible matches include: -{2}.",
-                                this,
-                                cleanInputArg,
-                                string.Join(" -", paramNames)
-                            )
-                        );
-                    }
-                }
-
-                // If list of candidates > 1 and contains at least 1 mandatory candidate
-                // Remove all optional candidates
+                // Handle multiple candidates by prioritizing mandatory ones
                 if (candidates.Count > 1)
                 {
-                    List<Argument> mandatoryCandidates = new List<Argument>(candidates.Count);
-                    foreach (Argument c in candidates)
-                    {
-                        if (!c.IsOptionalArgument)
-                            mandatoryCandidates.Add(c);
-                    }
-                    // If there are no mandatory candidates, we can simply use the first one
-                    if (mandatoryCandidates.Count == 0)
-                        candidates = new List<Argument>() { candidates[0] };
-                    else
-                        candidates = mandatoryCandidates;
+                    candidates = PrioritizeMandatoryCandidates(candidates);
                 }
 
-                // Attempt to assign the variable to whatever argument has not been assigned yet
-                bool assignedValue = false;
-                foreach (Argument a in candidates)
-                {
-                    if (a.GetType() == typeof(BoolArgument))
-                    {
-                        // Set value to true
-                        BoolArgument aCasted = (BoolArgument)a;
-                        aCasted.Value = true;
-                        assignedValue = true;
-
-                        // Update original ArgumentList with the value
-                        foreach (Argument originalArg in supportedArguments)
-                        {
-                            if (originalArg.Name.Equals(aCasted.Name, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                BoolArgument originalArgCasted = (BoolArgument)originalArg;
-                                originalArgCasted.Value = aCasted.Value;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    else if (a.GetType() == typeof(IntegerArgument))
-                    {
-                        // TODO: Currently simply overwrites the value if it is already set
-                        // Example: Get-ChildItem -Depth 1 -Depth 2
-                        IntegerArgument aCasted = (IntegerArgument)a;
-                        aCasted.Value = Convert.ToInt32(userArguments[++i]);
-                        assignedValue = true;
-
-                        // Update original ArgumentList with the value
-                        foreach (Argument originalArg in supportedArguments)
-                        {
-                            if (originalArg.Name.Equals(aCasted.Name, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                IntegerArgument originalArgCasted = (IntegerArgument)originalArg;
-                                originalArgCasted.Value = aCasted.Value;
-                                originalArgCasted.DashArgumentNameSkipUsed = true;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    else if (a.GetType() == typeof(StringArgument))
-                    {
-                        StringArgument aCasted = (StringArgument)a;
-                        if (aCasted.Value != null && !aCasted.IsDefaultValue)
-                            continue; // throw new DuplicateParameterException(this.ToString(), cleanInputArg);
-
-                        // Positional StringArgument which requires a value
-                        // For example Get-WmiObject -Namespace root\cimv2 -Query "Select CommandLine From Win32_Process"
-                        if (!a.DashArgumentNameSkipUsed)
-                            i++;
-
-                        // Possibilities:
-                        // - arg1,arg2
-                        // - arg1, arg2
-                        // Not supported yet: arg1 ,arg2
-                        StringBuilder strbargs = new StringBuilder();
-                        for (int j = i; j < userArguments.Length; j++)
-                        {
-                            string candidateArg = userArguments[j];
-
-                            if (candidateArg.EndsWith(","))
-                            {
-                                strbargs.Append(userArguments[j]);
-                                i++;
-                            }
-                            else
-                                break;
-                        }
-
-                        bool onlyArgument = strbargs.Length == 0;
-                        string strargs = strbargs.Append(userArguments[i]).ToString();
-
-                        // Array where current component is last one
-                        if (!onlyArgument)
-                            i++;
-
-                        aCasted.Value = UnescapeString(strargs);
-                        assignedValue = true;
-
-                        // Update original ArgumentList with the value and set the DashArgumentNameSkipUsed flag
-                        foreach (Argument originalArg in supportedArguments)
-                        {
-                            if (originalArg.Name.Equals(aCasted.Name, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                StringArgument originalArgCasted = (StringArgument)originalArg;
-                                originalArgCasted.Value = aCasted.Value;
-                                originalArgCasted.DashArgumentNameSkipUsed = true;
-                                break;
-                            }
-                        }
-
-                        break;
-                    }
-                }
-
-                if (!assignedValue)
-                    throw new Exception(
-                        string.Format(
-                            @"{0}: Failed to assign value to parameter. This can be because of:
-- A missing parameter name (e.g. 'MyValue' was used instead of '-Name MyValue')
-- Duplicate arguments (e.g. '-Name MyValue -Name MyValue2')
-- A missing pipe (' | ')",
-                            this
-                        )
-                    );
-
+                // Assign value to the argument
+                i = AssignValueToArgument(userArguments, supportedArguments, i, candidates, inputArg);
+                
                 i++;
             }
 
             // Validate if all mandatory arguments have been assigned
+            ValidateMandatoryArguments(supportedArguments);
+
+            return supportedArguments;
+        }
+
+        /// <summary>
+        /// Finds candidate arguments matching the user input
+        /// </summary>
+        private List<Argument> FindCandidateArguments(string[] userArguments, ArgumentList supportedArguments, string inputArg, bool isArgFlag, string cleanInputArg)
+        {
+            List<Argument> candidates = new List<Argument>(userArguments.Length);
+            foreach (Argument destArg in supportedArguments)
+            {
+                // Skip arguments which have already been assigned
+                if (destArg.IsSet)
+                    continue;
+
+                // Clone the argument based on its type
+                Argument clonedArg = CloneArgument(destArg);
+                if (clonedArg == null)
+                    throw new Exception("Unexpected argument type");
+
+                int compareLength = Math.Min(destArg.Name.Length, cleanInputArg.Length);
+                
+                if (isArgFlag)
+                {
+                    // Check for exact or partial match
+                    bool isFound = false;
+                    bool exactMatch = false;
+
+                    // Full match: -ArgName
+                    if (destArg.Name.Equals(cleanInputArg, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        isFound = true;
+                        exactMatch = true;
+                    }
+                    // Partial match: -ArgN
+                    else if (destArg.Name.Substring(0, compareLength).Equals(cleanInputArg, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        isFound = true;
+                    }
+
+                    // Add to candidates if matching argument is found
+                    if (isFound)
+                    {
+                        candidates.Add(clonedArg);
+                        if (exactMatch)
+                            break;
+                    }
+                }
+                // Handle positional arguments
+                else if (destArg.GetType() != typeof(BoolArgument))
+                {
+                    if (clonedArg is StringArgument stringArg)
+                    {
+                        stringArg.DashArgumentNameSkipUsed = true;
+                        candidates.Add(stringArg);
+                    }
+                    else if (clonedArg is IntegerArgument intArg)
+                    {
+                        intArg.DashArgumentNameSkipUsed = true;
+                        candidates.Add(intArg);
+                    }
+                    else
+                        throw new Exception("Unexpected positional argument type");
+                }
+            }
+
+            return candidates;
+        }
+
+        /// <summary>
+        /// Clones an argument based on its type
+        /// </summary>
+        private Argument CloneArgument(Argument destArg)
+        {
+            if (destArg.GetType() == typeof(StringArgument))
+                return ((StringArgument)destArg).Clone();
+            else if (destArg.GetType() == typeof(IntegerArgument))
+                return ((IntegerArgument)destArg).Clone();
+            else if (destArg.GetType() == typeof(BoolArgument))
+                return ((BoolArgument)destArg).Clone();
+
+            return null;
+        }
+
+        /// <summary>
+        /// Handles potentially ambiguous parameters
+        /// </summary>
+        private void HandleAmbiguousParameters(List<Argument> candidates, string cleanInputArg)
+        {
+            if (candidates.Count <= 1)
+                return;
+
+            // Collect candidates that are not optional and do not have a dash argument name skip used
+            List<Argument> duplicateCandidates = candidates.Where(c => !c.DashArgumentNameSkipUsed).ToList();
+
+            // Handle ambiguous parameter name
+            if (duplicateCandidates.Count > 1)
+            {
+                string[] paramNames = duplicateCandidates.Select(dc => dc.Name).ToArray();
+                
+                throw new ParameterBindingException(
+                    this.ToString(),
+                    string.Format(
+                        "Parameter cannot be processed because the parameter name '{1}' is ambiguous. Possible matches include: -{2}.",
+                        this,
+                        cleanInputArg,
+                        string.Join(" -", paramNames)
+                    )
+                );
+            }
+        }
+
+        /// <summary>
+        /// Prioritizes mandatory candidates over optional ones
+        /// </summary>
+        private List<Argument> PrioritizeMandatoryCandidates(List<Argument> candidates)
+        {
+            List<Argument> mandatoryCandidates = candidates.Where(c => !c.IsOptionalArgument).ToList();
+            
+            // If there are no mandatory candidates, use the first one
+            if (mandatoryCandidates.Count == 0)
+                return new List<Argument>() { candidates[0] };
+            
+            return mandatoryCandidates;
+        }
+
+        /// <summary>
+        /// Assigns a value to the appropriate argument
+        /// </summary>
+        private int AssignValueToArgument(string[] userArguments, ArgumentList supportedArguments, int currentIndex, List<Argument> candidates, string inputArg)
+        {
+            string cleanInputArg = inputArg.TrimStart('-');
+            bool assignedValue = false;
+
+            foreach (Argument a in candidates)
+            {
+                if (a is BoolArgument boolArg)
+                {
+                    assignedValue = AssignBoolArgumentValue(supportedArguments, boolArg);
+                    break;
+                }
+                else if (a is IntegerArgument intArg)
+                {
+                    currentIndex = AssignIntArgumentValue(userArguments, supportedArguments, currentIndex, intArg);
+                    assignedValue = true;
+                    break;
+                }
+                else if (a is StringArgument stringArg)
+                {
+                    if (stringArg.Value != null && !stringArg.IsDefaultValue)
+                        continue;
+
+                    currentIndex = AssignStringArgumentValue(userArguments, supportedArguments, currentIndex, stringArg);
+                    assignedValue = true;
+                    break;
+                }
+            }
+
+            if (!assignedValue)
+                throw new Exception(
+                    string.Format(
+                        @"{0}: Failed to assign value to parameter. This can be because of:
+- A missing parameter name (e.g. 'MyValue' was used instead of '-Name MyValue')
+- Duplicate arguments (e.g. '-Name MyValue -Name MyValue2')
+- A missing pipe (' | ')",
+                        this
+                    )
+                );
+
+            return currentIndex;
+        }
+
+        /// <summary>
+        /// Assigns a value to a boolean argument
+        /// </summary>
+        private bool AssignBoolArgumentValue(ArgumentList supportedArguments, BoolArgument boolArg)
+        {
+            boolArg.Value = true;
+
+            // Update original ArgumentList with the value
+            foreach (Argument originalArg in supportedArguments)
+            {
+                if (originalArg.Name.Equals(boolArg.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ((BoolArgument)originalArg).Value = boolArg.Value;
+                    break;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Assigns a value to an integer argument
+        /// </summary>
+        private int AssignIntArgumentValue(string[] userArguments, ArgumentList supportedArguments, int currentIndex, IntegerArgument intArg)
+        {
+            // TODO: Currently simply overwrites the value if it is already set
+            // Example: Get-ChildItem -Depth 1 -Depth 2
+            intArg.Value = Convert.ToInt32(userArguments[++currentIndex]);
+
+            // Update original ArgumentList with the value
+            foreach (Argument originalArg in supportedArguments)
+            {
+                if (originalArg.Name.Equals(intArg.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    IntegerArgument originalArgCasted = (IntegerArgument)originalArg;
+                    originalArgCasted.Value = intArg.Value;
+                    originalArgCasted.DashArgumentNameSkipUsed = true;
+                    break;
+                }
+            }
+
+            return currentIndex;
+        }
+
+        /// <summary>
+        /// Assigns a value to a string argument
+        /// </summary>
+        private int AssignStringArgumentValue(string[] userArguments, ArgumentList supportedArguments, int currentIndex, StringArgument stringArg)
+        {
+            // Positional StringArgument which requires a value
+            if (!stringArg.DashArgumentNameSkipUsed)
+                currentIndex++;
+
+            // Handle comma-separated arguments
+            StringBuilder strbargs = new StringBuilder();
+            for (int j = currentIndex; j < userArguments.Length; j++)
+            {
+                string candidateArg = userArguments[j];
+
+                if (candidateArg.EndsWith(","))
+                {
+                    strbargs.Append(userArguments[j]);
+                    currentIndex++;
+                }
+                else
+                    break;
+            }
+
+            bool onlyArgument = strbargs.Length == 0;
+            string strargs = strbargs.Append(userArguments[currentIndex]).ToString();
+
+            // Array where current component is last one
+            if (!onlyArgument)
+                currentIndex++;
+
+            stringArg.Value = UnescapeString(strargs);
+
+            // Update original ArgumentList with the value and set the DashArgumentNameSkipUsed flag
+            foreach (Argument originalArg in supportedArguments)
+            {
+                if (originalArg.Name.Equals(stringArg.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    StringArgument originalArgCasted = (StringArgument)originalArg;
+                    originalArgCasted.Value = stringArg.Value;
+                    originalArgCasted.DashArgumentNameSkipUsed = true;
+                    break;
+                }
+            }
+
+            return currentIndex;
+        }
+
+        /// <summary>
+        /// Validates that all mandatory arguments have been assigned a value
+        /// </summary>
+        private void ValidateMandatoryArguments(ArgumentList supportedArguments)
+        {
             foreach (Argument arg in supportedArguments)
             {
                 if (!arg.IsOptionalArgument && !arg.IsSet)
@@ -336,10 +376,7 @@ namespace NoPowerShell.Commands
                     throw new Exception(string.Format("{0}: Mandatory parameter '{1}' is missing.", this, arg.Name));
                 }
             }
-
-            return supportedArguments;
         }
-
 
         /// <summary>
         /// Processes the input string by replacing two consecutive backticks with one backtick,
