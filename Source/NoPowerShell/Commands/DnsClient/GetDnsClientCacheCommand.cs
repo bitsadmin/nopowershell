@@ -94,7 +94,7 @@ namespace NoPowerShell.Commands.Management
                         "List cached DNS entries from a remote computer using WMI",
                         new List<string>()
                         {
-                            "Get-DnsClientCache -ComputerName MyServer -Username Administrator -Password Pa$$w0rd",
+                            "Get-DnsClientCache -ComputerName MyServer -Username MyUser -Password MyPassword",
                             "Get-DnsClientCache -ComputerName MyServer"
                         }
                     )

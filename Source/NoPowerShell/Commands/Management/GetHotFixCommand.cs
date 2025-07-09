@@ -71,7 +71,7 @@ namespace NoPowerShell.Commands.Management
                         "Get all hotfixes from a remote computer using WMI",
                         new List<string>()
                         {
-                            "Get-HotFix -ComputerName MyServer -Username Administrator -Password Pa$$w0rd",
+                            "Get-HotFix -ComputerName MyServer -Username MyUser -Password MyPassword",
                             "Get-HotFix -ComputerName MyServer"
                         }
                     )

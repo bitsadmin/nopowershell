@@ -69,7 +69,7 @@ namespace NoPowerShell.Commands.Management
                         "Launch process on remote system",
                         new List<string>()
                         {
-                            "Invoke-WmiMethod -ComputerName MyServer -Username MyUserName -Password MyPassword -Class Win32_Process -Name Create \"powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA==\"",
+                            "Invoke-WmiMethod -ComputerName MyServer -Username MyUser -Password MyPassword -Class Win32_Process -Name Create \"powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA==\"",
                             "iwmi -ComputerName MyServer -Class Win32_Process -Name Create \"powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA==\""
                         }
                     ),
