@@ -77,11 +77,7 @@ namespace NoPowerShell.Commands.Core
 @"NAME
     {0}
 
-
-ALIASES
-    {1}
-
-
+{1}
 SYNOPSIS
     {2}
 
@@ -94,8 +90,21 @@ EXAMPLES
 {4}
 ";
 
+            // Command name
             string commandName = (aliases != null) ? aliases[0] : null;
-            string strAliases = string.Join(", ", aliases.GetRange(1, aliases.Count - 1).ToArray());
+
+            // Aliases
+            string strAliases = null;
+            if (aliases.Count > 1)
+                strAliases = string.Format(@"
+ALIASES
+    {0}
+
+", string.Join(", ", aliases.GetRange(1, aliases.Count - 1).ToArray()));
+            else
+                strAliases = string.Empty;
+
+            // Arguments
             string arguments = string.Format("{0} {1}", aliases[0], GetCommandCommand.GetArguments(supportedArguments));
 
             StringBuilder strExamples = new StringBuilder();
