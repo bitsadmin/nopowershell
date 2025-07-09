@@ -164,7 +164,7 @@ namespace NoPowerShell.Commands
                 return new ExampleEntries()
                 {
                     new ExampleEntry("List oldest 10 events of Application log", "Get-WinEvent -LogName Application -MaxEvents 10 -Oldest"),
-                    new ExampleEntry("Determine the IP address from where a specific user is authenticating to the DC", "Get-WinEvent -LogName Security -FilterXPath \"*[System[(EventID=4624)]] and *[EventData[Data[@Name='TargetUserName']='bitsadmin']]\" -ComputerName DC1 -MaxEvents 1"),
+                    new ExampleEntry("Determine the IP address from where a specific user is authenticating to the DC", "Get-WinEvent -LogName Security -FilterXPath \"*[System[(EventID=4624)]] and *[EventData[Data[@Name='TargetUserName']='bitsadmin']]\" -ComputerName MyServer -MaxEvents 1"),
                 };
             }
         }

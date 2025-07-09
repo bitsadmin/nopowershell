@@ -207,8 +207,8 @@ namespace NoPowerShell.Commands.Additional
                         "Query sessions on a remote machine",
                         new List<string>()
                         {
-                            "Get-WinStation -Server DC01.domain.local",
-                            "qwinsta DC01.domain.local"
+                            "Get-WinStation -Server MyServer",
+                            "qwinsta MyServer"
                         }
                     )
                 };

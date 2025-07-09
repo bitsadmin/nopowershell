@@ -99,8 +99,8 @@ namespace NoPowerShell.Commands.Management
                         "Obtain data of Win32_Process class from a remote system and apply a filter on the output",
                         new List<string>()
                         {
-                            "Get-WmiObject \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName dc01.corp.local -Username MyUser -Password MyPassword | ? Name -Like *PowerShell* | select ProcessId,CommandLine",
-                            "gwmi \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName dc01.corp.local | ? Name -Like *PowerShell* | select ProcessId,CommandLine"
+                            "Get-WmiObject \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName MyServer -Username MyUser -Password MyPassword | ? Name -Like *PowerShell* | select ProcessId,CommandLine",
+                            "gwmi \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName MyServer | ? Name -Like *PowerShell* | select ProcessId,CommandLine"
                         }
                     ),
                     new ExampleEntry("View details about a certain service", "Get-WmiObject -Class Win32_Service -Filter \"Name = 'WinRM'\""),
