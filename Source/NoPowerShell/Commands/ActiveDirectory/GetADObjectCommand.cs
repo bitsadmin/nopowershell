@@ -103,7 +103,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                     new StringArgument("Server", true),
                     new StringArgument("SearchBase", true),
                     new StringArgument("SearchScope", string.Empty),
-                    new IntegerArgument("ResultSetSize"),
+                    new IntegerArgument("ResultSetSize", 0),
                     new StringArgument("Identity", true),
                     new StringArgument("LDAPFilter", true),
                     new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID")
