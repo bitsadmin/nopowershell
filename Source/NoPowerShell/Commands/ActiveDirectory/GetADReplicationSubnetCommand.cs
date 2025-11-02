@@ -61,7 +61,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 {
                     new StringArgument("Server", true),
                     //new StringArgument("SearchBase"),
-                    new StringArgument("Identity"),
+                    new StringArgument("Identity", true),
                     //new StringArgument("LDAPFilter"),
                     new StringArgument("Properties", "DistinguishedName,Location,Name,ObjectClass,ObjectGUID,Site")
                 };
