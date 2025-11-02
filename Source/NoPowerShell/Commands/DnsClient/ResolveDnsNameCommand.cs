@@ -1,6 +1,7 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 /*
 Author: @bitsadmin
@@ -22,7 +23,14 @@ namespace NoPowerShell.Commands.DnsClient
             string query = _arguments.Get<StringArgument>("Name").Value;
             string type = _arguments.Get<StringArgument>("Type").Value;
 
-            _results = DnsHelper.GetRecords(query, type);
+            try
+            {
+                _results = DnsHelper.GetRecords(query, type);
+            }
+            catch(Win32Exception e)
+            {
+                throw new NoPowerShellException(e.Message);
+            }
 
             // Determine columns in results
             List<string> columns = new List<string>();
