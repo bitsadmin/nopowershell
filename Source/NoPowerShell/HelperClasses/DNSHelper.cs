@@ -77,7 +77,15 @@ namespace NoPowerShell.HelperClasses
                 }
                 // IPv4
                 else
-                    domain = string.Format("{0}.in-addr.arpa", ip);
+                {
+                    // Reverse IP address octets
+                    string[] octets = ip.ToString().Split('.');
+                    Array.Reverse(octets);
+                    IPAddress ipreverse = IPAddress.Parse(string.Join(".", octets));
+
+                    // Compile reverse IP address into domain name
+                    domain = string.Format("{0}.in-addr.arpa", ipreverse);
+                }
             }
 
             CommandResult results = new CommandResult();
