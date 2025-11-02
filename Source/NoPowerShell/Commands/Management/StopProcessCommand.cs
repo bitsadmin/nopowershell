@@ -87,16 +87,16 @@ namespace NoPowerShell.Commands.Management
                     // Process already exited
                     if (ex.Message.Contains("is not running"))
                     {
-                        Program.WriteError("Stop-Process: Cannot find a process with the process identifier {0}.", processId);
+                        throw new NoPowerShellException("Cannot find a process with the process identifier {0}.", processId);
                     }
                     else
                     {
-                        Program.WriteError("Stop-Process: Cannot stop process \"{0} ({1})\" because of the following error: {2}", processName, processId, ex.Message);
+                        throw new NoPowerShellException("Cannot stop process \"{0} ({1})\" because of the following error: {2}", processName, processId, ex.Message);
                     }
                 }
                 catch (Win32Exception ex)
                 {
-                    Program.WriteError("Stop-Process: Cannot stop process \"{0} ({1})\" because of the following error: {2}", processName, processId, ex.Message);
+                    throw new NoPowerShellException("Cannot stop process \"{0} ({1})\" because of the following error: {2}", processName, processId, ex.Message);
                 }
             }
 
