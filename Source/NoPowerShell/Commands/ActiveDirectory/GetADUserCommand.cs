@@ -124,7 +124,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                     new ExampleEntry("List all properties of the Administrator domain user", "Get-ADUser -Identity Administrator -Properties *"),
                     new ExampleEntry("List all Administrative users in domain", "Get-ADUser -LDAPFilter \"(admincount=1)\""),
                     new ExampleEntry("List all users in domain", "Get-ADUser -Filter *"),
-                    new ExampleEntry("List specific attributes of user", "Get-ADUser Administrator -Properties SamAccountName,ObjectSID"),
+                    new ExampleEntry("List specific attributes of user", "Get-ADUser -Identity Administrator -Properties SamAccountName,ObjectSID"),
                     new ExampleEntry("List all users in a specific OU", "Get-ADUser -SearchBase \"CN=Users,DC=MyDomain,DC=local\" -Filter *")
                 };
             }
