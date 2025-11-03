@@ -28,9 +28,9 @@ namespace NoPowerShell.Commands.Additional
 
             // Check if path exists
             if (!(Directory.Exists(path) || File.Exists(path)))
-                throw new ArgumentException(path + " does not exist.");
+                throw new NoPowerShellException(path + " does not exist.");
             if (!(Directory.Exists(destination) || File.Exists(destination)))
-                throw new ArgumentException(destination + " does not exist.");
+                throw new NoPowerShellException(destination + " does not exist.");
 
             // Check if path and destination are the same type
             if (!(Directory.Exists(path) == Directory.Exists(destination)))
