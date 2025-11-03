@@ -27,9 +27,22 @@ namespace NoPowerShell.Commands.Management
             // Obtain parameters
             bool includeHidden = _arguments.Get<BoolArgument>("Force").Value;
             string path = _arguments.Get<StringArgument>("Path").Value;
+            string literalPath = _arguments.Get<StringArgument>("LiteralPath").Value;
             bool recurse = _arguments.Get<BoolArgument>("Recurse").Value;
             int depth = _arguments.Get<IntegerArgument>("Depth").Value;
             string[] searchPatterns = _arguments.Get<StringArgument>("Include").Value.Split(new char[] { ',' });
+            bool followSymlink = _arguments.Get<BoolArgument>("FollowSymlink").Value;
+            bool useLiteralPath = false;
+
+            // LiteralPath
+            if (!string.IsNullOrEmpty(literalPath))
+            {
+                if (!string.IsNullOrEmpty(path) && path != ".")
+                    throw new NoPowerShellException("Specify either -Path or -LiteralPath, not both");
+
+                useLiteralPath = true;
+                path = literalPath;
+            }
 
             // If Depth is specified, it implies recursion
             if (depth != int.MaxValue)
@@ -51,8 +64,25 @@ namespace NoPowerShell.Commands.Management
             //     env:
             //     env:systemroot
             else if (path.ToUpperInvariant().StartsWith("ENV"))
+            {
                 _results = BrowseEnvironment(path);
+            }
+            // SMB share or full path:
+            //     \\
+            //     \\?\C:\
+            //     \\?\UNC\MYSERVER\C$
+            else if (path.StartsWith(@"\\"))
+            {
+                // Fix path to support long paths if not the literal path is used
+                if(!useLiteralPath)
+                {
+                    // Full network path: \\MYSERVER -> \\?\UNC\MYSERVER
+                    if (!path.ToUpperInvariant().StartsWith(@"\\?\UNC"))
+                        path = path.Replace(@"\\", @"\\?\UNC\");
+                }
 
+                _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPatterns, useLiteralPath, followSymlink);
+            }
             // Filesystem:
             //     \
             //     ..\
@@ -60,10 +90,10 @@ namespace NoPowerShell.Commands.Management
             else
             {
                 // Add \\?\ prefix to support long paths
-                //if (!path.StartsWith(@"\\?\"))
-                //    path = @"\\?\" + path;
+                if (!useLiteralPath && !path.StartsWith(@"\\?\"))
+                    path = @"\\?\" + path;
 
-                _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPatterns);
+                _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPatterns, useLiteralPath, followSymlink);
             }
 
             return _results;
@@ -135,7 +165,8 @@ namespace NoPowerShell.Commands.Management
             return results;
         }
 
-        public static CommandResult BrowseFilesystem(string path, bool recurse, int depth, bool includeHidden, string[] searchPatterns)
+        public static CommandResult BrowseFilesystem(string path, bool recurse, int depth, bool includeHidden, string[] searchPatterns,
+            bool useLiteralPath, bool followSymlink)
         {
             CommandResult results = new CommandResult();
 
@@ -144,13 +175,13 @@ namespace NoPowerShell.Commands.Management
             if (!gciDir.Exists)
                 throw new ItemNotFoundException(path);
 
-            // TODO: Follow symlinks. Skipping them for now
-            if ((gciDir.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
+            // Follow symlinks only if -FollowSymlink flag is specified, otherwise skip them
+            if (!followSymlink && (gciDir.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
                 return results;
 
             // Display directory name
             if (!recurse)
-                Console.WriteLine("\r\n    Directory: {0}\r\n", gciDir.FullName);
+                Console.WriteLine("\r\n    Directory: {0}\r\n", CleanupFullPath(gciDir.FullName, useLiteralPath));
 
             List<DirectoryInfo> directories = new List<DirectoryInfo>();
             try
@@ -167,7 +198,7 @@ namespace NoPowerShell.Commands.Management
             }
             catch (UnauthorizedAccessException)
             {
-                Program.WriteError("Access to the path '{0}' is denied.", path.Replace(@"\\?\", ""));
+                Program.WriteError("Access to the path '{0}' is denied.", CleanupFullPath(path, useLiteralPath));
                 return results;
             }
 
@@ -196,9 +227,9 @@ namespace NoPowerShell.Commands.Management
 
                 // If -Recurse is set, show the full path, otherwise the name
                 if (recurse)
-                    currentDir.Add("FullName", dir.FullName.Replace(@"\\?\", ""));
+                    currentDir.Add("FullName", CleanupFullPath(dir.FullName, useLiteralPath));
                 else
-                    currentDir.Add("Name", dir.Name.Replace(@"\\?\", ""));
+                    currentDir.Add("Name", CleanupFullPath(dir.Name, useLiteralPath));
 
                 results.Add(currentDir);
             }
@@ -218,9 +249,9 @@ namespace NoPowerShell.Commands.Management
 
                 // If -Recurse is set, show the full path, otherwise the name
                 if (recurse)
-                    currentFile.Add("FullName", file.FullName.Replace(@"\\?\", ""));
+                    currentFile.Add("FullName", CleanupFullPath(file.FullName, useLiteralPath));
                 else
-                    currentFile.Add("Name", file.Name.Replace(@"\\?\", ""));
+                    currentFile.Add("Name", CleanupFullPath(file.Name, useLiteralPath));
 
                 results.Add(currentFile);
             }
@@ -234,12 +265,22 @@ namespace NoPowerShell.Commands.Management
                     if ((subDir.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden && !includeHidden)
                         continue;
 
-                    CommandResult currentDir = BrowseFilesystem(subDir.FullName, recurse, depth - 1, includeHidden, searchPatterns);
+                    CommandResult currentDir = BrowseFilesystem(subDir.FullName, recurse, depth - 1, includeHidden, searchPatterns, useLiteralPath, followSymlink);
                     results.AddRange(currentDir);
                 }
             }
 
             return results;
+        }
+
+        private static string CleanupFullPath(string path, bool useLiteralPath)
+        {
+            if (useLiteralPath)
+                return path;
+            else
+                return path
+                    .Replace(@"\\?\UNC\", @"\\")
+                    .Replace(@"\\?\", "");
         }
 
         private static string GetModeFlags(FileSystemInfo f)
@@ -268,10 +309,12 @@ namespace NoPowerShell.Commands.Management
                 return new ArgumentList()
                 {
                     new StringArgument("Path", "."),
+                    new StringArgument("LiteralPath", true),
                     new BoolArgument("Force") ,
                     new BoolArgument("Recurse"),
                     new IntegerArgument("Depth", int.MaxValue),
-                    new StringArgument("Include", "*")
+                    new StringArgument("Include", "*"),
+                    new BoolArgument("FollowSymlink")
                 };
             }
         }
@@ -298,6 +341,8 @@ namespace NoPowerShell.Commands.Management
                     ),
                     new ExampleEntry("List autoruns", "ls HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
                     new ExampleEntry("Search for files which can contain sensitive data on the C-drive", "ls -Recurse -Force C:\\ -Include *.cmd,*.bat,*.ps1,*.psm1,*.psd1"),
+                    new ExampleEntry("Create directory listing of SYSVOL", "ls -Recurse -FollowSymlinks \\\\DC1\\SYSVOL"),
+                    new ExampleEntry("Directory listing using LiteralPath", "Get-ChildItem -Recurse -LiteralPath \\\\?\\C:\\SomeVeryLongPath\\ -Include *.pem")
                 };
             }
         }
