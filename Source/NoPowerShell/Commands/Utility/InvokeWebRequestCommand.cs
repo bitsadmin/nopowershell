@@ -147,7 +147,17 @@ namespace NoPowerShell.Commands.Utility
 
                     // Display HTTP response content or the filename in case -OutFile is specified
                     if (string.IsNullOrEmpty(outfile))
-                        result.Add("Content", await response.Content.ReadAsStringAsync());
+                    {
+                        if (response.Content.Headers.ContentType.MediaType == "application/octet-stream")
+                        {
+                            result.Add("Content", "...");
+                            result.Add("RawContentLength", response.Content.Headers.ContentLength.Value.ToString());
+                        }
+                        else
+                        {
+                            result.Add("Content", await response.Content.ReadAsStringAsync());
+                        }
+                    }
                     else
                         result.Add("File Name", outfile);
 
@@ -219,19 +229,12 @@ namespace NoPowerShell.Commands.Utility
                 {
                     new ExampleEntry(
                         "View external IP address using custom user agent",
-                        "iwr ifconfig.io/ip -UserAgent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3\""
+                        "iwr ifconfig.io/ip -UserAgent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0\""
                     ),
                     new ExampleEntry("View external IP using explicit proxy", "Invoke-WebRequest https://ifconfig.io/ip -Proxy http://proxy:8080"),
-                    new ExampleEntry(
-                        "Download file from the Internet",
-                        new List<string>()
-                        {
-                            "Invoke-WebRequest http://live.sysinternals.com/psexec.exe",
-                            "wget http://live.sysinternals.com/psexec.exe"
-                        }
-                    ),
-                    new ExampleEntry("Download file from the Internet specifying the destination", "wget http://live.sysinternals.com/psexec.exe -OutFile C:\\Tmp\\psexec.exe"),
-                    new ExampleEntry("Perform request ignoring invalid TLS certificates", "iwr https://1.2.3.4/file.txt -SkipCertificateCheck")
+                    new ExampleEntry("Download file from the Internet to disk", "wget https://live.sysinternals.com/psexec.exe -OutFile C:\\Tmp\\psexec.exe"),
+                    new ExampleEntry("Perform request ignoring invalid TLS certificates", "iwr https://74.242.189.11/about_this_site.txt -SkipCertificateCheck"),
+                    new ExampleEntry("Show certificate chain details", "Invoke-WebRequest -Verbose -SkipCertificateCheck https://74.242.189.11/about_this_site.txt")
                 };
             }
         }
