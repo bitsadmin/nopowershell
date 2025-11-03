@@ -41,7 +41,7 @@ namespace NoPowerShell.Commands.Management
             //     ..\
             //     D:\
             else
-                _results = GetChildItemCommand.BrowseFilesystem(path, false, 1, includeHidden, searchPatterns);
+                _results = GetChildItemCommand.BrowseFilesystem(path, false, 1, includeHidden, searchPatterns, false, true);
 
             return _results;
         }
