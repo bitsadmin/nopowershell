@@ -111,7 +111,7 @@ namespace NoPowerShell.Commands.Core
                 return new ExampleEntries()
                 {
                     new ExampleEntry("List all processes containing PowerShell in the process name", "Get-Process | ? Name -Like *PowerShell*"),
-                    new ExampleEntry("List all active local users", "Get-LocalUser | ? Disabled -EQ False")
+                    new ExampleEntry("List local drives", "Get-PSDrive | ? Provider -EQ FileSystem")
                 };
             }
         }
