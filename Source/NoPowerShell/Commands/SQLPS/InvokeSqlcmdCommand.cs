@@ -147,7 +147,7 @@ namespace NoPowerShell.Commands.SQLPS
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List SQL Server version", "Invoke-Sqlcmd -Query \"SELECT @@version\""),
+                    new ExampleEntry("List local SQL Server version", "Invoke-Sqlcmd -Query \"SELECT @@version\""),
                     new ExampleEntry("Query specific server", "Invoke-Sqlcmd -Query \"SELECT username,password FROM users\" -ServerInstance SQL1"),
                     new ExampleEntry("Use explicit authentication", "Invoke-Sqlcmd -Query \"exec xp_cmdshell 'dir C:\\'\" -ServerInstance SQL1 -Username sa -password Password1!"),
                     new ExampleEntry("Use encrypted connection", "Invoke-Sqlcmd -Query \"INSERT INTO logins (username,password) VALUES ('newuser', 'MyPass')\" -ServerInstance SQL1 -Database CRM -EncryptConnection"),
