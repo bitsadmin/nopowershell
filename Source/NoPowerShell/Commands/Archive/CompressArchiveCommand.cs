@@ -46,6 +46,10 @@ namespace NoPowerShell.Commands.Archive
                     throw new ArgumentException(string.Format("Unknown compression level: {0}. Possible options: Optimal, NoCompression, Fastest.", compressionLevel));
             }
 
+            // Validate path
+            if (!File.Exists(path))
+                throw new ItemNotFoundException(path);
+
             // Determine whether input is file or directory
             FileAttributes attr = File.GetAttributes(path);
 
