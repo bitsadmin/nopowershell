@@ -104,7 +104,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Obtain domain controllers", "Get-ADDomainController"),
+                    new ExampleEntry("List domain controllers", "Get-ADDomainController"),
                     new ExampleEntry("List all domain controllers, including read-only ones", "Get-ADDomainController -Filter *")
                 };
             }
