@@ -206,5 +206,13 @@ namespace NoPowerShell.HelperClasses
         {
             return dateTime.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
         }
+
+        public static string ToFormattedString(this DateTime? dateTime)
+        {
+            if (dateTime != null)
+                return ToFormattedString((DateTime)dateTime);
+            else
+                return null;
+        }
     }
 }
