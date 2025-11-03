@@ -83,6 +83,7 @@ namespace NoPowerShell.Commands.Utility
                 return new ExampleEntries()
                 {
                     new ExampleEntry("Display process list as CSV", @"Get-Process | ConvertTo-Csv"),
+                    new ExampleEntry("Use tab delimiter", "Get-Process | ConvertTo-Csv -Delimiter \"`t\"")
                 };
             }
         }
