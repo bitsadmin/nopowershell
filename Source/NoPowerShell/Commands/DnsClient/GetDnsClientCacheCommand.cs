@@ -25,7 +25,7 @@ namespace NoPowerShell.Commands.Management
             CommandResult dnsClientCache = WmiHelper.ExecuteWmiQuery("root/StandardCimv2", "Select Entry, Name, Type, Status, Section, TimeToLive, DataLength, Data From MSFT_DNSClientCache", computername, username, password);
             foreach (ResultRecord entry in dnsClientCache)
             {
-                DnsHelper.DnsRecordTypes recordType = (DnsHelper.DnsRecordTypes)Convert.ToInt32(entry["Type"]);
+                DnsHelper.DnsRecordType recordType = (DnsHelper.DnsRecordType)Convert.ToInt32(entry["Type"]);
                 int status = Convert.ToInt32(entry["Status"]);
                 string strStatus;
                 switch(status)
@@ -94,7 +94,7 @@ namespace NoPowerShell.Commands.Management
                         "List cached DNS entries from a remote computer using WMI",
                         new List<string>()
                         {
-                            "Get-DnsClientCache -ComputerName MyServer -Username Administrator -Password Pa$$w0rd",
+                            "Get-DnsClientCache -ComputerName MyServer -Username MyUser -Password MyPassword",
                             "Get-DnsClientCache -ComputerName MyServer"
                         }
                     )

@@ -22,10 +22,6 @@ namespace NoPowerShell.Commands.Additional
         public override CommandResult Execute(CommandResult pipeIn)
         {
             string server = _arguments.Get<StringArgument>("Server").Value;
-
-            if (string.IsNullOrEmpty(server))
-                throw new NoPowerShellException("Mandatory -Server argument missing");
-            
             server = server.Replace(@"\\", "");
 
             GetNetShares gns = new GetNetShares();
@@ -141,7 +137,7 @@ namespace NoPowerShell.Commands.Additional
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Server")
+                    new StringArgument("Server", "\\\\localhost")
                 };
             }
         }
@@ -157,6 +153,7 @@ namespace NoPowerShell.Commands.Additional
             {
                 return new ExampleEntries()
                 {
+                    new ExampleEntry("List local SMB shares", "Get-RemoteSmbShare"),
                     new ExampleEntry("List SMB shares of MyServer", "Get-RemoteSmbShare \\\\MyServer")
                 };
             }

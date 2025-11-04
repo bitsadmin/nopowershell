@@ -146,7 +146,7 @@ namespace NoPowerShell.Commands.Management
 
         public static new CaseInsensitiveList Aliases
         {
-            get { return new CaseInsensitiveList() { "Get-ComputerInfo", "systeminfo" }; }
+            get { return new CaseInsensitiveList() { "Get-ComputerInfo", "gin", "systeminfo" }; }
         }
 
         public static new ArgumentList SupportedArguments

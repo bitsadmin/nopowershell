@@ -1,6 +1,5 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
-using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -81,9 +80,9 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Value"),
-                    new BoolArgument("Append", false),
-                    new BoolArgument("PassThru", false)
+                    new StringArgument("Value", true),
+                    new BoolArgument("Append"),
+                    new BoolArgument("PassThru")
                 };
             }
         }
@@ -108,7 +107,7 @@ namespace NoPowerShell.Commands.Management
                             "scb \"You have been PWNED!\""
                         }
                     ),
-                    new ExampleEntry("Clear the clipboard", "Set-Clipboard"),
+                    new ExampleEntry("Clear the clipboard", "Set-Clipboard \"\""),
                     new ExampleEntry("Place output of command on clipboard", "Get-Process | Set-Clipboard")
                 };
             }

@@ -48,9 +48,15 @@ namespace NoPowerShell.Commands.Utility
                 }
             }
 
-            ResultPrinter.OutputResults(_results);
+            string output = ResultPrinter.OutputResults(_results);
 
-            return _results;
+            // Store in output key
+            return new CommandResult(1) {
+                new ResultRecord(1)
+                {
+                    { "Output", output }
+                }
+            };
         }
 
         public static new CaseInsensitiveList Aliases

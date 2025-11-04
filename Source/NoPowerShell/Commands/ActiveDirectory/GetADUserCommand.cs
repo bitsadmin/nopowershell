@@ -1,7 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
-using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -19,6 +18,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
             string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
@@ -62,6 +64,10 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 queryFilter = string.Format(filterBase, string.Empty);
             }
 
+            // Obtain search base if not specified
+            if (string.IsNullOrWhiteSpace(searchBase))
+                searchBase = LDAPHelper.GetDistinguishedName(server, username, password);
+
             // Query
             _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, properties, server, username, password);
 
@@ -71,11 +77,14 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 foreach (ResultRecord r in _results)
                 {
                     string uac = r["useraccountcontrol"];
-                    bool active = LDAPHelper.IsActive(uac);
-                    r["Enabled"] = active.ToString();
+                    r["Enabled"] = LDAPHelper.IsEnabled(uac).ToString();
                     //r.Remove("useraccountcontrol");
                 }
             }
+
+            // Display error message if no results and identity is specified
+            if (_results.Count == 0 && !string.IsNullOrEmpty(identity))
+                Console.WriteLine($"{Aliases[0]}: Cannot find an object with identity: '{identity}' under '{searchBase}'.");
 
             return _results;
         }
@@ -93,10 +102,10 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 {
                     new StringArgument("Server", true),
                     new StringArgument("SearchBase", true),
-                    new StringArgument("Identity"),
+                    new StringArgument("Identity", true),
                     new StringArgument("Filter", true),
                     new StringArgument("LDAPFilter", true),
-                    new StringArgument("Properties", "DistinguishedName,userAccountControl,GivenName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,Surname,UserPrincipalName", true)
+                    new StringArgument("Properties", "DistinguishedName,userAccountControl,GivenName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,Surname,UserPrincipalName")
                 };
             }
         }
@@ -115,7 +124,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                     new ExampleEntry("List all properties of the Administrator domain user", "Get-ADUser -Identity Administrator -Properties *"),
                     new ExampleEntry("List all Administrative users in domain", "Get-ADUser -LDAPFilter \"(admincount=1)\""),
                     new ExampleEntry("List all users in domain", "Get-ADUser -Filter *"),
-                    new ExampleEntry("List specific attributes of user", "Get-ADUser Administrator -Properties SamAccountName,ObjectSID"),
+                    new ExampleEntry("List specific attributes of user", "Get-ADUser -Identity Administrator -Properties SamAccountName,ObjectSID"),
                     new ExampleEntry("List all users in a specific OU", "Get-ADUser -SearchBase \"CN=Users,DC=MyDomain,DC=local\" -Filter *")
                 };
             }

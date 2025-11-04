@@ -9,29 +9,22 @@ namespace NoPowerShell.Arguments
     public class StringArgument : Argument
     {
         private string _value;
-        private string _defaultValue;
+        private readonly string _defaultValue;
+
+        public StringArgument()
+        {
+        }
 
         /// <summary>
-        /// Create a new string argument including its default value.
+        /// Create a new optional string argument including its default value.
         /// </summary>
         /// <param name="argumentName">Name of the parameter</param>
         /// <param name="defaultValue">Default value of the argument</param>
         public StringArgument(string argumentName, string defaultValue) : base(argumentName)
         {
-            this._value = defaultValue;
-            this._defaultValue = defaultValue;
-            this._isOptionalArgument = false;
-        }
-
-        /// <summary>
-        /// Create a new string argument including its default value specifying whether it is optional or not.
-        /// </summary>
-        /// <param name="argumentName">Name of the parameter</param>
-        /// <param name="defaultValue">Default value of the argument</param>
-        /// <param name="optionalArgument">True if the argument is optional; False if not</param>
-        public StringArgument(string argumentName, string defaultValue, bool optionalArgument) : this(argumentName, defaultValue)
-        {
-            this._isOptionalArgument = optionalArgument;
+            _value = defaultValue;
+            _defaultValue = defaultValue;
+            _isOptionalArgument = true;
         }
 
         /// <summary>
@@ -39,25 +32,55 @@ namespace NoPowerShell.Arguments
         /// </summary>
         /// <param name="argumentName">Name of the parameter</param>
         /// <param name="optionalArgument">True if the argument is optional; False if not</param>
-        public StringArgument(string argumentName, bool optionalArgument) : this(argumentName, null, optionalArgument)
+        public StringArgument(string argumentName, bool optionalArgument) : base(argumentName)
         {
+            _defaultValue = null;
+            _isOptionalArgument = optionalArgument;
+        }
+
+        /// <summary>
+        /// Create a new string argument including its default value.
+        /// </summary>
+        /// <param name="argumentName">Name of the parameter</param>
+        /// <param name="defaultValue">Default value of the argument</param>
+        /// <param name="optionalArgument">True if the argument is optional; False if not</param>
+        public StringArgument(string argumentName, string defaultValue, bool optionalArgument) : base(argumentName)
+        {
+            _value = defaultValue;
+            _defaultValue = defaultValue;
+            _isOptionalArgument = optionalArgument;
         }
 
         /// <summary>
         /// Create a new string argument with a null default value.
         /// </summary>
         /// <param name="argumentName">Name of the parameter</param>
-        public StringArgument(string argumentName) : this(argumentName, null)
+        public StringArgument(string argumentName) : base(argumentName)
         {
+            _isOptionalArgument = false;
+        }
+
+        public new StringArgument Clone()
+        {
+            return new StringArgument(this._name, this._defaultValue, this._isOptionalArgument)
+            {
+                _dashArgumentNameSkipUsed = this._dashArgumentNameSkipUsed,
+                _isSet = this._isSet,
+                _value = this._value
+            };
         }
 
         public string Value
         {
             get { return _value; }
-            set { _value = value; }
+            set
+            {
+                _isSet = true;
+                _value = value;
+            }
         }
 
-        public bool IsDefaultValue
+        public override bool IsDefaultValue
         {
             get { return string.Equals(_value, _defaultValue, System.StringComparison.InvariantCultureIgnoreCase); }
         }

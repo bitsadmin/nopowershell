@@ -18,6 +18,9 @@ namespace NoPowerShell.Commands.SmbShare
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             _results = WmiHelper.ExecuteWmiQuery(@"ROOT\Microsoft\Windows\SMB", "Select LocalPath,RemotePath From MSFT_SmbMapping", computername, username, password);
             return _results;
         }
@@ -56,7 +59,7 @@ namespace NoPowerShell.Commands.SmbShare
                 {
                     new ExampleEntry
                     (
-                        "List network shares on the local machine that are exposed to the network",
+                        "List mapped network drives",
                         new List<string>()
                         {
                             "Get-SmbMapping",

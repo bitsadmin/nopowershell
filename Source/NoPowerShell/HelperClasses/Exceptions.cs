@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 /*
 Author: @bitsadmin
@@ -42,6 +40,17 @@ namespace NoPowerShell.HelperClasses
         public override string Message => string.Format("{0} : A parameter cannot be found that matches parameter name '{1}'.", Command, Parameter);
 
         public ParameterBindingException(string command, string parameter) : base(command)
+        {
+            Parameter = parameter;
+        }
+    }
+
+    class DuplicateParameterException : CommandNotFoundException
+    {
+        public string Parameter { get; set; }
+        public override string Message => string.Format("{0} : Cannot bind parameter because parameter '{1}' is specified more than once. To provide multiple values to parameters that can accept multiple values, use the array syntax. For example, \"-parameter value1, value2, value3\"", Command, Parameter);
+
+        public DuplicateParameterException(string command, string parameter) : base(command)
         {
             Parameter = parameter;
         }

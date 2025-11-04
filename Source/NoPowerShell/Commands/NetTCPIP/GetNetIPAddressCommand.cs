@@ -18,6 +18,9 @@ namespace NoPowerShell.Commands.NetTCPIP
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             bool all = _arguments.Get<BoolArgument>("All").Value;
 
             string simpleSelect = "Description, IPAddress, DefaultIPGateway";

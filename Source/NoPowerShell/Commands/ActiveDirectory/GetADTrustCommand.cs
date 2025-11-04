@@ -2,7 +2,6 @@
 using NoPowerShell.HelperClasses;
 using System;
 using System.Collections.Generic;
-using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
 
 /*
@@ -21,23 +20,38 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
             string properties = _arguments.Get<StringArgument>("Properties").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
+            string filter = _arguments.Get<StringArgument>("Filter").Value;
             int maxDepth = _arguments.Get<IntegerArgument>("Depth").Value;
 
             // Determine properties
             List<string> arrProperties = null;
             if (!string.IsNullOrEmpty(properties))
                 arrProperties = new List<string>(properties.Split(','));
+            //else
+            //    arrProperties = new List<string>() { "Name", "trustDirection", "securityIdentifier" };
+
+            if (!string.IsNullOrEmpty(filter) && !string.IsNullOrEmpty(ldapFilter))
+                throw new NoPowerShellException("Specify either Filter or LDAPFilter, not both");
 
             // Build LDAP filter
             if (!string.IsNullOrEmpty(ldapFilter))
                 ldapFilter = string.Format("(&(objectClass=TrustedDomain){0})", ldapFilter);
 
+            // Filter *
+            if (filter == "*")
+                ldapFilter = string.Empty;
+            else if (!string.IsNullOrEmpty(filter))
+                throw new NoPowerShellException("Currently only * filter is supported");
+
             // Perform query
-            _results = GetTrustsRecursive(server, ldapFilter, arrProperties, 0, maxDepth);
+            _results = GetTrustsRecursive(server, ldapFilter, arrProperties, 1, maxDepth);
 
             return _results;
         }
@@ -117,23 +131,36 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 // Show all properties that are returned
                 else
                 {
-                    // Obtain values
-                    int trustAttributes = Convert.ToInt32(domain["trustAttributes"]);
-                    TrustType type = (TrustType)Convert.ToInt32(domain["trustType"]);
-                    string dn = domain["DistinguishedName"];
+                    if (domain.ContainsKey("trustAttributes"))
+                    {
+                        // Obtain trustAttributes values
+                        int trustAttributes = Convert.ToInt32(domain["trustAttributes"]);
 
-                    // Store in ResultRecord
-                    // Bits as specified at https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/e9a2d23c-c31e-4a6f-88a0-6646fdb51a3c1
-                    domain.Add("DisallowTransivity", IsBitSet(trustAttributes, 0).ToString());
-                    domain.Add("UplevelOnly", IsBitSet(trustAttributes, 1).ToString());
-                    domain.Add("ForestTransitive", IsBitSet(trustAttributes, 3).ToString());
-                    domain.Add("UsesRC4Encryption", IsBitSet(trustAttributes, 7).ToString());
-                    domain.Add("TGTDelegation", IsBitSet(trustAttributes, 9).ToString());
+                        // Store in ResultRecord
+                        // Bits as specified at https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/e9a2d23c-c31e-4a6f-88a0-6646fdb51a3c1
+                        domain.Add("DisallowTransivity", IsBitSet(trustAttributes, 0).ToString());
+                        domain.Add("UplevelOnly", IsBitSet(trustAttributes, 1).ToString());
+                        domain.Add("ForestTransitive", IsBitSet(trustAttributes, 3).ToString());
+                        domain.Add("UsesRC4Encryption", IsBitSet(trustAttributes, 7).ToString());
+                        domain.Add("TGTDelegation", IsBitSet(trustAttributes, 9).ToString());
+                    }
 
-                    // More attributes
-                    domain["TrustType"] = type.ToString();
+                    // TrustType
+                    if (domain.ContainsKey("trustType"))
+                    {
+                        TrustType type = (TrustType)Convert.ToInt32(domain["trustType"]);
+                        domain["TrustType"] = type.ToString();
+                    }
+
+                    if (domain.ContainsKey("DistinguishedName"))
+                    {
+                        string dn = domain["DistinguishedName"];
+                        domain.Add("Source", string.Join(",", Array.FindAll(dn.Split(','), s => s.StartsWith("DC="))));
+                    }
+
+                    // Direction
                     domain.Add("Direction", direction.ToString());
-                    domain.Add("Source", string.Join(",", Array.FindAll(dn.Split(','), s => s.StartsWith("DC="))));
+                    
 
                     // Attributes to be added:
                     // - IntraForest (bool)
@@ -190,8 +217,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 {
                     new StringArgument("Server", true),
                     new StringArgument("Properties", true),
-                    new StringArgument("LDAPFilter"),
-                    new IntegerArgument("Depth", 1, true) // Unofficial parameter
+                    new StringArgument("Filter", true),
+                    new StringArgument("LDAPFilter", true),
+                    new IntegerArgument("Depth", 1) // Unofficial parameter
                 };
             }
         }
@@ -207,8 +235,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List trusts", "Get-ADTrust"),
-                    new ExampleEntry("List trusts recursively till depth 3", "Get-ADTrust -Depth 3"),
+                    new ExampleEntry("List all direct trusts", "Get-ADTrust -Filter *"),
+                    new ExampleEntry("List trusts recursively till depth 3", "Get-ADTrust -Filter * -Depth 3"),
                     new ExampleEntry("List all details of a certain trust", "Get-ADTrust -LDAPFilter \"(Name=mydomain.com)\""),
                     new ExampleEntry("List specific details of a certain trust", "Get-ADTrust -LDAPFilter \"(Name=mydomain.com)\" -Properties Name,trustDirection,securityIdentifier")
                 };

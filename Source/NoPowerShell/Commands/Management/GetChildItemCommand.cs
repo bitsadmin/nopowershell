@@ -1,11 +1,12 @@
-﻿using NoPowerShell.Arguments;
+﻿using Microsoft.Win32;
+using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
-using System.IO;
-using System.Text;
-using Microsoft.Win32;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 
 /*
 Author: @bitsadmin
@@ -26,48 +27,96 @@ namespace NoPowerShell.Commands.Management
             // Obtain parameters
             bool includeHidden = _arguments.Get<BoolArgument>("Force").Value;
             string path = _arguments.Get<StringArgument>("Path").Value;
+            string literalPath = _arguments.Get<StringArgument>("LiteralPath").Value;
             bool recurse = _arguments.Get<BoolArgument>("Recurse").Value;
             int depth = _arguments.Get<IntegerArgument>("Depth").Value;
             string[] searchPatterns = _arguments.Get<StringArgument>("Include").Value.Split(new char[] { ',' });
+            bool followSymlink = _arguments.Get<BoolArgument>("FollowSymlink").Value;
+            bool useLiteralPath = false;
+
+            // LiteralPath
+            if (!string.IsNullOrEmpty(literalPath))
+            {
+                if (!string.IsNullOrEmpty(path) && path != ".")
+                    throw new NoPowerShellException("Specify either -Path or -LiteralPath, not both");
+
+                useLiteralPath = true;
+                path = literalPath;
+            }
+
+            // If Depth is specified, it implies recursion
+            if (depth != int.MaxValue)
+                recurse = true;
 
             // Registry:
             //     HKLM:\
             //     HKCU:\
             //     HKCR:\
             //     HKU:\
-            RegistryKey root = ProviderHelper.GetRegistryKey(ref path);
-            if (root != null)
-                _results = BrowseRegistry(root, path, includeHidden);
-
+            string registryPattern = @"^(HKLM|HKCU|HKCR|HKU):.*$";
+            Regex registryRegex = new Regex(registryPattern);
+            if (registryRegex.IsMatch(path))
+            {
+                RegistryHive root = RegistryHelper.GetRoot(ref path);
+                _results = BrowseRegistry(root, path);
+            }
             // Environment
             //     env:
             //     env:systemroot
             else if (path.ToUpperInvariant().StartsWith("ENV"))
+            {
                 _results = BrowseEnvironment(path);
-            
+            }
+            // SMB share or full path:
+            //     \\
+            //     \\?\C:\
+            //     \\?\UNC\MYSERVER\C$
+            else if (path.StartsWith(@"\\"))
+            {
+                // Fix path to support long paths if not the literal path is used
+                if(!useLiteralPath)
+                {
+                    // Full network path: \\MYSERVER -> \\?\UNC\MYSERVER
+                    if (!path.ToUpperInvariant().StartsWith(@"\\?\UNC"))
+                        path = path.Replace(@"\\", @"\\?\UNC\");
+                }
+
+                _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPatterns, useLiteralPath, followSymlink);
+            }
             // Filesystem:
             //     \
             //     ..\
             //     D:\
             else
-                _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPatterns);
+            {
+                // Add \\?\ prefix to support long paths
+                if (!useLiteralPath && !path.StartsWith(@"\\?\"))
+                    path = @"\\?\" + path;
+
+                _results = BrowseFilesystem(path, recurse, depth, includeHidden, searchPatterns, useLiteralPath, followSymlink);
+            }
 
             return _results;
         }
 
-        private static CommandResult BrowseRegistry(RegistryKey root, string path, bool includeHidden)
+        private static CommandResult BrowseRegistry(RegistryHive root, string path)
         {
             CommandResult results = new CommandResult();
 
-            RegistryKey key = root.OpenSubKey(path);
-            foreach (string subkey in key.GetSubKeyNames())
+            using (RegistryKey baseKey = RegistryKey.OpenBaseKey(root, RegistryView.Registry64))
             {
-                results.Add(
-                    new ResultRecord()
+                using (RegistryKey key = baseKey.OpenSubKey(path))
+                {
+                    foreach (string subkey in key.GetSubKeyNames())
                     {
-                        { "Name", subkey }
+                        results.Add(
+                            new ResultRecord()
+                            {
+                                { "Name", subkey }
+                            }
+                        );
                     }
-                );
+                }
             }
 
             return results;
@@ -116,7 +165,8 @@ namespace NoPowerShell.Commands.Management
             return results;
         }
 
-        public static CommandResult BrowseFilesystem(string path, bool recurse, int depth, bool includeHidden, string[] searchPatterns)
+        public static CommandResult BrowseFilesystem(string path, bool recurse, int depth, bool includeHidden, string[] searchPatterns,
+            bool useLiteralPath, bool followSymlink)
         {
             CommandResult results = new CommandResult();
 
@@ -125,9 +175,13 @@ namespace NoPowerShell.Commands.Management
             if (!gciDir.Exists)
                 throw new ItemNotFoundException(path);
 
-            // TODO: Follow symlinks. Skipping them for now
-            if ((gciDir.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
+            // Follow symlinks only if -FollowSymlink flag is specified, otherwise skip them
+            if (!followSymlink && (gciDir.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
                 return results;
+
+            // Display directory name
+            if (!recurse)
+                Console.WriteLine("\r\n    Directory: {0}\r\n", CleanupFullPath(gciDir.FullName, useLiteralPath));
 
             List<DirectoryInfo> directories = new List<DirectoryInfo>();
             try
@@ -144,12 +198,12 @@ namespace NoPowerShell.Commands.Management
             }
             catch (UnauthorizedAccessException)
             {
-                Program.WriteError("Access to the path '{0}' is denied.", path);
+                Program.WriteError("Access to the path '{0}' is denied.", CleanupFullPath(path, useLiteralPath));
                 return results;
             }
 
             List<FileInfo> files = new List<FileInfo>();
-            foreach(string pattern in searchPatterns)
+            foreach (string pattern in searchPatterns)
             {
                 files.AddRange(gciDir.GetFiles(pattern));
             }
@@ -167,14 +221,15 @@ namespace NoPowerShell.Commands.Management
                 ResultRecord currentDir = new ResultRecord()
                 {
                     { "Mode", GetModeFlags(dir) },
-                    { "LastWriteTime", dir.LastWriteTime.ToString() },
+                    { "LastWriteTime", dir.LastWriteTime.ToFormattedString() },
                     { "Length", string.Empty },
-                    { "Name", dir.Name }
                 };
 
-                // If recursive, also the directory name is needed
+                // If -Recurse is set, show the full path, otherwise the name
                 if (recurse)
-                    currentDir.Add("Directory", dir.FullName);
+                    currentDir.Add("FullName", CleanupFullPath(dir.FullName, useLiteralPath));
+                else
+                    currentDir.Add("Name", CleanupFullPath(dir.Name, useLiteralPath));
 
                 results.Add(currentDir);
             }
@@ -188,14 +243,15 @@ namespace NoPowerShell.Commands.Management
                 ResultRecord currentFile = new ResultRecord()
                 {
                     { "Mode", GetModeFlags(file) },
-                    { "LastWriteTime", file.LastWriteTime.ToString() },
-                    { "Length", file.Length.ToString() },
-                    { "Name", file.Name }
+                    { "LastWriteTime", file.LastWriteTime.ToFormattedString() },
+                    { "Length", file.Length.ToString() }
                 };
 
-                // If recursive, also the directory name is needed
+                // If -Recurse is set, show the full path, otherwise the name
                 if (recurse)
-                    currentFile.Add("Directory", file.Directory.FullName);
+                    currentFile.Add("FullName", CleanupFullPath(file.FullName, useLiteralPath));
+                else
+                    currentFile.Add("Name", CleanupFullPath(file.Name, useLiteralPath));
 
                 results.Add(currentFile);
             }
@@ -209,12 +265,22 @@ namespace NoPowerShell.Commands.Management
                     if ((subDir.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden && !includeHidden)
                         continue;
 
-                    CommandResult currentDir = BrowseFilesystem(subDir.FullName, recurse, depth - 1, includeHidden, searchPatterns);
+                    CommandResult currentDir = BrowseFilesystem(subDir.FullName, recurse, depth - 1, includeHidden, searchPatterns, useLiteralPath, followSymlink);
                     results.AddRange(currentDir);
                 }
             }
 
             return results;
+        }
+
+        private static string CleanupFullPath(string path, bool useLiteralPath)
+        {
+            if (useLiteralPath)
+                return path;
+            else
+                return path
+                    .Replace(@"\\?\UNC\", @"\\")
+                    .Replace(@"\\?\", "");
         }
 
         private static string GetModeFlags(FileSystemInfo f)
@@ -243,10 +309,12 @@ namespace NoPowerShell.Commands.Management
                 return new ArgumentList()
                 {
                     new StringArgument("Path", "."),
+                    new StringArgument("LiteralPath", true),
                     new BoolArgument("Force") ,
                     new BoolArgument("Recurse"),
-                    new IntegerArgument("Depth", int.MaxValue, true),
-                    new StringArgument("Include", "*", true)
+                    new IntegerArgument("Depth", int.MaxValue),
+                    new StringArgument("Include", "*"),
+                    new BoolArgument("FollowSymlink")
                 };
             }
         }
@@ -271,8 +339,10 @@ namespace NoPowerShell.Commands.Management
                             "ls -Recurse -Force C:\\Users\\ -Include *.kdbx"
                         }
                     ),
-                    new ExampleEntry("List the keys under the SOFTWARE key in the registry", "ls HKLM:\\SOFTWARE"),
+                    new ExampleEntry("List autoruns", "ls HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
                     new ExampleEntry("Search for files which can contain sensitive data on the C-drive", "ls -Recurse -Force C:\\ -Include *.cmd,*.bat,*.ps1,*.psm1,*.psd1"),
+                    new ExampleEntry("Create directory listing of SYSVOL", "ls -Recurse -FollowSymlinks \\\\DC1\\SYSVOL"),
+                    new ExampleEntry("Directory listing using LiteralPath", "Get-ChildItem -Recurse -LiteralPath \\\\?\\C:\\SomeVeryLongPath\\ -Include *.pem")
                 };
             }
         }

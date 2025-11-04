@@ -64,17 +64,26 @@
     <DllExportTimeout>30000</DllExportTimeout>
     <DllExportPeCheck>2</DllExportPeCheck>
     <DllExportPatches>0</DllExportPatches>
+    <DllExportRefreshObj>false</DllExportRefreshObj>
+    <DllExportILAsmExternAsm />
+    <DllExportILAsmTypeRef />
+    <DllExportTypeRefOptions>0</DllExportTypeRefOptions>
+    <DllExportRefPackages />
     <DllExportPreProcType>0</DllExportPreProcType>
     <DllExportPostProcType>0</DllExportPostProcType>
+    <DllExportDir>$(MSBuildProjectDirectory)\..\</DllExportDir>
   </PropertyGroup>
+	<PropertyGroup>
+	<StartupObject />
+	</PropertyGroup>
   <ItemGroup>
-    <Reference Include="BOFNET, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL" Condition=" $(DefineConstants.Contains('BOFBUILD')) ">
-      <HintPath>..\packages\BOFNET.1.1.3\lib\net40\BOFNET.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Condition="'$(DotNetVersion)' &gt; '4.0'" Include="System.IO.Compression" />
@@ -86,17 +95,23 @@
     <Compile Include="Arguments\BoolArgument.cs" />
     <Compile Include="Arguments\IntegerArgument.cs" />
     <Compile Include="Arguments\StringArgument.cs" />
+    <Compile Include="Commands\ActiveDirectory\GetADDomainControllerCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADComputerCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupMemberCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
+    <Compile Include="Commands\ActiveDirectory\GetADReplicationSubnetCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADObjectCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADTrustCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
+    <Compile Include="Commands\Additional\CopyAclCommand.cs" />
     <Compile Include="Commands\Additional\GetRemoteSmbShareCommand.cs" />
     <Compile Include="Commands\Additional\GetWinStationCommand.cs" />
+    <Compile Include="Commands\Additional\NewShortcutCommand.cs" />
     <Compile Include="Commands\Archive\ExpandArchiveCommand.cs" />
     <Compile Include="Commands\Archive\CompressArchiveCommand.cs" />
     <Compile Include="Commands\DnsClient\GetDnsClientCacheCommand.cs" />
+    <Compile Include="Commands\Diagnostics\GetWinEventCommand.cs" />
+    <Compile Include="Commands\Additional\ResolveAdiDnsNameCommand.cs" />
     <Compile Include="Commands\Management\GetClipboardCommand.cs" />
     <Compile Include="Commands\Management\GetComputerInfoCommand.cs" />
     <Compile Include="Commands\Core\GetCommandCommand.cs" />
@@ -107,6 +122,7 @@
     <Compile Include="Commands\LocalAccounts\GetLocalUserCommand.cs" />
     <Compile Include="Commands\Management\GetItemPropertyCommand.cs" />
     <Compile Include="Commands\Management\GetItemPropertyValueCommand.cs" />
+    <Compile Include="Commands\Management\GetServiceCommand.cs" />
     <Compile Include="Commands\Management\RemoveItemCommand.cs" />
     <Compile Include="Commands\Management\InvokeWmiMethodCommand.cs" />
     <Compile Include="Commands\Management\CopyItemCommand.cs" />
@@ -120,9 +136,12 @@
     <Compile Include="Commands\NetTCPIP\GetNetNeighborCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetTCPConnectionCommand.cs" />
     <Compile Include="Commands\NetTCPIP\TestNetConnectionCommand.cs" />
+    <Compile Include="Commands\Security\GetAclCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbShareCommand.cs" />
+    <Compile Include="Commands\SQLPS\InvokeSqlcmdCommand.cs" />
     <Compile Include="Commands\TemplateCommand.cs" />
+    <Compile Include="Commands\Utility\ConvertToCsvCommand.cs" />
     <Compile Include="Commands\Utility\ExportCsvCommand.cs" />
     <Compile Include="Commands\Utility\FormatListCommand.cs" />
     <Compile Include="Commands\Utility\FormatTableCommand.cs" />
@@ -137,6 +156,8 @@
     <Compile Include="Commands\Utility\InvokeWebRequestCommand.cs" />
     <Compile Include="Commands\Utility\MeasureObjectCommand.cs" />
     <Compile Include="Commands\Utility\SortObjectCommand.cs" />
+    <Compile Include="Commands\Utility\ConvertFromSddlStringCommand.cs" />
+    <Compile Include="Commands\Utility\GetFileHashCommand.cs" />
     <Compile Include="Commands\Utility\WriteOutputCommand.cs" />
     <Compile Include="HelperClasses\CaseInsensitiveList.cs" />
     <Compile Include="HelperClasses\CommandResult.cs" />
@@ -160,25 +181,35 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BOFNET">
+      <Version>1.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="DllExport">
+      <Version>1.8.1</Version>
+      <Visible>false</Visible>
+      <Wz>1</Wz>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ImportGroup Label=".NET DllExport">
-    <Import Project="$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
+    <Import Project="$(DllExportDir)packages\DllExport.1.8.1\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(DllExportDir)packages\DllExport.1.8.1\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
   </ImportGroup>
   <Target Name="DllExportRestorePkg" BeforeTargets="PrepareForBuild">
-    <Error Condition="!Exists('$(SolutionDir)DllExport.bat')" Text="DllExport.bat is not found. Path: '$(SolutionDir)' - https://github.com/3F/DllExport" />
-    <Exec Condition="('$(DllExportModImported)' != 'true' Or !Exists('$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets')) And Exists('$(SolutionDir)DllExport.bat')" Command=".\DllExport.bat -debug -action Restore" WorkingDirectory="$(SolutionDir)" />
-    <MSBuild Condition="'$(DllExportModImported)' != 'true'" Projects="$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets" Targets="DllExportMetaXBaseTarget" Properties="TargetFramework=$(TargetFramework)">
+    <Error Condition="'$(DllExportNoRestore)'!='true' And !Exists('$(DllExportDir)DllExport.bat')" Text="DllExport.bat was not found in $(DllExportDir); https://github.com/3F/DllExport" />
+    <Exec Condition="'$(DllExportNoRestore)'!='true' And ('$(DllExportModImported)'!='true' Or !Exists('$(DllExportDir)packages\DllExport.1.8.1\tools\net.r_eg.DllExport.targets') Or !Exists('$(DllExportDir)packages\DllExport.1.8.1\gcache')) And Exists('$(DllExportDir)DllExport.bat')" Command=".\DllExport.bat  -action Restore" WorkingDirectory="$(DllExportDir)" />
+    <MSBuild Condition="'$(DllExportModImported)'!='true'" Projects="$(DllExportDir)packages\DllExport.1.8.1\tools\net.r_eg.DllExport.targets" Targets="DllExportMetaXBaseTarget" Properties="TargetFramework=$(TargetFramework)">
       <Output TaskParameter="TargetOutputs" PropertyName="DllExportMetaXBase" />
     </MSBuild>
     <ItemGroup>
       <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
-        <HintPath>$(SolutionDir)packages\DllExport.1.7.4\gcache\$(DllExportMetaXBase)\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
+        <HintPath>$(DllExportDir)packages\DllExport.1.8.1\gcache\$(DllExportMetaXBase)\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
         <Private>False</Private>
         <SpecificVersion>False</SpecificVersion>
       </Reference>
     </ItemGroup>
   </Target>
-  <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
-    <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />
+  <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)'!='true' And '$(DllExportRPkgDyn)'!='false'">
+    <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="Configuration=$(Configuration);DllExportRPkgDyn=true" Targets="Build" />
   </Target>
 </Project>

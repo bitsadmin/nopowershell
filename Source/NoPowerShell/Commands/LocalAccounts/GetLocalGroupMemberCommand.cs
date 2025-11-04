@@ -117,7 +117,7 @@ namespace NoPowerShell.Commands.LocalAccounts
                 Win32API.LOCALGROUP_INFO_1 groupInfo = (Win32API.LOCALGROUP_INFO_1)Marshal.PtrToStructure(new IntPtr(newOffset), typeof(Win32API.LOCALGROUP_INFO_1));
                 string currentGroupName = Marshal.PtrToStringAuto(groupInfo.lpszGroupName);
 
-                if (groupname.ToLowerInvariant() != currentGroupName.ToLowerInvariant())
+                if (currentGroupName == null || groupname.ToLowerInvariant() != currentGroupName.ToLowerInvariant())
                     continue;
 
                 found = true;
@@ -194,7 +194,7 @@ namespace NoPowerShell.Commands.LocalAccounts
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List all active members of the Administrators group", "Get-LocalGroupMember -Group Administrators | ? Disabled -eq False")
+                    new ExampleEntry("List members of the Administrators group", "Get-LocalGroupMember -Group Administrators")
                 };
             }
         }

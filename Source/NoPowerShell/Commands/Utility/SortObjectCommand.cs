@@ -22,7 +22,7 @@ namespace NoPowerShell.Commands.Utility
             bool unique = _arguments.Get<BoolArgument>("Unique").Value;
 
             // Finished if input pipe is empty
-            if (pipeIn.Count == 0)
+            if (pipeIn == null || pipeIn.Count == 0)
                 return pipeIn;
 
             // If no specific field specified, use first one
@@ -115,8 +115,8 @@ namespace NoPowerShell.Commands.Utility
                 return new ArgumentList()
                 {
                     new StringArgument("Property"),
-                    new BoolArgument("Descending", false),
-                    new BoolArgument("Unique", false)
+                    new BoolArgument("Descending"),
+                    new BoolArgument("Unique")
                 };
             }
         }

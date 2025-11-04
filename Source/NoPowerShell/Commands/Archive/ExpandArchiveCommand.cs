@@ -67,7 +67,7 @@ namespace NoPowerShell.Commands.Archive
                 return new ArgumentList()
                 {
                     new StringArgument("Path"),
-                    new StringArgument("DestinationPath")
+                    new StringArgument("DestinationPath", true)
                 };
             }
         }

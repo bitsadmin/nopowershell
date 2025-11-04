@@ -103,8 +103,8 @@ namespace NoPowerShell.Commands.Management
                         "List processes on remote host using WMI",
                         new List<string>()
                         {
-                            "Get-Process -ComputerName dc01.corp.local -Username Administrator -Password P4ssw0rd!",
-                            "ps -ComputerName dc01.corp.local"
+                            "Get-Process -ComputerName MyServer -Username MyUser -Password MyPassword",
+                            "ps -ComputerName MyServer"
                         }
                     )
                 };

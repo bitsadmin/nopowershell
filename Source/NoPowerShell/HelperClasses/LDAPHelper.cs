@@ -2,9 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.DirectoryServices;
-using System.DirectoryServices.ActiveDirectory;
+using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Text;
 
 /*
 Author: @bitsadmin
@@ -16,6 +15,16 @@ namespace NoPowerShell.HelperClasses
 {
     class LDAPHelper
     {
+        public static string GetDistinguishedName(string server, string username, string password)
+        {
+            CommandResult result = LDAPHelper.QueryLDAP(null, SearchScope.Base, "(objectClass=*)", new List<string>() { "distinguishedname" }, 1, server, username, password);
+
+            if (result.Count == 0)
+                return string.Empty;
+
+            return result[0]["distinguishedname"];
+        }
+
         public static CommandResult QueryLDAP(string queryFilter, List<string> properties)
         {
             return QueryLDAP(null, queryFilter, properties, null, null, null);
@@ -23,10 +32,10 @@ namespace NoPowerShell.HelperClasses
 
         public static CommandResult QueryLDAP(string searchBase, string queryFilter, List<string> properties, string server, string username, string password)
         {
-            return QueryLDAP(searchBase, SearchScope.Subtree, queryFilter, properties, server, username, password);
+            return QueryLDAP(searchBase, SearchScope.Subtree, queryFilter, properties, 0, server, username, password);
         }
 
-        public static CommandResult QueryLDAP(string searchBase, SearchScope scope, string queryFilter, List<string> properties, string server, string username, string password)
+        public static CommandResult QueryLDAP(string searchBase, SearchScope scope, string queryFilter, List<string> properties, int resultSetSize, string server, string username, string password)
         {
             CommandResult _results = new CommandResult();
 
@@ -41,7 +50,7 @@ namespace NoPowerShell.HelperClasses
             if (hasServer)
             {
                 ldap += server;
-                
+
                 if (hasSearchBase)
                     ldap += "/" + searchBase;
             }
@@ -54,7 +63,8 @@ namespace NoPowerShell.HelperClasses
             DirectoryEntry entry = new DirectoryEntry(
                 ldap,
                 username,
-                password
+                password,
+                AuthenticationTypes.Secure
             );
 
             // Initialize searcher
@@ -64,6 +74,9 @@ namespace NoPowerShell.HelperClasses
                 ds.PropertiesToLoad.Clear();
                 ds.PropertiesToLoad.AddRange(properties.ToArray());
                 ds.SearchScope = scope;
+                ds.SizeLimit = resultSetSize;
+                ds.SecurityMasks = SecurityMasks.Dacl | SecurityMasks.Group | SecurityMasks.Owner; // Required to obtain nTSecurityDescriptor
+                //ds.ReferralChasing = ReferralChasingOption.All;
 
                 // Filter
                 ds.Filter = queryFilter;
@@ -86,11 +99,11 @@ namespace NoPowerShell.HelperClasses
                     //foreach (string property in properties)
                     //    if (!ciProperties.Contains(property))
                     //        throw new NoPowerShellException(string.Format("Column {0} not available in results", property));
-                    
+
                     // Create template
                     // This makes sure the order of columns is in the order the user specified
                     recordTemplate = new ResultRecord(properties.Count);
-                    foreach(string property in properties)
+                    foreach (string property in properties)
                         recordTemplate.Add(property, null);
                 }
 
@@ -122,20 +135,48 @@ namespace NoPowerShell.HelperClasses
                                 SecurityIdentifier sid = new SecurityIdentifier((byte[])objArray[0], 0);
                                 foundRecord[propertyKey] = sid.ToString();
                                 continue;
+                            // Convert byte array field to SDDL
+                            case "ntsecuritydescriptor":
+                            case "msds-allowedtoactonbehalfofotheridentity":
+                                RawSecurityDescriptor descriptor = new RawSecurityDescriptor((byte[])objArray[0], 0);
+                                foundRecord[propertyKey] = descriptor.GetSddlForm(AccessControlSections.All);
+                                //ActiveDirectorySecurity descriptor = new ActiveDirectorySecurity();
+                                //descriptor.SetSecurityDescriptorBinaryForm((byte[])objArray[0], AccessControlSections.All);
+                                continue;
                             // Date fields
                             case "lastlogon":
                             case "lastlogontimestamp":
                             case "badpasswordtime":
                             case "pwdlastset":
-                            case "PasswordLastSet":
+                            case "passwordlastset":
+                            case "usnchanged":
+                            case "usncreated":
                                 DateTime lastlogon = DateTime.FromFileTime((long)objArray[0]);
-                                foundRecord[propertyKey] = lastlogon.ToString();
+                                foundRecord[propertyKey] = lastlogon.ToFormattedString();
+                                continue;
+                            case "accountexpires":
+                                long accountExpires = (long)objArray[0];
+                                // Account never expires
+                                if (accountExpires == 0x7FFFFFFFFFFFFFFF)
+                                    foundRecord[propertyKey] = "Never";
+                                else
+                                    DateTime.FromFileTime(accountExpires).ToFormattedString();
                                 continue;
                             // This attribute is automatically added
                             case "adspath":
                                 if (!properties.Contains(propertyKey))
                                     continue;
                                 break;
+                            case "dnsrecord":
+                                string[] nodes = new string[objArray.Count];
+                                int nodeCounter = 0;
+                                foreach (byte[] record in objArray)
+                                {
+                                    nodes[nodeCounter] = new AdiDnsNode(record).ToString();
+                                    nodeCounter++;
+                                }
+                                foundRecord[propertyKey] = string.Join("\n", nodes);
+                                continue;
                         }
 
                         // Convert objects to string
@@ -157,7 +198,8 @@ namespace NoPowerShell.HelperClasses
             return _results;
         }
 
-        public static bool IsActive(string bits)
+        // https://learn.microsoft.com/en-us/troubleshoot/windows-server/active-directory/useraccountcontrol-manipulate-account-properties
+        public static bool IsEnabled(string bits)
         {
             if (string.IsNullOrEmpty(bits))
                 return true;

@@ -1,8 +1,7 @@
-﻿using NoPowerShell.Arguments;
+﻿using Microsoft.Win32;
+using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
-using Microsoft.Win32;
-using System.Collections.Generic;
 
 /*
 Author: @bitsadmin
@@ -42,33 +41,39 @@ namespace NoPowerShell.Commands.Management
             //     ..\
             //     D:\
             else
-                _results = GetChildItemCommand.BrowseFilesystem(path, false, 1, includeHidden, searchPatterns);
+                _results = GetChildItemCommand.BrowseFilesystem(path, false, 1, includeHidden, searchPatterns, false, true);
 
             return _results;
         }
 
         private CommandResult BrowseRegistry(string path, CaseInsensitiveList attributeNames)
         {
-            RegistryKey root = RegistryHelper.GetRoot(ref path);
+            RegistryHive root = RegistryHelper.GetRoot(ref path);
 
-            RegistryKey key = root.OpenSubKey(path);
-            foreach (string valueName in key.GetValueNames())
+            // Open the base key with the desired view
+            using (RegistryKey baseKey = RegistryKey.OpenBaseKey(root, RegistryView.Registry64))
             {
-                string valueKind = key.GetValueKind(valueName).ToString();
-                string value = Convert.ToString(key.GetValue(valueName));
-
-                // Skip if -Names parameter is provided and current attribute is not in the list
-                if (attributeNames != null && !attributeNames.Contains(valueName))
-                    continue;
-
-                _results.Add(
-                    new ResultRecord()
+                using (RegistryKey key = baseKey.OpenSubKey(path))
+                {
+                    foreach (string valueName in key.GetValueNames())
                     {
-                        { "Name", valueName },
-                        { "Kind", valueKind },
-                        { "Value", value }
+                        string valueKind = key.GetValueKind(valueName).ToString();
+                        string value = Convert.ToString(key.GetValue(valueName));
+
+                        // Skip if -Names parameter is provided and current attribute is not in the list
+                        if (attributeNames != null && !attributeNames.Contains(valueName))
+                            continue;
+
+                        _results.Add(
+                            new ResultRecord()
+                            {
+                                { "Name", valueName },
+                                { "Kind", valueKind },
+                                { "Value", value }
+                            }
+                        );
                     }
-                );
+                }
             }
 
             return _results;
@@ -87,7 +92,7 @@ namespace NoPowerShell.Commands.Management
                 {
                     new StringArgument("Path", "."),
                     new BoolArgument("Force") ,
-                    new StringArgument("Include", "*", true),
+                    new StringArgument("Include", "*"),
                     new StringArgument("Name", true)
                 };
             }

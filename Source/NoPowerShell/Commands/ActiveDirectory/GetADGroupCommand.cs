@@ -19,6 +19,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
             string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
@@ -64,8 +67,16 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 queryFilter = string.Format(filterBase, string.Empty);
             }
 
+            // Obtain search base if not specified
+            if (string.IsNullOrWhiteSpace(searchBase))
+                searchBase = LDAPHelper.GetDistinguishedName(server, username, password);
+
             // Query
             _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, new List<string>(properties.Split(',')), server, username, password);
+
+            // Display error message if no results and identity is specified
+            if (_results.Count == 0 && !string.IsNullOrEmpty(identity))
+                Console.WriteLine($"{Aliases[0]}: Cannot find an object with identity: '{identity}' under '{searchBase}'.");
 
             return _results;
         }
@@ -83,10 +94,10 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 {
                     new StringArgument("Server", true),
                     new StringArgument("SearchBase", true),
-                    new StringArgument("Identity"),
-                    new StringArgument("Filter"),
-                    new StringArgument("LDAPFilter"),
-                    new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID", true)
+                    new StringArgument("Identity", true),
+                    new StringArgument("Filter", true),
+                    new StringArgument("LDAPFilter", true),
+                    new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID")
                 };
             }
         }

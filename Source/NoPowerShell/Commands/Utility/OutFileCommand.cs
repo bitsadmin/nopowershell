@@ -56,7 +56,7 @@ namespace NoPowerShell.Commands.Utility
                 {
                     new StringArgument("FilePath", false),
                     new StringArgument("Encoding", "UTF-8"),
-                    new BoolArgument("PassThru", false)
+                    new BoolArgument("PassThru")
                 };
             }
         }
@@ -72,7 +72,6 @@ namespace NoPowerShell.Commands.Utility
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("Echo string to the console", "echo \"Hello Console!\""),
                     new ExampleEntry
                     (
                         "Create file hello.txt on the C: drive containing the \"Hello World!\" ASCII string",
@@ -81,7 +80,8 @@ namespace NoPowerShell.Commands.Utility
                             @"Write-Output ""Hello World!"" | Out-File -Encoding ASCII C:\hello.txt",
                             @"echo ""Hello World!"" | Out-File -Encoding ASCII C:\hello.txt"
                         }
-                    )
+                    ),
+                    new ExampleEntry("Create file with newlines", "echo \"@echo off`r`necho Hello World!\" | Out-File -Encoding ASCII C:\\hello.cmd")
                 };
             }
         }

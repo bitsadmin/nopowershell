@@ -19,16 +19,33 @@ namespace NoPowerShell.Arguments
         protected string _name;
         protected bool _isOptionalArgument;
         protected bool _dashArgumentNameSkipUsed;
+        protected bool _isSet;
+
+        public Argument()
+        {
+        }
 
         public Argument(string name)
         {
-            this._name = name;
+            _name = name;
             _dashArgumentNameSkipUsed = false;
+            _isSet = false;
         }
 
         public bool Equals(Argument other)
         {
             return other.Name.Equals(_name.Substring(0, other.Name.Length), StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public Argument Clone()
+        {
+            return new Argument()
+            {
+                _name = this._name,
+                _isOptionalArgument = this._isOptionalArgument,
+                _dashArgumentNameSkipUsed = this._dashArgumentNameSkipUsed,
+                _isSet = this._isSet
+            };
         }
 
         public string Name
@@ -41,8 +58,18 @@ namespace NoPowerShell.Arguments
             get { return this._isOptionalArgument; }
         }
 
+        public virtual bool IsDefaultValue
+        {
+            get { return false; }
+        }
+
+        public bool IsSet
+        {
+            get { return _isSet; }
+        }
+
         /// <summary>
-        /// Optional StringArgument which requires a value
+        /// Positional StringArgument which requires a value
         /// </summary>
         public bool DashArgumentNameSkipUsed
         {

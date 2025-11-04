@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System;
 using System.Collections.Generic;
 
 /*
@@ -18,6 +19,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
@@ -27,8 +31,16 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 string.Format("(&(objectCategory=group)(cn={0}))", identity),
                 new List<string>(1) { "distinguishedName" }
             );
-            string distinguishedName = dn[0]["distinguishedName"];
 
+            // Return error if group is not found
+            if (dn.Count == 0)
+            {
+                Console.WriteLine($"{Aliases[0]}: Cannot find an object with identity: '{identity}'.");
+                return dn;
+            }
+
+            // Obtain group members
+            string distinguishedName = dn[0]["distinguishedName"];
             _results = LDAPHelper.QueryLDAP(
                 null,
                 string.Format("(memberOf={0})", distinguishedName),

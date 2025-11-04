@@ -1,6 +1,5 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
-using System;
 using System.Collections.Generic;
 
 /*
@@ -19,7 +18,7 @@ namespace NoPowerShell.Commands
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect the (optional) ComputerName, Username and Password parameters
+            // Collect the (optional) ComputerName, Username and Password parameters and Verbose and WhatIf flags
             base.Execute();
 
             // Obtain cmdlet parameters
@@ -79,7 +78,7 @@ namespace NoPowerShell.Commands
                 return new ArgumentList()
                 {
                     new BoolArgument("MyFlag"),
-                    new IntegerArgument("MyInteger", 5, true),
+                    new IntegerArgument("MyInteger", 5),
                     new StringArgument("MyString", "Hello World")
                 };
             }

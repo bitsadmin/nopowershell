@@ -19,6 +19,9 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
             string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
@@ -62,8 +65,16 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 queryFilter = string.Format(filterBase, string.Empty);
             }
 
+            // Obtain search base if not specified
+            if(string.IsNullOrWhiteSpace(searchBase))
+                searchBase = LDAPHelper.GetDistinguishedName(server, username, password);
+
             // Query
             _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, new List<string>(properties.Split(',')), server, username, password);
+
+            // Display error message if no results and identity is specified
+            if(_results.Count == 0 && !string.IsNullOrEmpty(identity))
+                Console.WriteLine($"{Aliases[0]}: Cannot find an object with identity: '{identity}' under '{searchBase}'.");
 
             return _results;
         }
@@ -81,10 +92,10 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 {
                     new StringArgument("Server", true),
                     new StringArgument("SearchBase", true),
-                    new StringArgument("Identity"),
+                    new StringArgument("Identity", true),
                     new StringArgument("Filter", true),
                     new StringArgument("LDAPFilter", true),
-                    new StringArgument("Properties", "DistinguishedName,DNSHostName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,UserPrincipalName", true)
+                    new StringArgument("Properties", "DistinguishedName,DNSHostName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,UserPrincipalName")
                 };
             }
         }
@@ -100,11 +111,11 @@ namespace NoPowerShell.Commands.ActiveDirectory
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List all properties of the DC01 domain computer", "Get-ADComputer -Identity DC01 -Properties *"),
+                    new ExampleEntry("List all properties of the DC1 domain computer", "Get-ADComputer -Identity DC1 -Properties *"),
                     new ExampleEntry("List all Domain Controllers", "Get-ADComputer -LDAPFilter \"(msDFSR-ComputerReferenceBL=*)\""),
                     new ExampleEntry("List all computers in domain", "Get-ADComputer -Filter *"),
-                    new ExampleEntry("List domain controllers", "Get-ADComputer -searchBase \"OU=Domain Controllers,DC=bitsadmin,DC=local\" -Filter *"),
-                    new ExampleEntry("List specific attributes of the DC01 domain computer", "Get-ADComputer DC01 -Properties Name,operatingSystem")
+                    new ExampleEntry("List domain controllers", "Get-ADComputer -searchBase \"OU=Domain Controllers,DC=mydomain,DC=local\" -Filter *"),
+                    new ExampleEntry("List specific attributes of the DC1 domain computer", "Get-ADComputer -Identity DC1 -Properties Name,operatingSystem")
                 };
             }
         }

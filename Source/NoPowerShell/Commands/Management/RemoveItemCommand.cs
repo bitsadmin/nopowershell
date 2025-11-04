@@ -1,5 +1,6 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -19,13 +20,16 @@ namespace NoPowerShell.Commands.Management
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Collect common parameters
+            base.Execute();
+
             // Obtain source and destination
             string path = _arguments.Get<StringArgument>("Path").Value;
             bool force = _arguments.Get<BoolArgument>("Force").Value;
             bool recurse = _arguments.Get<BoolArgument>("Recurse").Value;
 
             // Determine if provided path is a file or a directory
-            if (!File.Exists(path))
+            if (!File.Exists(path) && !Directory.Exists(path))
                 throw new NoPowerShellException("Cannot find path '{0}' because it does not exist.", path);
 
             FileAttributes attr = File.GetAttributes(path);
@@ -33,7 +37,11 @@ namespace NoPowerShell.Commands.Management
             // Directory
             if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
             {
-                DirectoryDelete(path, recurse, force);
+                DirectoryDelete(path, recurse, force, verbose);
+
+                if (verbose)
+                    Console.WriteLine("Removing directory: {0}", path);
+
                 Directory.Delete(path);
             }
             // File
@@ -43,6 +51,9 @@ namespace NoPowerShell.Commands.Management
                 if(force)
                     File.SetAttributes(path, attr & ~FileAttributes.ReadOnly);
 
+                if(verbose)
+                    Console.WriteLine("Removing file: {0}", path);
+
                 File.Delete(path);
             }
 
@@ -51,14 +62,14 @@ namespace NoPowerShell.Commands.Management
 
         // Inspired by:
         // https://docs.microsoft.com/dotnet/standard/io/how-to-copy-directories
-        private static void DirectoryDelete(string dirName, bool recurse, bool force)
+        private static void DirectoryDelete(string dirName, bool recurse, bool force, bool verbose)
         {
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(dirName);
             DirectoryInfo[] dirs = dir.GetDirectories();
 
             if (dirs.Length > 0 && !recurse)
-                throw new System.Exception(string.Format("The item at {0} has children and the Recurse parameter was not specified. Nothing has been removed.", dirName));
+                throw new NoPowerShellException(string.Format("The item at {0} has children and the Recurse parameter was not specified. Nothing has been removed.", dirName));
 
             // Get the files in the directory and copy them to the new location.
             FileInfo[] files = dir.GetFiles();
@@ -68,6 +79,9 @@ namespace NoPowerShell.Commands.Management
                 if (force)
                     File.SetAttributes(file.FullName, file.Attributes & ~FileAttributes.ReadOnly);
 
+                if(verbose)
+                    Console.WriteLine("Removing file: {0}", file.FullName);
+
                 file.Delete();
             }
 
@@ -76,7 +90,11 @@ namespace NoPowerShell.Commands.Management
             {
                 foreach (DirectoryInfo subdir in dirs)
                 {
-                    DirectoryDelete(subdir.FullName, recurse, force);
+                    DirectoryDelete(subdir.FullName, recurse, force, verbose);
+
+                    if (verbose)
+                        Console.WriteLine("Removing directory: {0}", subdir.FullName);
+
                     subdir.Delete();
                 }
             }

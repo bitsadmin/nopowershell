@@ -1,10 +1,9 @@
 ﻿using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
-using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Sockets;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 
 /*
@@ -38,7 +37,7 @@ namespace NoPowerShell.Commands.NetTCPIP
             string ip = ResolveIP(computerName);
 
             // ICMP
-            if(port == -1)
+            if (port == -1)
             {
                 // Traceroute
                 if (performTraceroute)
@@ -52,7 +51,6 @@ namespace NoPowerShell.Commands.NetTCPIP
             {
                 _results = PerformPortTest(ip, computerName, port);
             }
-            
 
             return _results;
         }
@@ -70,7 +68,7 @@ namespace NoPowerShell.Commands.NetTCPIP
             {
                 ip = Dns.GetHostEntry(computerName);
             }
-            catch(SocketException)
+            catch (SocketException)
             {
                 throw new NoPowerShellException("Name resolution of {0} failed", computerName);
             }
@@ -103,7 +101,7 @@ namespace NoPowerShell.Commands.NetTCPIP
                     { "TcpTestSucceeded", connected ? "True" : "False" }
                 });
             }
-            catch(SocketException)
+            catch (SocketException)
             {
                 throw new NoPowerShellException("TCP connect to ({0} : {1}) failed", ip, port);
             }
@@ -128,12 +126,15 @@ namespace NoPowerShell.Commands.NetTCPIP
                 {
                     reply = ping.Send(ip, timeout, alphabet, options);
                 }
-                catch(PingException)
+                catch (PingException)
                 {
                     break;
                 }
 
                 succeeded = true;
+
+                if (reply.Status != IPStatus.Success)
+                    Program.WriteWarning("Ping to {0} failed with status: {1}", ip, reply.Status);
 
                 // Add to output
                 results.Add(
@@ -172,21 +173,27 @@ namespace NoPowerShell.Commands.NetTCPIP
             Ping ping = new Ping();
             List<string> IPs = new List<string>(maxHops);
 
+            // Perform check if target is reachable
+            PingOptions options = new PingOptions(maxHops, true);
+            PingReply reply = ping.Send(ip, timeout, alphabet, options);
+            if(reply.Status != IPStatus.Success)
+                Program.WriteWarning("Ping to {0} failed with status: {1}", ip, reply.Status);
+
             // Last hop details
-            string remoteAddress = string.Empty;
+            string remoteAddress = ip;
             bool succeeded = false;
-            int rtt = -1;
+            int rtt = 0;
 
             for (int ttl = 1; ttl <= maxHops; ttl++)
             {
-                PingOptions options = new PingOptions(ttl, true);
-                PingReply reply = null;
+                rtt = 0;
+                options = new PingOptions(ttl, true);
 
                 try
                 {
                     reply = ping.Send(ip, timeout, alphabet, options);
                 }
-                catch(PingException)
+                catch (PingException)
                 {
                     break;
                 }
@@ -194,7 +201,7 @@ namespace NoPowerShell.Commands.NetTCPIP
                 if (reply.Status == IPStatus.TtlExpired)
                     IPs.Add(reply.Address.ToString());
                 else if (reply.Status == IPStatus.TimedOut)
-                    IPs.Add("*");
+                    IPs.Add("0.0.0.0");
                 else if (reply.Status == IPStatus.Success)
                 {
                     IPs.Add(reply.Address.ToString());
@@ -203,20 +210,28 @@ namespace NoPowerShell.Commands.NetTCPIP
                     rtt = (int)reply.RoundtripTime;
                     break;
                 }
+                else
+                {
+                    IPs.Add(reply.Address.ToString());
+                    Program.WriteWarning("Ping to {0} failed with status: {1}", reply.Address, reply.Status);
+                }
+            }
+
+            // Check for insufficient TTL
+            string lastIp = IPs[IPs.Count - 1];
+            if (lastIp != ip)
+            {
+                Program.WriteWarning("Trace route to destination {0} did not complete. Trace terminated :: {1}", ip, lastIp);
             }
 
             ResultRecord record = new ResultRecord()
             {
                 { "ComputerName", computerName },
                 { "RemoteAddress", remoteAddress },
-                { "PingSucceeded", succeeded ? "True" : "False" }
+                { "PingSucceeded", succeeded ? "True" : "False" },
+                { "PingReplyDetails (RTT)", $"{rtt} ms" },
+                { "TraceRoute", string.Join("\n", IPs.ToArray()) }
             };
-
-            if(succeeded)
-            {
-                record.Add("PingReplyDetails (RTT)", rtt.ToString());
-                record.Add("TraceRoute", string.Join(", ", IPs.ToArray()));
-            }
 
             results.Add(record);
 
@@ -225,7 +240,8 @@ namespace NoPowerShell.Commands.NetTCPIP
 
         public static new CaseInsensitiveList Aliases
         {
-            get {
+            get
+            {
                 return new CaseInsensitiveList()
                 {
                     "Test-NetConnection",
@@ -241,12 +257,12 @@ namespace NoPowerShell.Commands.NetTCPIP
             {
                 return new ArgumentList()
                 {
-                    new BoolArgument("TraceRoute", false),
+                    new BoolArgument("TraceRoute"),
                     new StringArgument("ComputerName"),
-                    new IntegerArgument("Count", 1, true),      // Unofficial parameter
-                    new IntegerArgument("Timeout", 5000, true), // Unofficial parameter
-                    new IntegerArgument("TTL", 128, true),      // Unofficial parameter
-                    new IntegerArgument("Hops", 30, true),
+                    new IntegerArgument("Count", 1),      // Unofficial parameter
+                    new IntegerArgument("Timeout", 5000), // Unofficial parameter
+                    new IntegerArgument("TTL", 128),      // Unofficial parameter
+                    new IntegerArgument("Hops", 30),
                     new IntegerArgument("Port", -1)
                 };
             }
@@ -273,9 +289,9 @@ namespace NoPowerShell.Commands.NetTCPIP
                         }
                     ),
                     new ExampleEntry("Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout", "Test-NetConnection -Count 2 -Timeout 500 1.1.1.1"),
-                    new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 bitsadm.in"),
+                    new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 bitsadmin.com"),
                     new ExampleEntry("Perform ping with maximum TTL specified", "ping -TTL 32 1.1.1.1"),
-                    new ExampleEntry("Check for open port", "tnc bitsadm.in -Port 80")
+                    new ExampleEntry("Check for open port", "tnc bitsadmin.com -Port 80")
                 };
             }
         }

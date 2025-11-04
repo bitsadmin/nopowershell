@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.ComponentModel;
+using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -21,22 +22,22 @@ namespace NoPowerShell.HelperClasses
     {
         public static readonly Hashtable RecordTypes = new Hashtable(StringComparer.InvariantCultureIgnoreCase)
         {
-            { "A", DnsRecordTypes.DNS_TYPE_A },
-            { "NS", DnsRecordTypes.DNS_TYPE_NS },
-            { "MD", DnsRecordTypes.DNS_TYPE_MD },
-            { "MF", DnsRecordTypes.DNS_TYPE_MF },
-            { "CNAME", DnsRecordTypes.DNS_TYPE_CNAME },
-            { "SOA", DnsRecordTypes.DNS_TYPE_SOA },
-            { "MB", DnsRecordTypes.DNS_TYPE_MB },
-            { "MG", DnsRecordTypes.DNS_TYPE_MG },
-            { "MR", DnsRecordTypes.DNS_TYPE_MR },
-            { "WKS", DnsRecordTypes.DNS_TYPE_WKS },
-            { "PTR", DnsRecordTypes.DNS_TYPE_PTR },
-            { "MX", DnsRecordTypes.DNS_TYPE_MX },
-            { "TXT", DnsRecordTypes.DNS_TYPE_TEXT },
-            { "RT", DnsRecordTypes.DNS_TYPE_RT },
-            { "AAAA", DnsRecordTypes.DNS_TYPE_AAAA },
-            { "SRV", DnsRecordTypes.DNS_TYPE_SRV }
+            { "A", DnsRecordType.DNS_TYPE_A },
+            { "NS", DnsRecordType.DNS_TYPE_NS },
+            { "MD", DnsRecordType.DNS_TYPE_MD },
+            { "MF", DnsRecordType.DNS_TYPE_MF },
+            { "CNAME", DnsRecordType.DNS_TYPE_CNAME },
+            { "SOA", DnsRecordType.DNS_TYPE_SOA },
+            { "MB", DnsRecordType.DNS_TYPE_MB },
+            { "MG", DnsRecordType.DNS_TYPE_MG },
+            { "MR", DnsRecordType.DNS_TYPE_MR },
+            { "WKS", DnsRecordType.DNS_TYPE_WKS },
+            { "PTR", DnsRecordType.DNS_TYPE_PTR },
+            { "MX", DnsRecordType.DNS_TYPE_MX },
+            { "TXT", DnsRecordType.DNS_TYPE_TEXT },
+            { "RT", DnsRecordType.DNS_TYPE_RT },
+            { "AAAA", DnsRecordType.DNS_TYPE_AAAA },
+            { "SRV", DnsRecordType.DNS_TYPE_SRV }
         };
 
         /// <summary>
@@ -76,7 +77,15 @@ namespace NoPowerShell.HelperClasses
                 }
                 // IPv4
                 else
-                    domain = string.Format("{0}.in-addr.arpa", ip);
+                {
+                    // Reverse IP address octets
+                    string[] octets = ip.ToString().Split('.');
+                    Array.Reverse(octets);
+                    IPAddress ipreverse = IPAddress.Parse(string.Join(".", octets));
+
+                    // Compile reverse IP address into domain name
+                    domain = string.Format("{0}.in-addr.arpa", ipreverse);
+                }
             }
 
             CommandResult results = new CommandResult();
@@ -87,12 +96,12 @@ namespace NoPowerShell.HelperClasses
                 RecordTypes.Keys.CopyTo(types, 0);
                 throw new NoPowerShellException("Invalid type specified. Specify one of the following: {0}.", string.Join(",", types));
             }
-            DnsRecordTypes queryType = (DnsRecordTypes)foundType;
+            DnsRecordType queryType = (DnsRecordType)foundType;
 
             var recordsArray = IntPtr.Zero;
             try
             {
-                var result = DnsQuery(ref domain, queryType, DnsQueryOptions.DNS_QUERY_BYPASS_CACHE, IntPtr.Zero, ref recordsArray, IntPtr.Zero);
+                var result = DnsQuery(ref domain, queryType, DnsQueryOption.DNS_QUERY_BYPASS_CACHE, IntPtr.Zero, ref recordsArray, IntPtr.Zero);
                 if (result != 0)
                 {
                     throw new Win32Exception(result);
@@ -104,7 +113,7 @@ namespace NoPowerShell.HelperClasses
                     record = (DNS_RECORD)Marshal.PtrToStructure(recordPtr, typeof(DNS_RECORD));
                     switch (record.wType)
                     {
-                        case (ushort)DnsRecordTypes.DNS_TYPE_A:
+                        case (ushort)DnsRecordType.DNS_TYPE_A:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -115,7 +124,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_NS:
+                        case (ushort)DnsRecordType.DNS_TYPE_NS:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -126,7 +135,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_MD:
+                        case (ushort)DnsRecordType.DNS_TYPE_MD:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -137,7 +146,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_MF:
+                        case (ushort)DnsRecordType.DNS_TYPE_MF:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -148,7 +157,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_CNAME:
+                        case (ushort)DnsRecordType.DNS_TYPE_CNAME:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -159,7 +168,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_SOA:
+                        case (ushort)DnsRecordType.DNS_TYPE_SOA:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -170,7 +179,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_MB:
+                        case (ushort)DnsRecordType.DNS_TYPE_MB:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -181,7 +190,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_MG:
+                        case (ushort)DnsRecordType.DNS_TYPE_MG:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -192,7 +201,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_MR:
+                        case (ushort)DnsRecordType.DNS_TYPE_MR:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -203,7 +212,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_WKS:
+                        case (ushort)DnsRecordType.DNS_TYPE_WKS:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -216,7 +225,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_PTR:
+                        case (ushort)DnsRecordType.DNS_TYPE_PTR:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -227,7 +236,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_MX:
+                        case (ushort)DnsRecordType.DNS_TYPE_MX:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -239,7 +248,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_TEXT:
+                        case (ushort)DnsRecordType.DNS_TYPE_TEXT:
                             for (uint i = 0; i < record.Data.TXT.dwStringCount; i++)
                             {
                                 results.Add(
@@ -253,7 +262,7 @@ namespace NoPowerShell.HelperClasses
                             }
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_RT:
+                        case (ushort)DnsRecordType.DNS_TYPE_RT:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -265,7 +274,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_AAAA:
+                        case (ushort)DnsRecordType.DNS_TYPE_AAAA:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -276,7 +285,7 @@ namespace NoPowerShell.HelperClasses
                             );
                             break;
 
-                        case (ushort)DnsRecordTypes.DNS_TYPE_SRV:
+                        case (ushort)DnsRecordType.DNS_TYPE_SRV:
                             results.Add(
                                 new ResultRecord()
                                 {
@@ -316,8 +325,8 @@ namespace NoPowerShell.HelperClasses
         /// <returns>Success (0), or the DNS-specific error defined in Winerror.h</returns>
         [DllImport("dnsapi", EntryPoint = "DnsQuery_W", CharSet = CharSet.Unicode, SetLastError = true,
         ExactSpelling = true)]
-        public static extern int DnsQuery([MarshalAs(UnmanagedType.VBByRefStr)] ref string lpstrName, DnsRecordTypes wType,
-        DnsQueryOptions Options, IntPtr pExtra, ref IntPtr ppQueryResultsSet, IntPtr pReserved);
+        public static extern int DnsQuery([MarshalAs(UnmanagedType.VBByRefStr)] ref string lpstrName, DnsRecordType wType,
+        DnsQueryOption Options, IntPtr pExtra, ref IntPtr ppQueryResultsSet, IntPtr pReserved);
 
         /// <summary>
         /// Frees memory allocated for DNS records obtained by using the DnsQuery function
@@ -332,7 +341,7 @@ namespace NoPowerShell.HelperClasses
         /// See http://msdn.microsoft.com/en-us/library/windows/desktop/cc982162(v=vs.85).aspx
         /// </summary>
         [Flags]
-        public enum DnsQueryOptions
+        public enum DnsQueryOption
         {
             DNS_QUERY_STANDARD = 0x0,
             DNS_QUERY_ACCEPT_TRUNCATED_RESPONSE = 0x1,
@@ -359,10 +368,10 @@ namespace NoPowerShell.HelperClasses
         }
 
         /// <summary>
-        /// See http://msdn.microsoft.com/en-us/library/windows/desktop/cc982162(v=vs.85).aspx
+        /// See https://learn.microsoft.com/en-us/windows/win32/dns/dns-constants
         /// Also see http://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml
         /// </summary>
-        public enum DnsRecordTypes
+        public enum DnsRecordType
         {
             DNS_TYPE_A = 0x1,
             DNS_TYPE_NS = 0x2,
@@ -379,7 +388,7 @@ namespace NoPowerShell.HelperClasses
             DNS_TYPE_HINFO = 0xD,
             DNS_TYPE_MINFO = 0xE,
             DNS_TYPE_MX = 0xF,
-            DNS_TYPE_TEXT = 0x10,       // This is how it's specified on MSDN
+            DNS_TYPE_TEXT = 0x10,
             DNS_TYPE_TXT = DNS_TYPE_TEXT,
             DNS_TYPE_RP = 0x11,
             DNS_TYPE_AFSDB = 0x12,
@@ -963,5 +972,126 @@ namespace NoPowerShell.HelperClasses
 
             return new IPAddress(addressBytes);
         }
+    }
+
+    class AdiDnsNode
+    {
+        public AdiDnsNode(byte[] dnsrecordBytes)
+        {
+            string dnsValue = string.Empty;
+
+            // Parse dnsRecord
+            // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/6912b338-5472-4f59-b912-0edb536b6ed8
+            using (var stream = new MemoryStream(dnsrecordBytes))
+            using (var reader = new BinaryReader(stream))
+            {
+                // Unpack the data using BinaryReader for the first 24 bytes
+                ushort dataLength = reader.ReadUInt16();
+                RecordType = (DnsHelper.DnsRecordType)reader.ReadUInt16();
+                Version = reader.ReadByte();
+                Rank = reader.ReadByte();
+                Flags = reader.ReadUInt16();
+                Serial = reader.ReadUInt32();
+                TTL = ReadUint32BigEndian(reader); // TtlSeconds
+                uint reserved = reader.ReadUInt32();
+                uint ts = reader.ReadUInt32();
+                TimeStamp = DateTimeOffset.FromUnixTimeSeconds(ts).DateTime;
+
+                // Parse data element
+                byte[] data = reader.ReadBytes(dataLength);
+                using (var datastream = new MemoryStream(data))
+                using (var datareader = new BinaryReader(datastream))
+                {
+                    // DNS_RPC_RECORD_A
+                    // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/117c2ff9-9094-45b2-83c2-5e44518e0bac
+                    if (RecordType == DnsHelper.DnsRecordType.DNS_TYPE_A)
+                    {
+                        dnsValue = new IPAddress(datareader.ReadBytes(4)).ToString();
+                        RecordData = dnsValue.ToString();
+                    }
+                    // DNS_RPC_RECORD_SRV
+                    // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/db37cab7-f121-43ba-81c5-ca0e198d4b9a
+                    else if (RecordType == DnsHelper.DnsRecordType.DNS_TYPE_SRV)
+                    {
+                        ushort priority = ReadUInt16BigEndian(datareader);
+                        ushort weight = ReadUInt16BigEndian(datareader);
+                        ushort port = ReadUInt16BigEndian(datareader);
+                        byte length = datareader.ReadByte();
+                        byte[] dnsName = new byte[length];
+                        datareader.Read(dnsName, 0, (int)length);
+
+                        // Iterate over DNS name parts
+                        string dnsNameString;
+                        using (var dnsNameStream = new MemoryStream(dnsName))
+                        using (var dnsNameReader = new BinaryReader(dnsNameStream))
+                        {
+                            byte partCount = dnsNameReader.ReadByte();
+                            string[] dnsNameParts = new string[partCount];
+                            for (byte partIndex = 0; partIndex < partCount; partIndex++)
+                            {
+                                byte partLength = dnsNameReader.ReadByte();
+                                byte[] partBytes = dnsNameReader.ReadBytes(partLength);
+                                dnsNameParts[partIndex] = Encoding.ASCII.GetString(partBytes);
+                            }
+
+                            dnsNameString = string.Join(".", dnsNameParts);
+                        }
+
+                        RecordData = string.Format("[{0}][{1}][{2}][{3}]", priority, weight, port, dnsNameString);
+                    }
+                    // DNS_TYPE_NS / DNS_RPC_NAME
+                    // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/8f986756-f151-4f5b-bfcf-0d85be8b0d7e
+                    // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/3fd41adc-c69e-407b-979e-721251403132
+                    //else if (RecordType == DnsHelper.DnsRecordType.DNS_TYPE_NS)
+                    //{
+                    //    // TODO
+                    //}
+                    else
+                    {
+                        Program.WriteWarning("Record type \"{0}\" is not yet supported. Limited details will be returned.", RecordType.ToString().Replace("DNS_TYPE_",""));
+                    }
+                }
+            }
+        }
+
+        private static ushort ReadUInt16BigEndian(BinaryReader reader)
+        {
+            byte[] bytes = reader.ReadBytes(2);
+            if (bytes.Length < 2)
+                throw new EndOfStreamException("Not enough bytes to read a UInt16.");
+
+            // Convert to Big Endian
+            Array.Reverse(bytes);
+
+            return BitConverter.ToUInt16(bytes, 0);
+        }
+
+        private static uint ReadUint32BigEndian(BinaryReader reader)
+        {
+            byte[] bytes = reader.ReadBytes(4);
+            if (bytes.Length < 4)
+                throw new EndOfStreamException("Not enough bytes to read a Uint32.");
+
+            // Convert to Big Endian
+            Array.Reverse(bytes);
+
+            return BitConverter.ToUInt32(bytes, 0);
+        }
+
+        public override string ToString()
+        {
+            return $"{RecordType.ToString().Replace("DNS_TYPE_", "")} {TTL} {RecordData}";
+        }
+
+        public DnsHelper.DnsRecordType RecordType { get; set; }
+        public ushort Type { get; set; }
+        public byte Version { get; set; }
+        public byte Rank { get; set; }
+        public ushort Flags { get; set; }
+        public uint Serial { get; set; }
+        public uint TTL { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public string RecordData { get; set; }
+        public bool Tombstoned { get; set; }
     }
 }

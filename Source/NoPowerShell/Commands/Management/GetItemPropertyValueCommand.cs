@@ -1,9 +1,8 @@
-﻿using NoPowerShell.Arguments;
+﻿using Microsoft.Win32;
+using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
 using System;
-using Microsoft.Win32;
 using System.Collections.Generic;
-using System.Text;
 
 /*
 Author: @bitsadmin
@@ -48,52 +47,57 @@ namespace NoPowerShell.Commands.Management
 
         private CommandResult BrowseRegistry(string path, CaseInsensitiveList attributeNames)
         {
-            RegistryKey root = RegistryHelper.GetRoot(ref path);
+            RegistryHive root = RegistryHelper.GetRoot(ref path);
 
-            RegistryKey key = root.OpenSubKey(path);
-            foreach (string attr in attributeNames)
+            using (RegistryKey baseKey = RegistryKey.OpenBaseKey(root, RegistryView.Registry64))
             {
-                object value = key.GetValue(attr);
-                RegistryValueKind kind = key.GetValueKind(attr);
-
-                string strValue;
-                switch (kind)
+                using (RegistryKey key = baseKey.OpenSubKey(path))
                 {
-                    case RegistryValueKind.DWord:
-                        strValue = Convert.ToInt32(value).ToString();
-                        break;
-                    case RegistryValueKind.QWord:
-                        strValue = Convert.ToInt64(value).ToString();
-                        break;
-                    case RegistryValueKind.MultiString:
-                        strValue = string.Join(";", (string[])value);
-                        break;
-                    case RegistryValueKind.String:
-                    case RegistryValueKind.ExpandString:
-                        strValue = value.ToString();
-                        break;
-                    case RegistryValueKind.Binary:
-                        byte[] bValue = (byte[])value;
-                        _results.Add(
-                            new ResultRecord()
-                            {
+                    foreach (string attr in attributeNames)
+                    {
+                        object value = key.GetValue(attr);
+                        RegistryValueKind kind = key.GetValueKind(attr);
+
+                        string strValue;
+                        switch (kind)
+                        {
+                            case RegistryValueKind.DWord:
+                                strValue = Convert.ToInt32(value).ToString();
+                                break;
+                            case RegistryValueKind.QWord:
+                                strValue = Convert.ToInt64(value).ToString();
+                                break;
+                            case RegistryValueKind.MultiString:
+                                strValue = string.Join(";", (string[])value);
+                                break;
+                            case RegistryValueKind.String:
+                            case RegistryValueKind.ExpandString:
+                                strValue = value.ToString();
+                                break;
+                            case RegistryValueKind.Binary:
+                                byte[] bValue = (byte[])value;
+                                _results.Add(
+                                    new ResultRecord()
+                                    {
                                 { "Value", System.Text.Encoding.ASCII.GetString(bValue) },
                                 { "Hex", BitConverter.ToString(bValue).Replace('-', ' ') },
                                 { "Base64", Convert.ToBase64String(bValue) }
+                                    }
+                                );
+                                continue;
+                            default:
+                                strValue = value.ToString();
+                                break;
+                        }
+
+                        _results.Add(
+                            new ResultRecord()
+                            {
+                        { "Value", strValue }
                             }
                         );
-                        continue;
-                    default:
-                        strValue = value.ToString();
-                        break;
-                }
-
-                _results.Add(
-                    new ResultRecord()
-                    {
-                        { "Value", strValue }
                     }
-                );
+                }
             }
 
             return _results;

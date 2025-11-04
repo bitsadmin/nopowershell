@@ -17,6 +17,9 @@ namespace NoPowerShell.Commands.SmbShare
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
+            // Obtain Username/Password parameters
+            base.Execute(pipeIn);
+
             _results = WmiHelper.ExecuteWmiQuery("Select * From Win32_Share", computername, username, password);
             return _results;
         }

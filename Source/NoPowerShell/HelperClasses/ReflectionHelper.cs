@@ -1,7 +1,7 @@
-﻿using System;
+﻿using NoPowerShell.Commands;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using NoPowerShell.Commands;
 
 /*
 Author: @bitsadmin

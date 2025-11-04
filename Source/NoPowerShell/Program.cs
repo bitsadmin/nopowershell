@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NoPowerShell.Commands;
 using NoPowerShell.Commands.Core;
 using NoPowerShell.Commands.Utility;
@@ -30,6 +31,10 @@ namespace NoPowerShell
         public static void Main(string[] args)
         {
 #endif
+            // Display commandline arguments if verbose output is enabled
+            if (args.Any(x => x.Equals("-Verbose", StringComparison.InvariantCultureIgnoreCase)))
+                WriteVerbose("Commandline: '{0}'", string.Join("' '", args));
+
             // Using reflection determine available commands
             Dictionary<Type, CaseInsensitiveList> availableCommands = ReflectionHelper.GetCommands();
             List<PSCommand> userCommands = null;
@@ -49,13 +54,17 @@ namespace NoPowerShell
                 {
                     userCommands = PipeParser.ParseArguments(args, availableCommands);
                 }
-                catch (ParameterBindingException ex)
+                catch (CommandNotFoundException ex) when (ex is ParameterBindingException || ex is DuplicateParameterException)
                 {
                     error = ex.Message;
                 }
                 catch (CommandNotFoundException ex)
                 {
                     error = string.Join("", new string[] { ex.Message, HELP });
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
                 }
 
                 if (error != null)
@@ -105,54 +114,76 @@ namespace NoPowerShell
             }
 #endif
 
-            // Output to screen
+            // Collect output from the result
+            string output = null;
             if (justOutput)
             {
-                string output = ResultPrinter.OutputResults(result);
-
-#if BOFBUILD
-                BeaconConsole.WriteLine(output);
-#else
-                Console.Write(output);
-#endif
+                output = ResultPrinter.OutputResults(result);
             }
+            // Obtain output in case in the commandline explicitly Format-* is called
+            // In that case results are stored in the ResultRecord with key "Output"
+            else
+            {
+                if (result.Count == 1)
+                {
+                    // If only one result is returned, output it directly
+                    ResultRecord record = result[0];
+                    if (record.ContainsKey("Output"))
+                    {
+                        output = record["Output"];
+                    }
+                }
+            }
+
+            // Display output
+#if BOFBUILD
+            BeaconConsole.WriteLine(output);
+#else
+            Console.Write(output);
+#endif
         }
 
         public static void WriteError(string error, params object[] args)
         {
-            // Save existing color
-            ConsoleColor BackgroundColor = Console.BackgroundColor;
-            ConsoleColor ForegroundColor = Console.ForegroundColor;
-
-            // Change color to error text
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Red;
-
-            Console.WriteLine(error, args);
-
-            // Revert colors
-            Console.BackgroundColor = BackgroundColor;
-            Console.ForegroundColor = ForegroundColor;
+            WriteColored(null, ConsoleColor.Black, ConsoleColor.Red, error, args);
         }
 
         public static void WriteWarning(string warning, params object[] args)
+        {
+            WriteColored("WARNING", ConsoleColor.Black, ConsoleColor.Yellow, warning, args);
+        }
+
+        public static void WriteVerbose(string verbose, params object[] args)
+        {
+            WriteColored("VERBOSE", ConsoleColor.Black, ConsoleColor.Yellow, verbose, args);
+        }
+
+        public static void WriteColored(string prefix, ConsoleColor background, ConsoleColor foreground, string message, params object[] args)
         {
             // Save existing color
             ConsoleColor BackgroundColor = Console.BackgroundColor;
             ConsoleColor ForegroundColor = Console.ForegroundColor;
 
             // Change color to error text
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.BackgroundColor = background;
+            Console.ForegroundColor = foreground;
 
-            Console.WriteLine(warning, args);
+            // Compose message
+            string line = null;
+            if (!string.IsNullOrEmpty(prefix))
+                line = string.Format("{0}: {1}", prefix, message);
+            else
+                line = message;
+
+            // Display message
+            Console.WriteLine(line, args);
 
             // Revert colors
             Console.BackgroundColor = BackgroundColor;
             Console.ForegroundColor = ForegroundColor;
         }
 
-        public static readonly string VERSION = "1.25";
+        public static readonly string VERSION = "1.50";
         public static readonly string WEBSITE = "https://github.com/bitsadmin/nopowershell";
 #if !DLLBUILD
         private static readonly string USAGE = "Usage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n";
