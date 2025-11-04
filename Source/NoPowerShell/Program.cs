@@ -183,7 +183,7 @@ namespace NoPowerShell
             Console.ForegroundColor = ForegroundColor;
         }
 
-        public static readonly string VERSION = "1.26";
+        public static readonly string VERSION = "1.50";
         public static readonly string WEBSITE = "https://github.com/bitsadmin/nopowershell";
 #if !DLLBUILD
         private static readonly string USAGE = "Usage: NoPowerShell.exe [Command] [Parameters] | [Command2] [Parameters2] etc.\r\n";
