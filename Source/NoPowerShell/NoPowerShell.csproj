@@ -73,9 +73,9 @@
     <DllExportPostProcType>0</DllExportPostProcType>
     <DllExportDir>$(MSBuildProjectDirectory)\..\</DllExportDir>
   </PropertyGroup>
-	<PropertyGroup>
-	<StartupObject />
-	</PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -136,6 +136,7 @@
     <Compile Include="Commands\NetTCPIP\GetNetNeighborCommand.cs" />
     <Compile Include="Commands\NetTCPIP\GetNetTCPConnectionCommand.cs" />
     <Compile Include="Commands\NetTCPIP\TestNetConnectionCommand.cs" />
+    <Compile Include="Commands\ScheduledTasks\GetScheduledTaskCommand.cs" />
     <Compile Include="Commands\Security\GetAclCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbMappingCommand.cs" />
     <Compile Include="Commands\SmbShare\GetSmbShareCommand.cs" />
