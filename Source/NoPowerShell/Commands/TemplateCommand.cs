@@ -26,6 +26,10 @@ namespace NoPowerShell.Commands
             bool myFlag = _arguments.Get<BoolArgument>("MyFlag").Value;
             int myInteger = _arguments.Get<IntegerArgument>("MyInteger").Value;
             string myString = _arguments.Get<StringArgument>("MyString").Value;
+            string myOptionalString = _arguments.Get<StringArgument>("MyOptionalString").Value;
+
+            if (myOptionalString != null)
+                Program.WriteWarning("Flag MyOptionalString has been set with value \"{0}\"", myOptionalString);
 
             // Write your code here, storing the output in attributename-value pairs
             // Example of resulting table:
@@ -79,7 +83,8 @@ namespace NoPowerShell.Commands
                 {
                     new BoolArgument("MyFlag"),
                     new IntegerArgument("MyInteger", 5),
-                    new StringArgument("MyString", "Hello World")
+                    new StringArgument("MyString", "Hello World"),
+                    new StringArgument("MyOptionalString", true)
                 };
             }
         }
@@ -104,7 +109,8 @@ namespace NoPowerShell.Commands
                             "gtc \"Bye PowerShell\" -MyInteger 30 | ? Attribute2 -Like Line1* | select Attribute2 | fl",
                             "Get-TemplateCommand -MyInteger 10 \"Bye PowerShell\""
                         }
-                    )
+                    ),
+                    new ExampleEntry("Example where optional parameter is specified", "gtc -MyOptionalString \"Hello Moon\"")
                 };
             }
         }
