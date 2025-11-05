@@ -1,7 +1,9 @@
-﻿using NoPowerShell.Arguments;
-using NoPowerShell.HelperClasses;
-using System;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Text;
+using NoPowerShell.Arguments;
+using NoPowerShell.HelperClasses;
 
 /*
 Author: @bitsadmin
@@ -11,59 +13,6 @@ License: BSD 3-Clause
 
 namespace NoPowerShell.Commands.LocalAccounts
 {
-    // Most code in this class is from https://www.codeproject.com/Articles/2937/Getting-local-groups-and-member-names-in-C
-    // Code from obtaining the SID string by Igor Korkhov from https://stackoverflow.com/a/2146418
-
-    internal class Win32API
-    {
-        #region Win32 API Interfaces
-        [DllImport("netapi32.dll", EntryPoint = "NetApiBufferFree")]
-        internal static extern void NetApiBufferFree(IntPtr bufptr);
-
-        [DllImport("netapi32.dll", EntryPoint = "NetLocalGroupGetMembers")]
-        internal static extern uint NetLocalGroupGetMembers(
-            IntPtr ServerName,
-            IntPtr GrouprName,
-            uint level,
-            ref IntPtr siPtr,
-            uint prefmaxlen,
-            ref uint entriesread,
-            ref uint totalentries,
-            IntPtr resumeHandle);
-
-        [DllImport("netapi32.dll", EntryPoint = "NetLocalGroupEnum")]
-        internal static extern uint NetLocalGroupEnum(
-            IntPtr ServerName,
-            uint level,
-            ref IntPtr siPtr,
-            uint prefmaxlen,
-            ref uint entriesread,
-            ref uint totalentries,
-            IntPtr resumeHandle);
-
-        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        internal struct LOCALGROUP_MEMBERS_INFO_2
-        {
-            public IntPtr lgrmi2_sid;
-            public IntPtr lgrmi2_sidusage;
-            public IntPtr lgrmi2_name;
-        }
-
-        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        internal struct LOCALGROUP_INFO_1
-        {
-            public IntPtr lpszGroupName;
-            public IntPtr lpszComment;
-        }
-
-        [DllImport("advapi32", CharSet = CharSet.Auto, SetLastError = true)]
-        internal static extern bool ConvertSidToStringSid(IntPtr pSID, out IntPtr ptrSid);
-
-        [DllImport("kernel32.dll")]
-        internal static extern IntPtr LocalFree(IntPtr hMem);
-        #endregion
-    }
-
     public class GetLocalGroupMemberCommand : PSCommand
     {
         public GetLocalGroupMemberCommand(string[] userArguments) : base(userArguments, SupportedArguments)
@@ -72,103 +21,206 @@ namespace NoPowerShell.Commands.LocalAccounts
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Parameters
-            string group = _arguments.Get<StringArgument>("Group").Value;
+            base.Execute();
+
             string name = _arguments.Get<StringArgument>("Name").Value;
+            string sid = _arguments.Get<StringArgument>("SID").Value;
+            bool useWMI = _arguments.Get<BoolArgument>("UseWMI").Value;
 
-            // Validate parameters
-            string groupname = group ?? name;
-            if (string.IsNullOrEmpty(groupname))
-                throw new NoPowerShellException("-Group or -Name parameter needs to be provided");
+            if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(sid))
+                throw new NoPowerShellException("Specify either the Name or SID parameter.");
 
-            // Defining values for getting group names
-            uint level = 1, prefmaxlen = 0xFFFFFFFF, entriesread = 0, totalentries = 0;
-            int LOCALGROUP_INFO_1_SIZE, LOCALGROUP_MEMBERS_INFO_2_SIZE;
-            unsafe
+            if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(sid))
+                throw new NoPowerShellException("The Name and SID parameters are mutually exclusive.");
+
+            if (useWMI)
+                return ExecuteWmi(name, sid);
+            else
+                return ExecutePInvoke(name, sid);
+        }
+
+        public CommandResult ExecuteWmi(string name, string sid)
+        {
+            string groupName = null;
+            string groupDomain = null;
+
+            string compName = computername == "." ? Environment.MachineName : computername;
+
+            if (!string.IsNullOrEmpty(sid))
             {
-                LOCALGROUP_INFO_1_SIZE = sizeof(Win32API.LOCALGROUP_INFO_1);
-                LOCALGROUP_MEMBERS_INFO_2_SIZE = sizeof(Win32API.LOCALGROUP_MEMBERS_INFO_2);
+                string query = $"Select Name, Domain From Win32_Group Where SID='{sid}'";
+                CommandResult groupRes = WmiHelper.ExecuteWmiQuery(query, computername, username, password);
+                if (groupRes.Count == 0)
+                    throw new NoPowerShellException($"No group found with SID '{sid}'.");
+                groupName = groupRes[0]["Name"];
+                groupDomain = groupRes[0]["Domain"];
+            }
+            else if (!string.IsNullOrEmpty(name))
+            {
+                groupName = name;
+                groupDomain = compName;
             }
 
-            // Values that will receive information
-            IntPtr GroupInfoPtr, UserInfoPtr;
-            GroupInfoPtr = IntPtr.Zero;
-            UserInfoPtr = IntPtr.Zero;
+            string membersQuery = $"ASSOCIATORS OF {{Win32_Group.Domain='{groupDomain}',Name='{groupName}'}} WHERE ResultClass = Win32_Account";
+            CommandResult members = WmiHelper.ExecuteWmiQuery(membersQuery, computername, username, password);
 
-            Win32API.NetLocalGroupEnum(
-                IntPtr.Zero,            // Server name.it must be null
-                level,                  // Level can be 0 or 1 for groups. For more information see LOCALGROUP_INFO_0 and LOCALGROUP_INFO_1
-                ref GroupInfoPtr,       // Value that will be receive information
-                prefmaxlen,             // Maximum length
-                ref entriesread,        // Value that receives the count of elements actually enumerated
-                ref totalentries,       // Value that receives the approximate total number of entries that could have been enumerated from the current resume position
-                IntPtr.Zero
-            );
-
-            // This string array will hold comments of each group
-            string[] commentArray = new string[totalentries];
-
-            // Getting group names
-            bool found = false;
-            for (int i = 0; i < totalentries; i++)
+            foreach (ResultRecord member in members)
             {
-                // Converting unmanaged code to managed codes with using Marshal class 
-                int newOffset = GroupInfoPtr.ToInt32() + LOCALGROUP_INFO_1_SIZE * i;
-                Win32API.LOCALGROUP_INFO_1 groupInfo = (Win32API.LOCALGROUP_INFO_1)Marshal.PtrToStructure(new IntPtr(newOffset), typeof(Win32API.LOCALGROUP_INFO_1));
-                string currentGroupName = Marshal.PtrToStringAuto(groupInfo.lpszGroupName);
-
-                if (currentGroupName == null || groupname.ToLowerInvariant() != currentGroupName.ToLowerInvariant())
-                    continue;
-
-                found = true;
-
-                // Defining value for getting name of members in each group
-                uint prefmaxlen1 = 0xFFFFFFFF, entriesread1 = 0, totalentries1 = 0;
-
-                // Parameters for NetLocalGroupGetMembers is like NetLocalGroupEnum
-                Win32API.NetLocalGroupGetMembers(
-                    IntPtr.Zero,
-                    groupInfo.lpszGroupName, 2,
-                    ref UserInfoPtr, prefmaxlen1,
-                    ref entriesread1, ref totalentries1,
-                    IntPtr.Zero
-                );
-
-                // Getting member's name
-                for (int j = 0; j < totalentries1; j++)
+                string fullName = member["Caption"];
+                string memberSid = member["SID"];
+                string objectClass = ((SID_NAME_USE)Convert.ToInt32(member["SIDType"])).ToString();
+                string partDomain = member["Domain"];
+                string principalSource;
+                if (string.Equals(partDomain, "BUILTIN", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(partDomain, "NT AUTHORITY", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(partDomain, compName, StringComparison.OrdinalIgnoreCase))
                 {
-                    // Converting unmanaged code to managed codes using Marshal class 
-                    int newOffset1 = UserInfoPtr.ToInt32() + LOCALGROUP_MEMBERS_INFO_2_SIZE * j;
-                    Win32API.LOCALGROUP_MEMBERS_INFO_2 memberInfo = (Win32API.LOCALGROUP_MEMBERS_INFO_2)Marshal.PtrToStructure(new IntPtr(newOffset1), typeof(Win32API.LOCALGROUP_MEMBERS_INFO_2));
-                    string currentUserName = Marshal.PtrToStringAuto(memberInfo.lgrmi2_name);
-                    IntPtr pstr = IntPtr.Zero;
-                    Win32API.ConvertSidToStringSid(memberInfo.lgrmi2_sid, out pstr);
-                    string sid = Marshal.PtrToStringAuto(pstr);
-                    Win32API.LocalFree(pstr);
+                    principalSource = "Local";
+                }
+                else
+                {
+                    principalSource = "ActiveDirectory";
+                }
+
+                _results.Add(
+                    new ResultRecord()
+                    {
+                        { "Name", fullName },
+                        { "SID", memberSid },
+                        { "ObjectClass", objectClass },
+                        { "PrincipalSource", principalSource }
+                    }
+                );
+            }
+            return _results;
+        }
+
+        public CommandResult ExecutePInvoke(string name, string sid)
+        {
+            if (!string.IsNullOrEmpty(username) || !string.IsNullOrEmpty(password))
+                throw new NoPowerShellException("This implementation of retrieving group members via Netapi32!NetLocalGroupGetMembers does not support username and password. Use -UseWMI flag instead.");
+
+            string server = string.IsNullOrEmpty(computername) ? null : @"\\" + computername;
+            string compName = string.IsNullOrEmpty(computername) ? Environment.MachineName : computername;
+
+            string groupName = null;
+
+            if (!string.IsNullOrEmpty(sid))
+            {
+                IntPtr pSid = IntPtr.Zero;
+                if (!ConvertStringSidToSid(sid, out pSid))
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+
+                try
+                {
+                    StringBuilder nameBuilder = new StringBuilder(256);
+                    uint nameSize = (uint)nameBuilder.Capacity;
+                    StringBuilder domainBuilder = new StringBuilder(256);
+                    uint domainSize = (uint)domainBuilder.Capacity;
+                    SID_NAME_USE sidUse;
+
+                    bool success = LookupAccountSid(server, pSid, nameBuilder, ref nameSize, domainBuilder, ref domainSize, out sidUse);
+                    if (!success)
+                    {
+                        int error = Marshal.GetLastWin32Error();
+                        if (error == ERROR_INSUFFICIENT_BUFFER)
+                        {
+                            nameBuilder.Capacity = (int)nameSize;
+                            domainBuilder.Capacity = (int)domainSize;
+                            success = LookupAccountSid(server, pSid, nameBuilder, ref nameSize, domainBuilder, ref domainSize, out sidUse);
+                            if (!success)
+                                throw new Win32Exception(Marshal.GetLastWin32Error());
+                        }
+                        else
+                        {
+                            throw new Win32Exception(error);
+                        }
+                    }
+
+                    if (sidUse != SID_NAME_USE.Group && sidUse != SID_NAME_USE.Alias && sidUse != SID_NAME_USE.WellKnownGroup)
+                        throw new NoPowerShellException($"SID '{sid}' does not belong to a group.");
+
+                    groupName = nameBuilder.ToString();
+                }
+                finally
+                {
+                    if (pSid != IntPtr.Zero)
+                        LocalFree(pSid);
+                }
+            }
+            else if (!string.IsNullOrEmpty(name))
+            {
+                groupName = name;
+            }
+
+            IntPtr bufPtr = IntPtr.Zero;
+            uint entriesRead = 0;
+            uint totalEntries = 0;
+            uint resumeHandle = 0;
+
+            uint ret = NetLocalGroupGetMembers(server, groupName, 2, out bufPtr, MAX_PREFERRED_LENGTH, out entriesRead, out totalEntries, ref resumeHandle);
+            if (ret != NERR_Success)
+            {
+                if (bufPtr != IntPtr.Zero)
+                    NetApiBufferFree(bufPtr);
+                throw new Win32Exception(unchecked((int)ret), $"NetLocalGroupGetMembers failed with error code: {ret}");
+            }
+
+            try
+            {
+                IntPtr currentPtr = bufPtr;
+                for (uint i = 0; i < entriesRead; i++)
+                {
+                    LOCALGROUP_MEMBERS_INFO_2 mi = Marshal.PtrToStructure<LOCALGROUP_MEMBERS_INFO_2>(currentPtr);
+
+                    string memberSid = null;
+                    if (!ConvertSidToStringSid(mi.lgrmi2_sid, out memberSid))
+                        memberSid = string.Empty;
+
+                    string fullName = mi.lgrmi2_domainandname;
+
+                    string objectClass = (mi.lgrmi2_sidusage == (uint)SID_NAME_USE.User) ? "User" : "Group";
+
+                    string principalSource;
+                    int slashIndex = fullName.IndexOf('\\');
+                    string partDomain = (slashIndex != -1) ? fullName.Substring(0, slashIndex) : string.Empty;
+
+                    if (string.Equals(partDomain, "BUILTIN", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(partDomain, "NT AUTHORITY", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(partDomain, compName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        principalSource = "Local";
+                    }
+                    else
+                    {
+                        principalSource = "ActiveDirectory";
+                    }
 
                     _results.Add(
                         new ResultRecord()
                         {
-                            { "Name", currentUserName },
-                            { "SID", sid }
+                            { "Name", fullName },
+                            { "SID", memberSid },
+                            { "ObjectClass", objectClass },
+                            { "PrincipalSource", principalSource }
                         }
                     );
-                }
-                // Free memory
-                Win32API.NetApiBufferFree(UserInfoPtr);
-            }
-            // Free memory
-            Win32API.NetApiBufferFree(GroupInfoPtr);
 
-            if (!found)
-                throw new NoPowerShellException("Group {0} was not found.", groupname);
+                    currentPtr = new IntPtr(currentPtr.ToInt64() + Marshal.SizeOf<LOCALGROUP_MEMBERS_INFO_2>());
+                }
+            }
+            finally
+            {
+                if (bufPtr != IntPtr.Zero)
+                    NetApiBufferFree(bufPtr);
+            }
 
             return _results;
         }
 
         public static new CaseInsensitiveList Aliases
         {
-            get { return new CaseInsensitiveList() { "Get-LocalGroupMember", "glgm" }; }
+            get { return new CaseInsensitiveList() { "Get-LocalGroupMember" }; }
         }
 
         public static new ArgumentList SupportedArguments
@@ -177,15 +229,16 @@ namespace NoPowerShell.Commands.LocalAccounts
             {
                 return new ArgumentList()
                 {
-                    new StringArgument("Group"),
-                    new StringArgument("Name", true)
+                    new StringArgument("Name", true),
+                    new StringArgument("SID", true),
+                    new BoolArgument("UseWMI") // Unofficial
                 };
             }
         }
 
         public static new string Synopsis
         {
-            get { return "Gets members from a local group."; }
+            get { return "Gets the members of local groups."; }
         }
 
         public static new ExampleEntries Examples
@@ -194,9 +247,74 @@ namespace NoPowerShell.Commands.LocalAccounts
             {
                 return new ExampleEntries()
                 {
-                    new ExampleEntry("List members of the Administrators group", "Get-LocalGroupMember -Group Administrators")
+                    new ExampleEntry("Gets the members of the local group Administrators", "Get-LocalGroupMember -Name Administrators"),
+                    new ExampleEntry("Gets the members of the local group with the specified SID", "Get-LocalGroupMember -SID S-1-5-32-544"),
+                    new ExampleEntry("Gets the members of a local group on a remote computer", "Get-LocalGroupMember -Name Administrators -ComputerName MyServer"),
+                    new ExampleEntry("Gets the members of a local group on a remote computer using WMI", "Get-LocalGroupMember -UseWMI -Name Administrators -ComputerName MyServer -Username LabAdmin -Password Password1!")
                 };
             }
         }
+
+        private const uint NERR_Success = 0;
+        private const uint MAX_PREFERRED_LENGTH = uint.MaxValue;
+        private const int ERROR_INSUFFICIENT_BUFFER = 122;
+
+        private enum SID_NAME_USE : uint
+        {
+            User = 1,
+            Group = 2,
+            Domain = 3,
+            Alias = 4,
+            WellKnownGroup = 5,
+            DeletedAccount = 6,
+            Invalid = 7,
+            Unknown = 8,
+            Computer = 9,
+            Label = 10
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct LOCALGROUP_MEMBERS_INFO_2
+        {
+            public IntPtr lgrmi2_sid;
+            public uint lgrmi2_sidusage;
+            public string lgrmi2_domainandname;
+        }
+
+        [DllImport("netapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern uint NetLocalGroupGetMembers(
+            string servername,
+            string localgroupname,
+            uint level,
+            out IntPtr bufptr,
+            uint prefmaxlen,
+            out uint entriesread,
+            out uint totalentries,
+            ref uint resume_handle);
+
+        [DllImport("netapi32.dll", SetLastError = true)]
+        private static extern uint NetApiBufferFree(IntPtr buffer);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool ConvertSidToStringSid(IntPtr pSid, out string strSid);
+
+        [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool ConvertStringSidToSid(string StringSid, out IntPtr ptrSid);
+
+        [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool LookupAccountSid(
+            string lpSystemName,
+            IntPtr Sid,
+            StringBuilder lpName,
+            ref uint cchName,
+            StringBuilder ReferencedDomainName,
+            ref uint cchReferencedDomainName,
+            out SID_NAME_USE peUse);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr LocalFree(IntPtr hMem);
     }
 }
