@@ -10,7 +10,7 @@ Website: https://github.com/bitsadmin
 License: BSD 3-Clause
 */
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.Additional
 {
     public class NewShortcut : PSCommand
     {

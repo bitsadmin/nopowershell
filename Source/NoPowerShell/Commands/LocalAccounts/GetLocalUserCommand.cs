@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Security.Principal;
 
-namespace NoPowerShell.Commands
+namespace NoPowerShell.Commands.LocalAccounts
 {
     public class GetLocalUserCommand : PSCommand
     {
