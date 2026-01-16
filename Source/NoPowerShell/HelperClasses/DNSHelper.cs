@@ -81,7 +81,7 @@ namespace NoPowerShell.HelperClasses
                     // Reverse IP address octets
                     string[] octets = ip.ToString().Split('.');
                     Array.Reverse(octets);
-                    IPAddress ipreverse = IPAddress.Parse(string.Join(".", octets));
+                    string ipreverse = string.Join(".", octets);
 
                     // Compile reverse IP address into domain name
                     domain = string.Format("{0}.in-addr.arpa", ipreverse);
