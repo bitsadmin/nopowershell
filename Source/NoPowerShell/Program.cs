@@ -33,7 +33,7 @@ namespace NoPowerShell
 #endif
             // Display commandline arguments if verbose output is enabled
             if (args.Any(x => x.Equals("-Verbose", StringComparison.InvariantCultureIgnoreCase)))
-                WriteVerbose("Commandline: '{0}'", string.Join("' '", args));
+                WriteVerbose($"Commandline: '{string.Join("' '", args)}'");
 
             // Using reflection determine available commands
             Dictionary<Type, CaseInsensitiveList> availableCommands = ReflectionHelper.GetCommands();
@@ -42,7 +42,7 @@ namespace NoPowerShell
             // If no arguments are provided to the executable, show help
             if (args.Length == 0)
             {
-                Console.WriteLine("== NoPowerShell v{0} ==\r\nWebsite: {1}\r\n{2}", VERSION, WEBSITE, USAGE);
+                Console.WriteLine($"== NoPowerShell v{VERSION} ==\r\nWebsite: {WEBSITE}\r\n{USAGE}");
                 userCommands = new List<PSCommand>(1) { new GetCommandCommand(null) };
             }
             // Parse pipes in commandline arguments and commands within pipes
@@ -60,7 +60,7 @@ namespace NoPowerShell
                 }
                 catch (CommandNotFoundException ex)
                 {
-                    error = string.Join("", new string[] { ex.Message, HELP });
+                    error = ex.Message + HELP;
                 }
                 catch (Exception ex)
                 {
@@ -104,12 +104,12 @@ namespace NoPowerShell
             }
             catch (NoPowerShellException e)
             {
-                WriteError(string.Format("{0} : {1}", mostRecentCommand.ToString(), e.Message));
+                WriteError($"{mostRecentCommand} : {e.Message}");
                 return;
             }
             catch (Exception e)
             {
-                WriteError(string.Format("{0} : {1}", mostRecentCommand.ToString(), e.ToString()));
+                WriteError($"{mostRecentCommand} : {e}");
                 return;
             }
 #endif
@@ -122,16 +122,13 @@ namespace NoPowerShell
             }
             // Obtain output in case in the commandline explicitly Format-* is called
             // In that case results are stored in the ResultRecord with key "Output"
-            else
+            else if (result?.Count == 1)
             {
-                if (result.Count == 1)
+                // If only one result is returned, output it directly
+                ResultRecord record = result[0];
+                if (record.ContainsKey("Output"))
                 {
-                    // If only one result is returned, output it directly
-                    ResultRecord record = result[0];
-                    if (record.ContainsKey("Output"))
-                    {
-                        output = record["Output"];
-                    }
+                    output = record["Output"];
                 }
             }
 
@@ -169,14 +166,15 @@ namespace NoPowerShell
             Console.ForegroundColor = foreground;
 
             // Compose message
-            string line = null;
-            if (!string.IsNullOrEmpty(prefix))
-                line = string.Format("{0}: {1}", prefix, message);
-            else
-                line = message;
+            string line = !string.IsNullOrEmpty(prefix) 
+                ? $"{prefix}: {message}" 
+                : message;
 
             // Display message
-            Console.WriteLine(line, args);
+            if (args != null && args.Length > 0)
+                Console.WriteLine(line, args);
+            else
+                Console.WriteLine(line);
 
             // Revert colors
             Console.BackgroundColor = BackgroundColor;

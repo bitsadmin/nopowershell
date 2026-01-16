@@ -36,8 +36,11 @@ namespace NoPowerShell.HelperClasses
             List<PSCommand> allCommands = new List<PSCommand>(parsedPipes.Count);
             foreach (List<string> pipe in parsedPipes)
             {
+                if (pipe.Count == 0)
+                    continue;
+
                 string command = pipe[0].ToLowerInvariant();
-                string[] pipeargs = pipe.GetRange(1, pipe.Count - 1).ToArray();
+                string[] pipeargs = pipe.Count > 1 ? pipe.GetRange(1, pipe.Count - 1).ToArray() : new string[0];
 
                 // Locate the command in the aliases of the available commands
                 bool foundMatchingCommand = false;
@@ -50,9 +53,9 @@ namespace NoPowerShell.HelperClasses
                         {
                             allCommands.Add((PSCommand)Activator.CreateInstance(commandType.Key, parameters));
                         }
-                        catch(System.Reflection.TargetInvocationException e)
+                        catch (System.Reflection.TargetInvocationException e)
                         {
-                            throw e.InnerException;
+                            throw e.InnerException ?? e;
                         }
                         foundMatchingCommand = true;
                         break;

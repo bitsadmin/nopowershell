@@ -46,22 +46,23 @@ namespace NoPowerShell.Commands.SQLPS
                     if (commands.Any(c => query.StartsWith(c, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         int affectedRows = cmd.ExecuteNonQuery();
-                        Console.WriteLine("{0} row(s) affected\r\nThe command(s) completed successfully.", affectedRows);
+                        Console.WriteLine($"{affectedRows} row(s) affected\r\nThe command(s) completed successfully.");
                     }
                     // All other queries
                     else
                     {
-                        SqlDataReader reader = cmd.ExecuteReader();
-
-                        // Read the results and add them to the output
-                        while (reader.Read())
+                        using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            ResultRecord row = new ResultRecord();
-                            for (int i = 0; i < reader.FieldCount; i++)
+                            // Read the results and add them to the output
+                            while (reader.Read())
                             {
-                                row[reader.GetName(i)] = reader.GetValue(i).ToString();
+                                ResultRecord row = new ResultRecord();
+                                for (int i = 0; i < reader.FieldCount; i++)
+                                {
+                                    row[reader.GetName(i)] = reader.GetValue(i)?.ToString() ?? string.Empty;
+                                }
+                                _results.Add(row);
                             }
-                            _results.Add(row);
                         }
                     }
                 }

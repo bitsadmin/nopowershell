@@ -29,8 +29,8 @@ namespace NoPowerShell.Commands
         protected string password;
 
         // Default parameters
-        protected bool verbose = false;
-        protected bool whatif = false;
+        protected bool verbose;
+        protected bool whatif;
 
         /// <summary>
         /// Construct a new PSCommand parsing the provided arguments using the provided list of arguments supported by this cmdlet
@@ -62,7 +62,7 @@ namespace NoPowerShell.Commands
         /// <returns>Parsed arguments</returns>
         protected ArgumentList ParseArguments(string[] userArguments, ArgumentList supportedArguments)
         {
-            if (userArguments == null)
+            if (userArguments is null)
                 return supportedArguments;
 
             // Iterate over user-provided arguments
@@ -117,8 +117,8 @@ namespace NoPowerShell.Commands
 
                 // Clone the argument based on its type
                 Argument clonedArg = CloneArgument(destArg);
-                if (clonedArg == null)
-                    throw new Exception("Unexpected argument type");
+                if (clonedArg is null)
+                    throw new NoPowerShellException("Unexpected argument type");
 
                 int compareLength = Math.Min(destArg.Name.Length, cleanInputArg.Length);
                 
@@ -162,7 +162,7 @@ namespace NoPowerShell.Commands
                         candidates.Add(intArg);
                     }
                     else
-                        throw new Exception("Unexpected positional argument type");
+                        throw new NoPowerShellException("Unexpected positional argument type");
                 }
             }
 
@@ -202,12 +202,7 @@ namespace NoPowerShell.Commands
                 
                 throw new ParameterBindingException(
                     this.ToString(),
-                    string.Format(
-                        "Parameter cannot be processed because the parameter name '{1}' is ambiguous. Possible matches include: -{2}.",
-                        this,
-                        cleanInputArg,
-                        string.Join(" -", paramNames)
-                    )
+                    $"Parameter cannot be processed because the parameter name '{cleanInputArg}' is ambiguous. Possible matches include: -{string.Join(" -", paramNames)}."
                 );
             }
         }
@@ -259,14 +254,11 @@ namespace NoPowerShell.Commands
             }
 
             if (!assignedValue)
-                throw new Exception(
-                    string.Format(
-                        @"{0}: Failed to assign value to parameter. This can be because of:
+                throw new NoPowerShellException(
+                    $@"{this}: Failed to assign value to parameter. This can be because of:
 - A missing parameter name (e.g. 'MyValue' was used instead of '-Name MyValue')
 - Duplicate arguments (e.g. '-Name MyValue -Name MyValue2')
-- A missing pipe (' | ')",
-                        this
-                    )
+- A missing pipe (' | ')"
                 );
 
             return currentIndex;
@@ -373,7 +365,7 @@ namespace NoPowerShell.Commands
             {
                 if (!arg.IsOptionalArgument && !arg.IsSet)
                 {
-                    throw new Exception(string.Format("{0}: Mandatory parameter '{1}' is missing.", this, arg.Name));
+                    throw new NoPowerShellException($"{this}: Mandatory parameter '{arg.Name}' is missing.");
                 }
             }
         }
@@ -458,40 +450,21 @@ namespace NoPowerShell.Commands
         /// <summary>
         /// Command + aliases of PSCommand. Is used for displaying help and to determine which command a user wants to execute.
         /// </summary>
-        public virtual List<string> Aliases
-        {
-            get { throw new InvalidOperationException("This attribute should be overridden"); }
-        }
+        public virtual List<string> Aliases => throw new InvalidOperationException("This attribute should be overridden");
 
         /// <summary>
         /// Name of cmdlet
         /// </summary>
-        public string Command
-        {
-            // First command in list of Aliases should always be the full cmdlet
-            get { return Aliases[0]; }
-        }
+        public string Command => Aliases[0]; // First command in list of Aliases should always be the full cmdlet
 
         /// <summary>
         /// List of supported arguments. Order of the arguments will be reflected in the help (Get-Command).
         /// </summary>
-        public virtual ArgumentList SupportedArguments
-        {
-            get { throw new InvalidOperationException("This attribute should be overridden"); }
-        }
+        public virtual ArgumentList SupportedArguments => throw new InvalidOperationException("This attribute should be overridden");
 
-        public virtual string Synopsis
-        {
-            get { throw new InvalidOperationException("This attribute should be overridden"); }
-        }
+        public virtual string Synopsis => throw new InvalidOperationException("This attribute should be overridden");
 
-        public virtual ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries();
-            }
-        }
+        public virtual ExampleEntries Examples => new ExampleEntries();
 
         public override string ToString()
         {

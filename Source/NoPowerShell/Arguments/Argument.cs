@@ -34,7 +34,14 @@ namespace NoPowerShell.Arguments
 
         public bool Equals(Argument other)
         {
-            return other.Name.Equals(_name.Substring(0, other.Name.Length), StringComparison.InvariantCultureIgnoreCase);
+            if (other is null)
+                return false;
+
+            int minLength = Math.Min(_name?.Length ?? 0, other.Name?.Length ?? 0);
+            if (minLength == 0)
+                return false;
+
+            return _name.Substring(0, minLength).Equals(other.Name.Substring(0, minLength), StringComparison.InvariantCultureIgnoreCase);
         }
 
         public Argument Clone()
@@ -48,25 +55,13 @@ namespace NoPowerShell.Arguments
             };
         }
 
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
-        public bool IsOptionalArgument
-        {
-            get { return this._isOptionalArgument; }
-        }
+        public bool IsOptionalArgument => _isOptionalArgument;
 
-        public virtual bool IsDefaultValue
-        {
-            get { return false; }
-        }
+        public virtual bool IsDefaultValue => false;
 
-        public bool IsSet
-        {
-            get { return _isSet; }
-        }
+        public bool IsSet => _isSet;
 
         /// <summary>
         /// Positional StringArgument which requires a value

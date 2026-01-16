@@ -38,27 +38,24 @@ namespace NoPowerShell.Commands.Management
                 wmiClass = wmiQuery;
 
             if (!string.IsNullOrEmpty(wmiClass))
-                wmiQuery = string.Format("Select * From {0}", wmiClass);
+                wmiQuery = $"Select * From {wmiClass}";
             if (!string.IsNullOrEmpty(wmiFilter))
-                wmiQuery += string.Format(" Where {0}", wmiFilter);
+                wmiQuery += $" Where {wmiFilter}";
 
             // Execute WMI query
             try
             {
                 _results = WmiHelper.ExecuteWmiQuery(wmiNamespace, wmiQuery, computername, username, password);
             }
-            catch(ManagementException ex)
+            catch (ManagementException ex)
             {
-                throw new NoPowerShellException("{0} - {1}: {2}", wmiNamespace, wmiQuery, ex.Message);
+                throw new NoPowerShellException($"{wmiNamespace} - {wmiQuery}: {ex.Message}");
             }
 
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
-        {
-            get { return new CaseInsensitiveList() { "Get-WmiObject", "gwmi" }; }
-        }
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList() { "Get-WmiObject", "gwmi" };
 
         public static new ArgumentList SupportedArguments
         {
@@ -74,10 +71,7 @@ namespace NoPowerShell.Commands.Management
             }
         }
 
-        public static new string Synopsis
-        {
-            get { return "Gets instances of WMI classes or information about the available classes."; }
-        }
+        public static new string Synopsis => "Gets instances of WMI classes or information about the available classes.";
 
         public static new ExampleEntries Examples
         {

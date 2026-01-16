@@ -8,9 +8,9 @@ License: BSD 3-Clause
 
 namespace NoPowerShell.HelperClasses
 {
-    class NoPowerShellException : Exception
+    public class NoPowerShellException : Exception
     {
-        public NoPowerShellException() : base()
+        public NoPowerShellException()
         {
         }
 
@@ -23,10 +23,10 @@ namespace NoPowerShell.HelperClasses
         }
     }
 
-    class CommandNotFoundException : NoPowerShellException
+    public class CommandNotFoundException : NoPowerShellException
     {
         public string Command { get; set; }
-        public override string Message => string.Format("{0} : The term '{0}' is not recognized as the name of a cmdlet.", Command);
+        public override string Message => $"{Command} : The term '{Command}' is not recognized as the name of a cmdlet.";
 
         public CommandNotFoundException(string command) : base()
         {
@@ -34,10 +34,10 @@ namespace NoPowerShell.HelperClasses
         }
     }
 
-    class ParameterBindingException : CommandNotFoundException
+    public class ParameterBindingException : CommandNotFoundException
     {
         public string Parameter { get; set; }
-        public override string Message => string.Format("{0} : A parameter cannot be found that matches parameter name '{1}'.", Command, Parameter);
+        public override string Message => $"{Command} : A parameter cannot be found that matches parameter name '{Parameter}'.";
 
         public ParameterBindingException(string command, string parameter) : base(command)
         {
@@ -45,10 +45,10 @@ namespace NoPowerShell.HelperClasses
         }
     }
 
-    class DuplicateParameterException : CommandNotFoundException
+    public class DuplicateParameterException : CommandNotFoundException
     {
         public string Parameter { get; set; }
-        public override string Message => string.Format("{0} : Cannot bind parameter because parameter '{1}' is specified more than once. To provide multiple values to parameters that can accept multiple values, use the array syntax. For example, \"-parameter value1, value2, value3\"", Command, Parameter);
+        public override string Message => $"{Command} : Cannot bind parameter because parameter '{Parameter}' is specified more than once. To provide multiple values to parameters that can accept multiple values, use the array syntax. For example, \"-parameter value1, value2, value3\"";
 
         public DuplicateParameterException(string command, string parameter) : base(command)
         {
@@ -56,10 +56,10 @@ namespace NoPowerShell.HelperClasses
         }
     }
 
-    class ItemNotFoundException : NoPowerShellException
+    public class ItemNotFoundException : NoPowerShellException
     {
         public string Path { get; set; }
-        public override string Message => string.Format("Cannot find path '{0}' because it does not exist.", Path);
+        public override string Message => $"Cannot find path '{Path}' because it does not exist.";
 
         public ItemNotFoundException(string path) : base()
         {

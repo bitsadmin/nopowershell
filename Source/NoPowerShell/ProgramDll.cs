@@ -29,7 +29,7 @@ namespace NoPowerShell
                 ProgramDll nps = new ProgramDll();
                 nps.NoPowerShellExecute();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show(e.Message, "NoPowerShell", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -61,7 +61,7 @@ namespace NoPowerShell
             Encoding encoding = Encoding.GetEncoding(MY_CODE_PAGE);
             StreamWriter standardOutput = new StreamWriter(fileStream, encoding) { AutoFlush = true };
             Console.SetOut(standardOutput);
-            Console.Title = string.Format("NoPowerShell DLL v{0}", Program.VERSION);
+            Console.Title = $"NoPowerShell DLL v{Program.VERSION}";
             Console.TreatControlCAsInput = true;
 
             // Set colors
@@ -70,7 +70,7 @@ namespace NoPowerShell
             Console.Clear();
 
             // Title
-            Console.WriteLine("NoPowerShell DLL v{0} by Arris Huijgen (@bitsadmin)\r\nType 'help' to list all supported cmdlets.\r\n", Program.VERSION);
+            Console.WriteLine($"NoPowerShell DLL v{Program.VERSION} by Arris Huijgen (@bitsadmin)\r\nType 'help' to list all supported cmdlets.\r\n");
 
             // Main loop
             List<string> history = new List<string>();
@@ -89,7 +89,7 @@ namespace NoPowerShell
                     Console.ForegroundColor = previousColor;
                     continue;
                 }
-                else if (line == string.Empty)
+                else if (string.IsNullOrEmpty(line))
                     continue;
 
                 switch (line.ToLowerInvariant())
@@ -110,7 +110,7 @@ namespace NoPowerShell
                         int i = 1;
                         foreach (string hline in history)
                         {
-                            Console.WriteLine("{0} {1}", i.ToString().PadLeft(4), hline);
+                            Console.WriteLine($"{i.ToString().PadLeft(4)} {hline}");
                             i++;
                         }
                         Console.WriteLine();
