@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Additional
 {
     public class GetWhoamiCommand : PSCommand
     {
-        public GetWhoamiCommand(string[] arguments) : base(arguments)
+        public GetWhoamiCommand(string[] userArguments) : base(userArguments)
         {
         }
 

@@ -13,7 +13,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class ConvertToCsvCommand : PSCommand
     {
-        public ConvertToCsvCommand(string[] arguments) : base(arguments)
+        public ConvertToCsvCommand(string[] userArguments) : base(userArguments)
         {
         }
 

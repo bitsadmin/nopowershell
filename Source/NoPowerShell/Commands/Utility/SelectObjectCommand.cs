@@ -12,7 +12,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class SelectObjectCommand : PSCommand
     {
-        public SelectObjectCommand(string[] arguments) : base(arguments)
+        public SelectObjectCommand(string[] userArguments) : base(userArguments)
         {
         }
 

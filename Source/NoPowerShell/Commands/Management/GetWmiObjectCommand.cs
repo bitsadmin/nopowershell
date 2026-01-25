@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetWmiObjectCommand : PSCommand
     {
-        public GetWmiObjectCommand(string[] arguments) : base(arguments)
+        public GetWmiObjectCommand(string[] userArguments) : base(userArguments)
         {
         }
 

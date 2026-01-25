@@ -12,7 +12,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class FormatListCommand : PSCommand
     {
-        public FormatListCommand(string[] arguments) : base(arguments)
+        public FormatListCommand(string[] userArguments) : base(userArguments)
         {
         }
 

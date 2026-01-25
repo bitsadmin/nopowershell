@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetItemPropertyValueCommand : PSCommand
     {
-        public GetItemPropertyValueCommand(string[] arguments) : base(arguments)
+        public GetItemPropertyValueCommand(string[] userArguments) : base(userArguments)
         {
         }
 
