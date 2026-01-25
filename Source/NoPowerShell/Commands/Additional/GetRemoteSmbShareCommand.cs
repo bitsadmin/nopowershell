@@ -126,37 +126,22 @@ namespace NoPowerShell.Commands.Additional
             }
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-RemoteSmbShare", "netview" }; }
-        }
+            "Get-RemoteSmbShare", "netview"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Server", "\\\\localhost")
-                };
-            }
-        }
+            new StringArgument("Server", "\\\\localhost")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Retrieves the SMB shares of a computer."; }
-        }
+        public static new string Synopsis => "Retrieves the SMB shares of a computer.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List local SMB shares", "Get-RemoteSmbShare"),
-                    new ExampleEntry("List SMB shares of MyServer", "Get-RemoteSmbShare \\\\MyServer")
-                };
-            }
-        }
+            new ExampleEntry("List local SMB shares", "Get-RemoteSmbShare"),
+            new ExampleEntry("List SMB shares of MyServer", "Get-RemoteSmbShare \\\\MyServer")
+        };
     }
 }

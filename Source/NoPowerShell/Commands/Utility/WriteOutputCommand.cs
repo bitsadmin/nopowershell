@@ -31,45 +31,32 @@ namespace NoPowerShell.Commands.Utility
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Write-Output", "echo", "write" }; }
-        }
+            "Write-Output",
+            "echo",
+            "write"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("InputObject", false)
+        };
+
+        public static new string Synopsis => "Sends the specified objects to the next command in the pipeline. If the command is the last command in the pipeline, the objects are displayed in the console.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Echo string to the console",
+                new List<string>()
                 {
-                    new StringArgument("InputObject", false)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Sends the specified objects to the next command in the pipeline. If the command is the last command in the pipeline, the objects are displayed in the console."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Echo string to the console",
-                        new List<string>()
-                        {
-                            "Write-Output \"Hello World!\"",
-                            "echo \"Hello World!\""
-                        }
-                    ),
-                    new ExampleEntry("Echo string with escaped characters", "Write-Output \"backtick: ``; tab: `t; lf: `ncr: `rrc\"")
-                };
-            }
-        }
+                    "Write-Output \"Hello World!\"",
+                    "echo \"Hello World!\""
+                }
+            ),
+            new ExampleEntry("Echo string with escaped characters", "Write-Output \"backtick: ``; tab: `t; lf: `ncr: `rrc\"")
+        };
     }
 }

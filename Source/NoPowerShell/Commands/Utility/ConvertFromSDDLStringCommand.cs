@@ -200,46 +200,31 @@ namespace NoPowerShell.Commands.Utility
             return sddlType;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "ConvertFrom-SddlString" }; }
-        }
+            "ConvertFrom-SddlString"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Sddl"),
+            new StringArgument("Type", "FileSystemRights")
+        };
+
+        public static new string Synopsis => "Converts a SDDL string to a custom object.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry("Convert Active Directory SDDL (nTSecurityDescriptor) to readable format' command", "ConvertFrom-SddlString \"D:(A;;CR;;;S-1-5-21-2137271609-6538894-3613171323-1144)\" -Type ActiveDirectoryRights"),
+            new ExampleEntry
+            (
+                "Convert filesystem SDDL to readable format",
+                new List<string>()
                 {
-                    new StringArgument("Sddl"),
-                    new StringArgument("Type", "FileSystemRights")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Converts a SDDL string to a custom object."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Convert Active Directory SDDL (nTSecurityDescriptor) to readable format' command", "ConvertFrom-SddlString \"D:(A;;CR;;;S-1-5-21-2137271609-6538894-3613171323-1144)\" -Type ActiveDirectoryRights"),
-                    new ExampleEntry
-                    (
-                        "Convert filesystem SDDL to readable format",
-                        new List<string>()
-                        {
-                            "ConvertFrom-SddlString \"O:BAG:BAD:(A;;FA;;;BA)(A;;0x1200a9;;;SY)\"",
-                            "ConvertFrom-SddlString \"O:BAG:BAD:(A;;FA;;;BA)(A;;0x1200a9;;;SY)\" -Type FileSystemrights"
-                        }
-                    )
-                };
-            }
-        }
+                    "ConvertFrom-SddlString \"O:BAG:BAD:(A;;FA;;;BA)(A;;0x1200a9;;;SY)\"",
+                    "ConvertFrom-SddlString \"O:BAG:BAD:(A;;FA;;;BA)(A;;0x1200a9;;;SY)\" -Type FileSystemrights"
+                }
+            )
+        };
     }
 }

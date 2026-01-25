@@ -179,47 +179,32 @@ namespace NoPowerShell.Commands.LocalAccounts
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-LocalGroup" }; }
-        }
+            "Get-LocalGroup"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new StringArgument("Name", true),
-                    new StringArgument("SID", true),
-                    new BoolArgument("UseWMI")
-                };
-            }
-        }
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Name", true),
+            new StringArgument("SID", true),
+            new BoolArgument("UseWMI")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets local security groups."; }
-        }
+        public static new string Synopsis => "Gets local security groups.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Gets all the local groups on the computer", "Get-LocalGroup"),
-                    new ExampleEntry("Gets the local group with the name Administrators", "Get-LocalGroup -Name Administrators"),
-                    new ExampleEntry("Gets all the local groups that match the name pattern", "Get-LocalGroup -Name Admin* | fl"),
-                    new ExampleEntry("Gets the local group that has the specified SID", "Get-LocalGroup -SID S-1-5-32-544"),
-                    new ExampleEntry("Gets all the local groups on a remote computer", "Get-LocalGroup -ComputerName MyServer"),
-                    new ExampleEntry("Gets all the local groups on a remote computer using WMI instead of Netapi32!NetLocalGroupEnum", "Get-LocalGroup -UseWMI -ComputerName MyServer -Username LabAdmin -Password Password1!"),
-                };
-            }
-        }
+            new ExampleEntry("Gets all the local groups on the computer", "Get-LocalGroup"),
+            new ExampleEntry("Gets the local group with the name Administrators", "Get-LocalGroup -Name Administrators"),
+            new ExampleEntry("Gets all the local groups that match the name pattern", "Get-LocalGroup -Name Admin* | fl"),
+            new ExampleEntry("Gets the local group that has the specified SID", "Get-LocalGroup -SID S-1-5-32-544"),
+            new ExampleEntry("Gets all the local groups on a remote computer", "Get-LocalGroup -ComputerName MyServer"),
+            new ExampleEntry("Gets all the local groups on a remote computer using WMI instead of Netapi32!NetLocalGroupEnum", "Get-LocalGroup -UseWMI -ComputerName MyServer -Username LabAdmin -Password Password1!"),
+        };
 
         private static bool WildcardMatch(string text, string pattern)
         {

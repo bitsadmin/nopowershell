@@ -297,54 +297,42 @@ namespace NoPowerShell.Commands.Management
             return sb.ToString();
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ChildItem", "gci", "ls", "dir" }; }
-        }
+            "Get-ChildItem",
+            "gci",
+            "ls",
+            "dir"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Path", "."),
+            new StringArgument("LiteralPath", true),
+            new BoolArgument("Force") ,
+            new BoolArgument("Recurse"),
+            new IntegerArgument("Depth", int.MaxValue),
+            new StringArgument("Include", "*"),
+            new BoolArgument("FollowSymlink")
+        };
+
+        public static new string Synopsis => "Gets the files and folders in a file system drive.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Locate KeePass files in the C:\\Users\\ directory",
+                new List<string>()
                 {
-                    new StringArgument("Path", "."),
-                    new StringArgument("LiteralPath", true),
-                    new BoolArgument("Force") ,
-                    new BoolArgument("Recurse"),
-                    new IntegerArgument("Depth", int.MaxValue),
-                    new StringArgument("Include", "*"),
-                    new BoolArgument("FollowSymlink")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets the files and folders in a file system drive."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Locate KeePass files in the C:\\Users\\ directory",
-                        new List<string>()
-                        {
-                            "Get-ChildItem -Recurse -Force C:\\Users\\ -Include *.kdbx",
-                            "ls -Recurse -Force C:\\Users\\ -Include *.kdbx"
-                        }
-                    ),
-                    new ExampleEntry("List autoruns", "ls HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
-                    new ExampleEntry("Search for files which can contain sensitive data on the C-drive", "ls -Recurse -Force C:\\ -Include *.cmd,*.bat,*.ps1,*.psm1,*.psd1"),
-                    new ExampleEntry("Create directory listing of SYSVOL", "ls -Recurse -FollowSymlinks \\\\DC1\\SYSVOL"),
-                    new ExampleEntry("Directory listing using LiteralPath", "Get-ChildItem -Recurse -LiteralPath \\\\?\\C:\\SomeVeryLongPath\\ -Include *.pem")
-                };
-            }
-        }
+                    "Get-ChildItem -Recurse -Force C:\\Users\\ -Include *.kdbx",
+                    "ls -Recurse -Force C:\\Users\\ -Include *.kdbx"
+                }
+            ),
+            new ExampleEntry("List autoruns", "ls HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
+            new ExampleEntry("Search for files which can contain sensitive data on the C-drive", "ls -Recurse -Force C:\\ -Include *.cmd,*.bat,*.ps1,*.psm1,*.psd1"),
+            new ExampleEntry("Create directory listing of SYSVOL", "ls -Recurse -FollowSymlinks \\\\DC1\\SYSVOL"),
+            new ExampleEntry("Directory listing using LiteralPath", "Get-ChildItem -Recurse -LiteralPath \\\\?\\C:\\SomeVeryLongPath\\ -Include *.pem")
+        };
     }
 }

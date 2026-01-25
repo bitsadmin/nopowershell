@@ -135,43 +135,28 @@ namespace NoPowerShell.Commands.Diagnostics
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-WinEvent" }; }
-        }
+            "Get-WinEvent"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new StringArgument("LogName"),
-                    new StringArgument("FilterXPath", "*"),
-                    new IntegerArgument("MaxEvents", 100),
-                    new BoolArgument("Oldest")
-                };
-            }
-        }
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("LogName"),
+            new StringArgument("FilterXPath", "*"),
+            new IntegerArgument("MaxEvents", 100),
+            new BoolArgument("Oldest")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets events from event logs and event tracing log files on local and remote computers."; }
-        }
+        public static new string Synopsis => "Gets events from event logs and event tracing log files on local and remote computers.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List oldest 10 events of Application log", "Get-WinEvent -LogName Application -MaxEvents 10 -Oldest"),
-                    new ExampleEntry("Determine the IP address from where a specific user is authenticating to the DC", "Get-WinEvent -LogName Security -FilterXPath \"*[System[(EventID=4624)]] and *[EventData[Data[@Name='TargetUserName']='bitsadmin']]\" -ComputerName MyServer -MaxEvents 1"),
-                };
-            }
-        }
+            new ExampleEntry("List oldest 10 events of Application log", "Get-WinEvent -LogName Application -MaxEvents 10 -Oldest"),
+            new ExampleEntry("Determine the IP address from where a specific user is authenticating to the DC", "Get-WinEvent -LogName Security -FilterXPath \"*[System[(EventID=4624)]] and *[EventData[Data[@Name='TargetUserName']='bitsadmin']]\" -ComputerName MyServer -MaxEvents 1"),
+        };
     }
 }

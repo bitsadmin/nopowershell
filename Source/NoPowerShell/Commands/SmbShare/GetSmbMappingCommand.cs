@@ -29,52 +29,32 @@ namespace NoPowerShell.Commands.SmbShare
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get {
-                return new CaseInsensitiveList()
+            "Get-SmbMapping",
+            "netuse" // Not official
+        };
+
+        public static new ArgumentList SupportedArguments => new ArgumentList()
+        {
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true)
+        };
+
+        public static new string Synopsis => "Retrieves the SMB client directory mappings created for a server.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "List mapped network drives",
+                new List<string>()
                 {
                     "Get-SmbMapping",
-                    "netuse" // Not official
-                };
-            }
-        }
-
-        public static new ArgumentList SupportedArguments
-        {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Retrieves the SMB client directory mappings created for a server."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "List mapped network drives",
-                        new List<string>()
-                        {
-                            "Get-SmbMapping",
-                            "netuse"
-                        }
-                    )
-                };
-            }
-        }
+                    "netuse"
+                }
+            )
+        };
     }
 }

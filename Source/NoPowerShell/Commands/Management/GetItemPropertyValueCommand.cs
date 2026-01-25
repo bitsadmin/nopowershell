@@ -103,45 +103,31 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ItemPropertyValue", "gpv" }; }
-        }
+            "Get-ItemPropertyValue",
+            "gpv"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Path", false),
+            new StringArgument("Name", false)
+        };
+
+        public static new string Synopsis => "Gets the value for one or more properties of a specified item.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Show current user's PATH variable",
+                new List<string>()
                 {
-                    new StringArgument("Path", false),
-                    new StringArgument("Name", false)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets the value for one or more properties of a specified item."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Show current user's PATH variable",
-                        new List<string>()
-                        {
-                            @"Get-ItemPropertyValue -Path HKCU:\Environment -Name Path",
-                            @"gpv HKCU:\Environment Path"
-                        }
-                    )
-                };
-            }
-        }
+                    @"Get-ItemPropertyValue -Path HKCU:\Environment -Name Path",
+                    @"gpv HKCU:\Environment Path"
+                }
+            )
+        };
     }
 }

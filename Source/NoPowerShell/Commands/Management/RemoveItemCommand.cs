@@ -101,49 +101,40 @@ namespace NoPowerShell.Commands.Management
             }
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Remove-Item", "del", "erase", "rd", "ri", "rm", "rmdir" }; }
-        }
+            "Remove-Item",
+            "del",
+            "erase",
+            "rd",
+            "ri",
+            "rm",
+            "rmdir"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Path"),
+            new BoolArgument("Force"),
+            new BoolArgument("Recurse"),
+            new BoolArgument("Verbose")
+        };
+
+        public static new string Synopsis => "Deletes files and folders.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Delete a file",
+                new List<string>()
                 {
-                    new StringArgument("Path"),
-                    new BoolArgument("Force"),
-                    new BoolArgument("Recurse"),
-                    new BoolArgument("Verbose")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Deletes files and folders."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Delete a file",
-                        new List<string>()
-                        {
-                            "Remove-Item C:\\tmp\\MyFile.txt",
-                            "rm C:\\tmp\\MyFile.txt"
-                        }
-                    ),
-                    new ExampleEntry("Delete a read-only file", "Remove-Item -Force C:\\Tmp\\MyFile.txt"),
-                    new ExampleEntry("Recursively delete a folder", "Remove-Item -Recurse C:\\Tmp\\MyTools\\")
-                };
-            }
-        }
+                    "Remove-Item C:\\tmp\\MyFile.txt",
+                    "rm C:\\tmp\\MyFile.txt"
+                }
+            ),
+            new ExampleEntry("Delete a read-only file", "Remove-Item -Force C:\\Tmp\\MyFile.txt"),
+            new ExampleEntry("Recursively delete a folder", "Remove-Item -Recurse C:\\Tmp\\MyTools\\")
+        };
     }
 }

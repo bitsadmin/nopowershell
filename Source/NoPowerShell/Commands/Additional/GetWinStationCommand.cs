@@ -174,46 +174,33 @@ namespace NoPowerShell.Commands.Additional
             };
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-WinStation", "qwinsta", "quser" }; }
-        }
+            "Get-WinStation",
+            "qwinsta",
+            "quser"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Server", true)
+        };
+
+        public static new string Synopsis => "Display information about Remote Desktop Services sessions.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry("Query sessions on local machine", "Get-WinStation"),
+            new ExampleEntry
+            (
+                "Query sessions on a remote machine",
+                new List<string>()
                 {
-                    new StringArgument("Server", true)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Display information about Remote Desktop Services sessions."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Query sessions on local machine", "Get-WinStation"),
-                    new ExampleEntry
-                    (
-                        "Query sessions on a remote machine",
-                        new List<string>()
-                        {
-                            "Get-WinStation -Server MyServer",
-                            "qwinsta MyServer"
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-WinStation -Server MyServer",
+                    "qwinsta MyServer"
+                }
+            )
+        };
 
         // Code inspired by https://github.com/gentilkiwi/mimikatz/ -> mimikatz\modules\kuhl_m_ts.{c,h}
         public enum WINSTATIONSTATECLASS

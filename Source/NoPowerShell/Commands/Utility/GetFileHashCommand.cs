@@ -151,48 +151,33 @@ namespace NoPowerShell.Commands.Utility
             return results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-FileHash" }; }
-        }
+            "Get-FileHash"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Path"),
+            new StringArgument("Algorithm", string.Empty),
+        };
+
+        public static new string Synopsis => "Computes the hash value for a file by using a specified hash algorithm.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Calculate commonly used hashes (MD5,SHA1,SHA256) for file",
+                new List<string>()
                 {
-                    new StringArgument("Path"),
-                    new StringArgument("Algorithm", string.Empty),
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Computes the hash value for a file by using a specified hash algorithm."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Calculate commonly used hashes (MD5,SHA1,SHA256) for file",
-                        new List<string>()
-                        {
-                            "Get-FileHash C:\\Windows\\explorer.exe",
-                            "Get-FileHash -Path C:\\Windows\\explorer.exe -Algorithm common"
-                        }
-                    ),
-                    new ExampleEntry("Calculate SHA256 hash of a file", "Get-FileHash -Path C:\\Windows\\explorer.exe -Algorithm SHA256"),
-                    new ExampleEntry("Calculate specific hashes for file", "Get-FileHash C:\\file.bin -Algorithm MD5,SHA1"),
-                    new ExampleEntry("Calculate all supported hashes (MD5,SHA1,SHA256,SHA384,SHA512,RIPEMD160) for file", "Get-FileHash C:\\file.bin -Algorithm *")
-                };
-            }
-        }
+                    "Get-FileHash C:\\Windows\\explorer.exe",
+                    "Get-FileHash -Path C:\\Windows\\explorer.exe -Algorithm common"
+                }
+            ),
+            new ExampleEntry("Calculate SHA256 hash of a file", "Get-FileHash -Path C:\\Windows\\explorer.exe -Algorithm SHA256"),
+            new ExampleEntry("Calculate specific hashes for file", "Get-FileHash C:\\file.bin -Algorithm MD5,SHA1"),
+            new ExampleEntry("Calculate all supported hashes (MD5,SHA1,SHA256,SHA384,SHA512,RIPEMD160) for file", "Get-FileHash C:\\file.bin -Algorithm *")
+        };
     }
 }

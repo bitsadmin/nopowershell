@@ -146,57 +146,44 @@ namespace NoPowerShell.Commands.Management
                 return null;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ComputerInfo", "gin", "systeminfo" }; }
-        }
+            "Get-ComputerInfo",
+            "gin",
+            "systeminfo" // Not official
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new BoolArgument("Simple")
+        };
+
+        public static new string Synopsis => "Shows details about the system such as hardware and Windows installation.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Show information about the system",
+                new List<string>()
                 {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new BoolArgument("Simple")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Shows details about the system such as hardware and Windows installation."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
+                    "Get-ComputerInfo",
+                    "systeminfo"
+                }
+            ),
+            new ExampleEntry("Show information about the system not listing patches", "systeminfo -Simple"),
+            new ExampleEntry
+            (
+                "Show information about a remote machine using WMI",
+                new List<string>()
                 {
-                    new ExampleEntry
-                    (
-                        "Show information about the system",
-                        new List<string>()
-                        {
-                            "Get-ComputerInfo",
-                            "systeminfo"
-                        }
-                    ),
-                    new ExampleEntry("Show information about the system not listing patches", "systeminfo -Simple"),
-                    new ExampleEntry
-                    (
-                        "Show information about a remote machine using WMI",
-                        new List<string>()
-                        {
-                            "Get-ComputerInfo -ComputerName MyServer -Username MyUser -Password MyPassword",
-                            "Get-ComputerInfo -ComputerName MyServer"
-                        }
-                    ),
-                };
-            }
-        }
+                    "Get-ComputerInfo -ComputerName MyServer -Username MyUser -Password MyPassword",
+                    "Get-ComputerInfo -ComputerName MyServer"
+                }
+            ),
+        };
     }
 }

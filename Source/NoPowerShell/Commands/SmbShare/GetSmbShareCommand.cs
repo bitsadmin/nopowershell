@@ -28,44 +28,24 @@ namespace NoPowerShell.Commands.SmbShare
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get {
-                return new CaseInsensitiveList()
-                {
-                    "Get-SmbShare",
-                    "netshare" // Not official
-                };
-            }
-        }
+            "Get-SmbShare",
+            "netshare" // Not official
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true)
-                };
-            }
-        }
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true)
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Retrieves the SMB shares on the computer."; }
-        }
+        public static new string Synopsis => "Retrieves the SMB shares on the computer.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List SMB shares on the computer", "Get-SmbShare"),
-                };
-            }
-        }
+            new ExampleEntry("List SMB shares on the computer", "Get-SmbShare"),
+        };
     }
 }

@@ -52,59 +52,36 @@ namespace NoPowerShell.Commands.DnsClient
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get
-            {
-                return new CaseInsensitiveList()
-                {
-                    "Resolve-DnsName",
-                    "nslookup", "host" // Not official
-                };
-            }
-        }
+            "Resolve-DnsName",
+            "nslookup", // Not official
+            "host" // Not official
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Name"),
-                    new StringArgument("Type", "A")
-                    // TODO:
-                    //new StringArgument("Server", true),
-                };
-            }
-        }
+            new StringArgument("Name"),
+            new StringArgument("Type", "A")
+            // TODO:
+            //new StringArgument("Server", true),
+        };
 
-        public static new string Synopsis
-        {
-            get
-            {
-                return string.Format("Resolve DNS name.");
-            }
-        }
+        public static new string Synopsis => string.Format("Resolve DNS name.");
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
+            new ExampleEntry
+            (
+                "Resolve domain name",
+                new List<string>()
                 {
-                    new ExampleEntry
-                    (
-                        "Resolve domain name",
-                        new List<string>()
-                        {
-                            "Resolve-DnsName microsoft.com",
-                            "host linux.org",
-                        }
-                    ),
-                    new ExampleEntry("Lookup specific record", "Resolve-DnsName -Type MX pm.me"),
-                    new ExampleEntry("Reverse DNS lookup", "Resolve-DnsName 1.1.1.1")
-                };
-            }
-        }
+                    "Resolve-DnsName microsoft.com",
+                    "host linux.org"
+                }
+            ),
+            new ExampleEntry("Lookup specific record", "Resolve-DnsName -Type MX pm.me"),
+            new ExampleEntry("Reverse DNS lookup", "Resolve-DnsName 1.1.1.1")
+        };
     }
 }

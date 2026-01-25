@@ -204,47 +204,33 @@ namespace NoPowerShell.Commands.LocalAccounts
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-LocalUser", "glu" }; }
-        }
+            "Get-LocalUser",
+            "glu"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new StringArgument("Name", true),
-                    new StringArgument("SID", true),
-                    new BoolArgument("UseWMI") // Unofficial
-                };
-            }
-        }
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Name", true),
+            new StringArgument("SID", true),
+            new BoolArgument("UseWMI") // Unofficial
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets local user accounts."; }
-        }
+        public static new string Synopsis => "Gets local user accounts.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Gets all the local user accounts on the computer", "Get-LocalUser | select Name,Enabled,Description"),
-                    new ExampleEntry("Gets the local user account with the name Administrator", "Get-LocalUser -Name Administrator"),
-                    new ExampleEntry("Gets all the local user accounts that match the name pattern", "Get-LocalUser -Name Admin* | fl"),
-                    new ExampleEntry("Gets the local user account that has the specified SID", "Get-LocalUser -SID S-1-5-21-222222222-3333333333-4444444444-5555"),
-                    new ExampleEntry("Gets all the local user accounts on a remote computer", "Get-LocalUser -ComputerName MyServer | select Name,Enabled,Description"),
-                    new ExampleEntry("Gets all the local user accounts on a remote computer using WMI instead of Netapi32!NetUserEnum", "Get-LocalUser -UseWMI -ComputerName MyServer -Username LabAdmin -Password Password1!"),
-                };
-            }
-        }
+            new ExampleEntry("Gets all the local user accounts on the computer", "Get-LocalUser | select Name,Enabled,Description"),
+            new ExampleEntry("Gets the local user account with the name Administrator", "Get-LocalUser -Name Administrator"),
+            new ExampleEntry("Gets all the local user accounts that match the name pattern", "Get-LocalUser -Name Admin* | fl"),
+            new ExampleEntry("Gets the local user account that has the specified SID", "Get-LocalUser -SID S-1-5-21-222222222-3333333333-4444444444-5555"),
+            new ExampleEntry("Gets all the local user accounts on a remote computer", "Get-LocalUser -ComputerName MyServer | select Name,Enabled,Description"),
+            new ExampleEntry("Gets all the local user accounts on a remote computer using WMI instead of Netapi32!NetUserEnum", "Get-LocalUser -UseWMI -ComputerName MyServer -Username LabAdmin -Password Password1!"),
+        };
 
         private static bool WildcardMatch(string text, string pattern)
         {

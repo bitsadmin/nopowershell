@@ -85,7 +85,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
             "Get-ADComputer"
         };
 
-        public static new ArgumentList SupportedArguments => new ArgumentList
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
             new StringArgument("Server", true),
             new StringArgument("Username", true),

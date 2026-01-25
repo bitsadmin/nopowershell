@@ -42,44 +42,30 @@ namespace NoPowerShell.Commands.Utility
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Measure-Object", "measure" }; }
-        }
+            "Measure-Object",
+            "measure"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+        };
+
+        public static new string Synopsis => "Calculates the numeric properties of objects, and the characters, words, and lines in string objects, such as files of text.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Count number of results",
+                new List<string>()
                 {
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Calculates the numeric properties of objects, and the characters, words, and lines in string objects, such as files of text."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Count number of results",
-                        new List<string>()
-                        {
-                            "Get-Process | Measure-Object",
-                            "Get-Process | measure"
-                        }
-                    ),
-                    new ExampleEntry("Count number of lines in file", "gc C:\\Windows\\WindowsUpdate.log | measure"),
-                };
-            }
-        }
+                    "Get-Process | Measure-Object",
+                    "Get-Process | measure"
+                }
+            ),
+            new ExampleEntry("Count number of lines in file", "gc C:\\Windows\\WindowsUpdate.log | measure"),
+        };
     }
 }

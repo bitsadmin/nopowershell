@@ -79,39 +79,25 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ItemProperty", "gp" }; }
-        }
+            "Get-ItemProperty",
+            "gp"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Path", "."),
-                    new BoolArgument("Force") ,
-                    new StringArgument("Include", "*"),
-                    new StringArgument("Name", true)
-                };
-            }
-        }
+            new StringArgument("Path", "."),
+            new BoolArgument("Force") ,
+            new StringArgument("Include", "*"),
+            new StringArgument("Name", true)
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets the properties of a specified item."; }
-        }
+        public static new string Synopsis => "Gets the properties of a specified item.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List autoruns in the registry", @"Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Run | ft")
-                };
-            }
-        }
+            new ExampleEntry("List autoruns in the registry", @"Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Run | ft")
+        };
     }
 }

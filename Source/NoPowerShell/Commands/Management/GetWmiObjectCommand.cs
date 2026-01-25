@@ -59,55 +59,47 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList() { "Get-WmiObject", "gwmi" };
-
-        public static new ArgumentList SupportedArguments
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new StringArgument("Query", true),
-                    new StringArgument("Class", true),
-                    new StringArgument("Namespace", @"ROOT\CIMV2"),
-                    new StringArgument("Filter", true)
-                };
-            }
-        }
+            "Get-WmiObject",
+            "gwmi"
+        };
+
+        public static new ArgumentList SupportedArguments => new ArgumentList()
+        {
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Query", true),
+            new StringArgument("Class", true),
+            new StringArgument("Namespace", @"ROOT\CIMV2"),
+            new StringArgument("Filter", true)
+        };
 
         public static new string Synopsis => "Gets instances of WMI classes or information about the available classes.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
+            new ExampleEntry
+            (
+                "List local shares",
+                new List<string>()
                 {
-                    new ExampleEntry
-                    (
-                        "List local shares",
-                        new List<string>()
-                        {
-                            "Get-WmiObject -Namespace ROOT\\CIMV2 -Query \"Select * From Win32_Share Where Name LIKE '%$'\"",
-                            "gwmi -Class Win32_Share -Filter \"Name LIKE '%$'\""
-                        }
-                    ),
-                    new ExampleEntry
-                    (
-                        "Obtain data of Win32_Process class from a remote system and apply a filter on the output",
-                        new List<string>()
-                        {
-                            "Get-WmiObject \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName MyServer -Username MyUser -Password MyPassword | ? Name -Like *PowerShell* | select ProcessId,CommandLine",
-                            "gwmi \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName MyServer | ? Name -Like *PowerShell* | select ProcessId,CommandLine"
-                        }
-                    ),
-                    new ExampleEntry("View details about a certain service", "Get-WmiObject -Class Win32_Service -Filter \"Name = 'WinRM'\""),
-                    new ExampleEntry("List installed antivirus products (on non-server OS)", "Get-WmiObject -Namespace root\\SecurityCenter2 -Class AntiVirusProduct")
-                };
-            }
-        }
+                    "Get-WmiObject -Namespace ROOT\\CIMV2 -Query \"Select * From Win32_Share Where Name LIKE '%$'\"",
+                    "gwmi -Class Win32_Share -Filter \"Name LIKE '%$'\""
+                }
+            ),
+            new ExampleEntry
+            (
+                "Obtain data of Win32_Process class from a remote system and apply a filter on the output",
+                new List<string>()
+                {
+                    "Get-WmiObject \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName MyServer -Username MyUser -Password MyPassword | ? Name -Like *PowerShell* | select ProcessId,CommandLine",
+                    "gwmi \"Select ProcessId,Name,CommandLine From Win32_Process\" -ComputerName MyServer | ? Name -Like *PowerShell* | select ProcessId,CommandLine"
+                }
+            ),
+            new ExampleEntry("View details about a certain service", "Get-WmiObject -Class Win32_Service -Filter \"Name = 'WinRM'\""),
+            new ExampleEntry("List installed antivirus products (on non-server OS)", "Get-WmiObject -Namespace root\\SecurityCenter2 -Class AntiVirusProduct")
+        };
     }
 }

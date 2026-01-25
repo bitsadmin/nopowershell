@@ -68,37 +68,23 @@ namespace NoPowerShell.Commands.Utility
             return null;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Export-Csv", "epcsv" }; }
-        }
+            "Export-Csv",
+            "epcsv"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Path"),
-                    new StringArgument("Encoding", "Unicode")
-                };
-            }
-        }
+            new StringArgument("Path"),
+            new StringArgument("Encoding", "Unicode")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Converts objects into a series of comma-separated (CSV) strings and saves the strings in a CSV file."; }
-        }
+        public static new string Synopsis => "Converts objects into a series of comma-separated (CSV) strings and saves the strings in a CSV file.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Store list of commands as CSV", @"Get-Command | Export-Csv -Encoding ASCII -Path commands.csv"),
-                };
-            }
-        }
+            new ExampleEntry("Store list of commands as CSV", @"Get-Command | Export-Csv -Encoding ASCII -Path commands.csv"),
+        };
     }
 }

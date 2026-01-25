@@ -113,51 +113,31 @@ namespace NoPowerShell.Commands.SQLPS
             return builder.ConnectionString;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get
-            {
-                return new CaseInsensitiveList() {
-                    "Invoke-Sqlcmd",
-                    "sqlcmd" // unofficial
-                };
-            }
-        }
+            "Invoke-Sqlcmd",
+            "sqlcmd" // unofficial
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Query"),
-                    new StringArgument("ServerInstance", "."),
-                    new StringArgument("Database", true),
-                    new IntegerArgument("Timeout", 30),
-                    new BoolArgument("EncryptConnection"),
-                    new StringArgument("ConnectionString", true)
-                };
-            }
-        }
+            new StringArgument("Query"),
+            new StringArgument("ServerInstance", "."),
+            new StringArgument("Database", true),
+            new IntegerArgument("Timeout", 30),
+            new BoolArgument("EncryptConnection"),
+            new StringArgument("ConnectionString", true)
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Runs a script containing statements from the languages (Transact-SQL and XQuery) and commands supported by the SQL Server sqlcmd utility."; }
-        }
+        public static new string Synopsis => "Runs a script containing statements from the languages (Transact-SQL and XQuery) and commands supported by the SQL Server sqlcmd utility.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List local SQL Server version", "Invoke-Sqlcmd -Query \"SELECT @@version\""),
-                    new ExampleEntry("Query specific server", "Invoke-Sqlcmd -Query \"SELECT username,password FROM users\" -ServerInstance SQL1"),
-                    new ExampleEntry("Use explicit authentication", "Invoke-Sqlcmd -Query \"exec xp_cmdshell 'dir C:\\'\" -ServerInstance SQL1 -Username sa -password Password1!"),
-                    new ExampleEntry("Use encrypted connection", "Invoke-Sqlcmd -Query \"INSERT INTO logins (username,password) VALUES ('newuser', 'MyPass')\" -ServerInstance SQL1 -Database CRM -EncryptConnection"),
-                    new ExampleEntry("Use connectionstring to named pipe", "Invoke-Sqlcmd -Query \"SELECT * FROM transactions LIMIT 10'\" -ConnectionString \"Server=\\\\.\\pipe\\sql\\query; Database=Sales; Integrated Security=True;\""),
-                };
-            }
-        }
+            new ExampleEntry("List local SQL Server version", "Invoke-Sqlcmd -Query \"SELECT @@version\""),
+            new ExampleEntry("Query specific server", "Invoke-Sqlcmd -Query \"SELECT username,password FROM users\" -ServerInstance SQL1"),
+            new ExampleEntry("Use explicit authentication", "Invoke-Sqlcmd -Query \"exec xp_cmdshell 'dir C:\\'\" -ServerInstance SQL1 -Username sa -password Password1!"),
+            new ExampleEntry("Use encrypted connection", "Invoke-Sqlcmd -Query \"INSERT INTO logins (username,password) VALUES ('newuser', 'MyPass')\" -ServerInstance SQL1 -Database CRM -EncryptConnection"),
+            new ExampleEntry("Use connectionstring to named pipe", "Invoke-Sqlcmd -Query \"SELECT * FROM transactions LIMIT 10'\" -ConnectionString \"Server=\\\\.\\pipe\\sql\\query; Database=Sales; Integrated Security=True;\""),
+        };
     }
 }

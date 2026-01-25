@@ -139,50 +139,29 @@ namespace NoPowerShell.Commands.NetTCPIP
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get
-            {
-                return new CaseInsensitiveList()
+            "Get-NetNeighbor",
+            "arp" // Unofficial
+        };
+
+        public static new ArgumentList SupportedArguments => new ArgumentList()
+        {
+        };
+
+        public static new string Synopsis => "Gets neighbor cache entries.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "List ARP table entries",
+                new List<string>()
                 {
                     "Get-NetNeighbor",
-                    "arp" // Unofficial
-                };
-            }
-        }
-
-        public static new ArgumentList SupportedArguments
-        {
-            get
-            {
-                return new ArgumentList()
-                {
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets neighbor cache entries."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "List ARP table entries",
-                        new List<string>()
-                        {
-                            "Get-NetNeighbor",
-                            "arp"
-                        }
-                    )
-                };
-            }
-        }
+                    "arp"
+                }
+            )
+        };
     }
 }

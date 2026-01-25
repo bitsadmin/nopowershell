@@ -66,47 +66,32 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-DnsClientCache" }; }
-        }
+            "Get-DnsClientCache"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true)
+        };
+
+        public static new string Synopsis => "Retrieves the contents of the DNS client cache.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry("List cached DNS entries on the local computer", "Get-DnsClientCache"),
+            new ExampleEntry
+            (
+                "List cached DNS entries from a remote computer using WMI",
+                new List<string>()
                 {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Retrieves the contents of the DNS client cache."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List cached DNS entries on the local computer", "Get-DnsClientCache"),
-                    new ExampleEntry
-                    (
-                        "List cached DNS entries from a remote computer using WMI",
-                        new List<string>()
-                        {
-                            "Get-DnsClientCache -ComputerName MyServer -Username MyUser -Password MyPassword",
-                            "Get-DnsClientCache -ComputerName MyServer"
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-DnsClientCache -ComputerName MyServer -Username MyUser -Password MyPassword",
+                    "Get-DnsClientCache -ComputerName MyServer"
+                }
+            )
+        };
     }
 }

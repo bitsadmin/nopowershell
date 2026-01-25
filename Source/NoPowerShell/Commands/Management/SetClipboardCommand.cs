@@ -69,48 +69,34 @@ namespace NoPowerShell.Commands.Management
                 return value;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Set-Clipboard", "scb" }; }
-        }
+            "Set-Clipboard",
+            "scb"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Value", true),
+            new BoolArgument("Append"),
+            new BoolArgument("PassThru")
+        };
+
+        public static new string Synopsis => "Sets the current Windows clipboard entry.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Put string on clipboard",
+                new List<string>()
                 {
-                    new StringArgument("Value", true),
-                    new BoolArgument("Append"),
-                    new BoolArgument("PassThru")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Sets the current Windows clipboard entry."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Put string on clipboard",
-                        new List<string>()
-                        {
-                            "Set-Clipboard -Value \"You have been PWNED!\"",
-                            "scb \"You have been PWNED!\""
-                        }
-                    ),
-                    new ExampleEntry("Clear the clipboard", "Set-Clipboard \"\""),
-                    new ExampleEntry("Place output of command on clipboard", "Get-Process | Set-Clipboard")
-                };
-            }
-        }
+                    "Set-Clipboard -Value \"You have been PWNED!\"",
+                    "scb \"You have been PWNED!\""
+                }
+            ),
+            new ExampleEntry("Clear the clipboard", "Set-Clipboard \"\""),
+            new ExampleEntry("Place output of command on clipboard", "Get-Process | Set-Clipboard")
+        };
     }
 }

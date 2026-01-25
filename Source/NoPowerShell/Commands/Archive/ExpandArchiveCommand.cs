@@ -48,54 +48,33 @@ namespace NoPowerShell.Commands.Archive
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get
-            {
-                return new CaseInsensitiveList()
-                {
-                    "Expand-Archive",
-                    "unzip" // Unofficial
-                };
-            }
-        }
+            "Expand-Archive",
+            "unzip" // Unofficial
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Path"),
-                    new StringArgument("DestinationPath", true)
-                };
-            }
-        }
+            new StringArgument("Path"),
+            new StringArgument("DestinationPath", true)
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Extracts files from a specified archive (zipped) file."; }
-        }
+        public static new string Synopsis => "Extracts files from a specified archive (zipped) file.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
+            new ExampleEntry
+            (
+                "Extract zip",
+                new List<string>()
                 {
-                    new ExampleEntry
-                    (
-                        "Extract zip",
-                        new List<string>()
-                        {
-                            "Expand-Archive -Path C:\\MyArchive.zip -DestinationPath C:\\Extracted",
-                            "unzip C:\\MyArchive.zip C:\\Extracted"
-                        }
-                    ),
-                    new ExampleEntry("Extract zip into current directory", "unzip C:\\MyArchive.zip"),
-                };
-            }
-        }
+                    "Expand-Archive -Path C:\\MyArchive.zip -DestinationPath C:\\Extracted",
+                    "unzip C:\\MyArchive.zip C:\\Extracted"
+                }
+            ),
+            new ExampleEntry("Extract zip into current directory", "unzip C:\\MyArchive.zip"),
+        };
     }
 }
 #endif

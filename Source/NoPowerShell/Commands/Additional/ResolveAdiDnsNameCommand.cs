@@ -77,43 +77,28 @@ namespace NoPowerShell.Commands.Additional
         }
         */
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Resolve-AdiDnsName" }; }
-        }
+            "Resolve-AdiDnsName"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ZoneName"),
-                    //new StringArgument("Type", true),
-                    new StringArgument("Name", true),
-                    new StringArgument("Server", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true)
-                };
-            }
-        }
+            new StringArgument("ZoneName"),
+            //new StringArgument("Type", true),
+            new StringArgument("Name", true),
+            new StringArgument("Server", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true)
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Obtains DNS names via ADIDNS"; }
-        }
+        public static new string Synopsis => "Obtains DNS names via ADIDNS";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List DNS zones", "Get-ADObject -SearchBase \"CN=MicrosoftDNS,DC=DomainDnsZones,DC=AD,DC=bitsadmin,DC=com\" -LDAPFilter \"(ObjectClass=dnsZone)\" -SearchScope OneLevel"),
-                    new ExampleEntry("Obtain IP address of host W11", "Resolve-AdiDnsName -ZoneName ad.bitsadmin.com -Name W11"),
-                    new ExampleEntry("Obtain LDAP servers in domain", "Resolve-AdiDnsName -ZoneName ad.bitsadmin.com -Name _ldap._tcp")
-                };
-            }
-        }
+            new ExampleEntry("List DNS zones", "Get-ADObject -SearchBase \"CN=MicrosoftDNS,DC=DomainDnsZones,DC=AD,DC=bitsadmin,DC=com\" -LDAPFilter \"(ObjectClass=dnsZone)\" -SearchScope OneLevel"),
+            new ExampleEntry("Obtain IP address of host W11", "Resolve-AdiDnsName -ZoneName ad.bitsadmin.com -Name W11"),
+            new ExampleEntry("Obtain LDAP servers in domain", "Resolve-AdiDnsName -ZoneName ad.bitsadmin.com -Name _ldap._tcp")
+        };
     }
 }

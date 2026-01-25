@@ -66,56 +66,42 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-Process", "ps" }; }
-        }
+            "Get-Process",
+            "ps"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Name", string.Empty)
+        };
+
+        public static new string Synopsis => "Gets the processes that are running on the local computer or a remote computer.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "List processes",
+                new List<string>()
                 {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new StringArgument("Name", string.Empty)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets the processes that are running on the local computer or a remote computer."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
+                    "Get-Process",
+                    "ps"
+                }
+            ),
+            new ExampleEntry
+            (
+                "List processes on remote host using WMI",
+                new List<string>()
                 {
-                    new ExampleEntry
-                    (
-                        "List processes",
-                        new List<string>()
-                        {
-                            "Get-Process",
-                            "ps"
-                        }
-                    ),
-                    new ExampleEntry
-                    (
-                        "List processes on remote host using WMI",
-                        new List<string>()
-                        {
-                            "Get-Process -ComputerName MyServer -Username MyUser -Password MyPassword",
-                            "ps -ComputerName MyServer"
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-Process -ComputerName MyServer -Username MyUser -Password MyPassword",
+                    "ps -ComputerName MyServer"
+                }
+            )
+        };
     }
 }

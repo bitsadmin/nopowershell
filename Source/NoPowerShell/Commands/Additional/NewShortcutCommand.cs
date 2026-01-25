@@ -115,44 +115,29 @@ namespace NoPowerShell.Commands.Additional
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "New-Shortcut" }; }
-        }
+            "New-Shortcut"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Path"),
-                    new StringArgument("TargetPath"),
-                    new StringArgument("Arguments", string.Empty),
-                    new StringArgument("IconLocation", string.Empty),
-                    new StringArgument("WorkingDirectory", string.Empty),
-                    new StringArgument("WindowStyle", "Normal"),
-                    new StringArgument("Hotkey", string.Empty),
-                    new BoolArgument("Force")
-                };
-            }
-        }
+            new StringArgument("Path"),
+            new StringArgument("TargetPath"),
+            new StringArgument("Arguments", string.Empty),
+            new StringArgument("IconLocation", string.Empty),
+            new StringArgument("WorkingDirectory", string.Empty),
+            new StringArgument("WindowStyle", "Normal"),
+            new StringArgument("Hotkey", string.Empty),
+            new BoolArgument("Force")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Create a new shortcut."; }
-        }
+        public static new string Synopsis => "Create a new shortcut.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Create basic shortcut", @"New-Shortcut -Path C:\Users\Public\Desktop\Notepad.lnk -TargetPath C:\Windows\notepad.exe"),
-                    new ExampleEntry("Create advanced shortcut", @"New-Shortcut -Path ""C:\Users\User1\Desktop\Microsoft Edge.lnk"" -TargetPath C:\Windows\System32\cmd.exe -Arguments ""/C echo PWNED>pwned.txt"" -IconLocation ""C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe,0"" -WorkingDirectory ""%~dp0"" -WindowStyle Minimized -Hotkey ""Ctrl+Shift+C"" -Force"),
-                };
-            }
-        }
+            new ExampleEntry("Create basic shortcut", @"New-Shortcut -Path C:\Users\Public\Desktop\Notepad.lnk -TargetPath C:\Windows\notepad.exe"),
+            new ExampleEntry("Create advanced shortcut", @"New-Shortcut -Path ""C:\Users\User1\Desktop\Microsoft Edge.lnk"" -TargetPath C:\Windows\System32\cmd.exe -Arguments ""/C echo PWNED>pwned.txt"" -IconLocation ""C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe,0"" -WorkingDirectory ""%~dp0"" -WindowStyle Minimized -Hotkey ""Ctrl+Shift+C"" -Force"),
+        };
     }
 }

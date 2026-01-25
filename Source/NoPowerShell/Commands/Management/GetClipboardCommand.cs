@@ -32,44 +32,30 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-Clipboard", "gcb" }; }
-        }
+            "Get-Clipboard",
+            "gcb"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            //new BoolArgument("History")
+        };
+
+        public static new string Synopsis => "Gets the current Windows clipboard entry.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Show text contents of clipboard",
+                new List<string>()
                 {
-                    //new BoolArgument("History")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets the current Windows clipboard entry."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Show text contents of clipboard",
-                        new List<string>()
-                        {
-                            "Get-Clipboard",
-                            "gcb"
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-Clipboard",
+                    "gcb"
+                }
+            )
+        };
     }
 }

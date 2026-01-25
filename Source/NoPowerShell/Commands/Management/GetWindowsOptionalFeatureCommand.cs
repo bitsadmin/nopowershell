@@ -145,12 +145,12 @@ namespace NoPowerShell.Commands.Management
             return "No";
         }
 
-        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
             "Get-WindowsOptionalFeature"
         };
 
-        public static new ArgumentList SupportedArguments => new ArgumentList
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
             new StringArgument("ComputerName", true),
             new StringArgument("Username", true),
@@ -159,9 +159,9 @@ namespace NoPowerShell.Commands.Management
             new BoolArgument("Online")
         };
 
-        public override string Synopsis => "Gets information about Windows optional features.";
+        public static new string Synopsis => "Gets information about Windows optional features.";
 
-        public override ExampleEntries Examples => new ExampleEntries
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
             new ExampleEntry("List all Windows optional features", "Get-WindowsOptionalFeature -Online"),
             new ExampleEntry("Get a specific feature", "Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All"),

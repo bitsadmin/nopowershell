@@ -238,37 +238,23 @@ namespace NoPowerShell.Commands.Additional
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr LocalFree(IntPtr hMem);
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-Whoami", "whoami" }; }
-        }
+            "Get-Whoami",
+            "whoami"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new BoolArgument("Groups")
-                };
-            }
-        }
+            new BoolArgument("Groups")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Show details about the current user."; }
-        }
+        public static new string Synopsis => "Show details about the current user.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Show the current user", "whoami"),
-                    new ExampleEntry("List groups the current user is member of", "whoami -Groups")
-                };
-            }
-        }
+            new ExampleEntry("Show the current user", "whoami"),
+            new ExampleEntry("List groups the current user is member of", "whoami -Groups")
+        };
     }
 }

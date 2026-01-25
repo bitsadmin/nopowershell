@@ -59,45 +59,31 @@ namespace NoPowerShell.Commands.Utility
             };
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Format-Table", "ft" }; }
-        }
+            "Format-Table",
+            "ft"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Property", string.Empty)
+        };
+
+        public static new string Synopsis => "Formats the output as a table.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Format output as a table",
+                new List<string>()
                 {
-                    new StringArgument("Property", string.Empty)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Formats the output as a table."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Format output as a table",
-                        new List<string>()
-                        {
-                            "Get-Process | Format-Table",
-                            "Get-Process | ft"
-                        }
-                    ),
-                    new ExampleEntry("Format output as a table showing only specific attributes", "Get-Process | ft ProcessId,Name"),
-                };
-            }
-        }
+                    "Get-Process | Format-Table",
+                    "Get-Process | ft"
+                }
+            ),
+            new ExampleEntry("Format output as a table showing only specific attributes", "Get-Process | ft ProcessId,Name"),
+        };
     }
 }

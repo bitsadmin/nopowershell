@@ -213,49 +213,34 @@ namespace NoPowerShell.Commands.Security
             return accountName;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-Acl" }; }
-        }
+            "Get-Acl"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Path"),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Server", true) // Just used in case Get-Acl is used on an AD object from outside of the domain
+        };
+
+        public static new string Synopsis => "Gets the security descriptor for a resource, such as a file or registry key.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "List ACLs of file",
+                new List<string>()
                 {
-                    new StringArgument("Path"),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new StringArgument("Server", true) // Just used in case Get-Acl is used on an AD object from outside of the domain
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets the security descriptor for a resource, such as a file or registry key."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "List ACLs of file",
-                        new List<string>()
-                        {
-                            "Get-Acl C:\\Windows\\explorer.exe",
-                            "Get-Acl -Path C:\\Windows\\explorer.exe"
-                        }
-                    ),
-                    new ExampleEntry("List ACLs of directory", "Get-Acl C:\\Windows"),
-                    new ExampleEntry("List ACLs of AD Object", "Get-Acl \"AD:\\CN=User One,CN=Users,DC=ad,DC=bitsadmin,DC=com\"")
-                };
-            }
-        }
+                    "Get-Acl C:\\Windows\\explorer.exe",
+                    "Get-Acl -Path C:\\Windows\\explorer.exe"
+                }
+            ),
+            new ExampleEntry("List ACLs of directory", "Get-Acl C:\\Windows"),
+            new ExampleEntry("List ACLs of AD Object", "Get-Acl \"AD:\\CN=User One,CN=Users,DC=ad,DC=bitsadmin,DC=com\"")
+        };
     }
 }

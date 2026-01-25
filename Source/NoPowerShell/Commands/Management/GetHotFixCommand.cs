@@ -43,47 +43,32 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-HotFix" }; }
-        }
+            "Get-HotFix"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true)
+        };
+
+        public static new string Synopsis => "Gets the hotfixes that have been applied to the local and remote computers.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry("Get all hotfixes on the local computer", "Get-HotFix"),
+            new ExampleEntry
+            (
+                "Get all hotfixes from a remote computer using WMI",
+                new List<string>()
                 {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets the hotfixes that have been applied to the local and remote computers."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Get all hotfixes on the local computer", "Get-HotFix"),
-                    new ExampleEntry
-                    (
-                        "Get all hotfixes from a remote computer using WMI",
-                        new List<string>()
-                        {
-                            "Get-HotFix -ComputerName MyServer -Username MyUser -Password MyPassword",
-                            "Get-HotFix -ComputerName MyServer"
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-HotFix -ComputerName MyServer -Username MyUser -Password MyPassword",
+                    "Get-HotFix -ComputerName MyServer"
+                }
+            )
+        };
     }
 }

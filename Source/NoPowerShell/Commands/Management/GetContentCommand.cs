@@ -32,44 +32,32 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-Content", "gc", "cat", "type" }; }
-        }
+            "Get-Content",
+            "gc",
+            "cat",
+            "type"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Path")
+        };
+
+        public static new string Synopsis => "Gets the contents of a file.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "View contents of a file",
+                new List<string>()
                 {
-                    new StringArgument("Path")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets the contents of a file."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "View contents of a file",
-                        new List<string>()
-                        {
-                            "Get-Content C:\\Windows\\WindowsUpdate.log",
-                            "cat C:\\Windows\\WindowsUpdate.log"
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-Content C:\\Windows\\WindowsUpdate.log",
+                    "cat C:\\Windows\\WindowsUpdate.log"
+                }
+            )
+        };
     }
 }

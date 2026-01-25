@@ -41,72 +41,53 @@ namespace NoPowerShell.Commands.NetTCPIP
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get {
-                return new CaseInsensitiveList()
-                {
-                    "Get-NetIPAddress", "ipconfig",
-                    "ifconfig" // Not official
-                };
-            }
-        }
+            "Get-NetIPAddress",
+            "ipconfig", // Not official
+            "ifconfig" // Not official
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new BoolArgument("All")
-                };
-            }
-        }
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new BoolArgument("All")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets the IP address configuration."; }
-        }
+        public static new string Synopsis => "Gets the IP address configuration.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
+            new ExampleEntry
+            (
+                "Show network interfaces",
+                new List<string>()
                 {
-                    new ExampleEntry
-                    (
-                        "Show network interfaces",
-                        new List<string>()
-                        {
-                            "Get-NetIPAddress",
-                            "ipconfig",
-                            "ifconfig"
-                        }
-                    ),
-                    new ExampleEntry
-                    (
-                        "Show all network interfaces",
-                        new List<string>()
-                        {
-                            "Get-NetIPAddress -All",
-                            "ipconfig -All"
-                        }
-                    ),
-                    new ExampleEntry
-                    (
-                        "Show all network interfaces on a remote machine using WMI",
-                        new List<string>()
-                        {
-                            "Get-NetIPAddress -All -ComputerName MyServer -Username MyUser -Password MyPassword",
-                            "Get-NetIPAddress -All -ComputerName MyServer"
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-NetIPAddress",
+                    "ipconfig",
+                    "ifconfig"
+                }
+            ),
+            new ExampleEntry
+            (
+                "Show all network interfaces",
+                new List<string>()
+                {
+                    "Get-NetIPAddress -All",
+                    "ipconfig -All"
+                }
+            ),
+            new ExampleEntry
+            (
+                "Show all network interfaces on a remote machine using WMI",
+                new List<string>()
+                {
+                    "Get-NetIPAddress -All -ComputerName MyServer -Username MyUser -Password MyPassword",
+                    "Get-NetIPAddress -All -ComputerName MyServer"
+                }
+            )
+        };
     }
 }

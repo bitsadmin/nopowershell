@@ -43,47 +43,32 @@ namespace NoPowerShell.Commands.Utility
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Out-File" }; }
-        }
+            "Out-File"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("FilePath", false),
+            new StringArgument("Encoding", "UTF-8"),
+            new BoolArgument("PassThru")
+        };
+
+        public static new string Synopsis => "Sends output to a file.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Create file hello.txt on the C: drive containing the \"Hello World!\" ASCII string",
+                new List<string>()
                 {
-                    new StringArgument("FilePath", false),
-                    new StringArgument("Encoding", "UTF-8"),
-                    new BoolArgument("PassThru")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Sends output to a file."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Create file hello.txt on the C: drive containing the \"Hello World!\" ASCII string",
-                        new List<string>()
-                        {
-                            @"Write-Output ""Hello World!"" | Out-File -Encoding ASCII C:\hello.txt",
-                            @"echo ""Hello World!"" | Out-File -Encoding ASCII C:\hello.txt"
-                        }
-                    ),
-                    new ExampleEntry("Create file with newlines", "echo \"@echo off`r`necho Hello World!\" | Out-File -Encoding ASCII C:\\hello.cmd")
-                };
-            }
-        }
+                    @"Write-Output ""Hello World!"" | Out-File -Encoding ASCII C:\hello.txt",
+                    @"echo ""Hello World!"" | Out-File -Encoding ASCII C:\hello.txt"
+                }
+            ),
+            new ExampleEntry("Create file with newlines", "echo \"@echo off`r`necho Hello World!\" | Out-File -Encoding ASCII C:\\hello.cmd")
+        };
     }
 }

@@ -55,37 +55,22 @@ namespace NoPowerShell.Commands.Utility
             return null;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "ConvertTo-Csv" }; }
-        }
+            "ConvertTo-Csv"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Delimiter", ","),
-                };
-            }
-        }
+            new StringArgument("Delimiter", ","),
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Converts .NET objects into a series of character-separated value (CSV) strings."; }
-        }
+        public static new string Synopsis => "Converts .NET objects into a series of character-separated value (CSV) strings.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Display process list as CSV", @"Get-Process | ConvertTo-Csv"),
-                    new ExampleEntry("Use tab delimiter", "Get-Process | ConvertTo-Csv -Delimiter \"`t\"")
-                };
-            }
-        }
+            new ExampleEntry("Display process list as CSV", @"Get-Process | ConvertTo-Csv"),
+            new ExampleEntry("Use tab delimiter", "Get-Process | ConvertTo-Csv -Delimiter \"`t\"")
+        };
     }
 }

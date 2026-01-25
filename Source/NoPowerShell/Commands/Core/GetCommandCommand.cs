@@ -206,43 +206,25 @@ namespace NoPowerShell.Commands.Core
             return string.Join(" ", strArgs);
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get
-            {
-                return new CaseInsensitiveList() { "Get-Command" };
-            }
-        }
+            "Get-Command"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new BoolArgument ("_Included"),
-                    new BoolArgument ("_Cheatsheet"),
-                    new BoolArgument ("_Tsv"),
-                    new StringArgument ("Module", true)
-                };
-            }
-        }
+            new BoolArgument ("_Included"),
+            new BoolArgument ("_Cheatsheet"),
+            new BoolArgument ("_Tsv"),
+            new StringArgument ("Module", true)
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Shows all available commands."; }
-        }
+        public static new string Synopsis => "Shows all available commands.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List all commands supported by NoPowerShell", "Get-Command"),
-                    new ExampleEntry("List commands of a certain module", "Get-Command -Module ActiveDirectory")
-                };
-            }
-        }
+            new ExampleEntry("List all commands supported by NoPowerShell", "Get-Command"),
+            new ExampleEntry("List commands of a certain module", "Get-Command -Module ActiveDirectory")
+        };
     }
 }

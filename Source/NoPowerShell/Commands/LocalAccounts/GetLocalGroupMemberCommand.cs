@@ -222,45 +222,30 @@ namespace NoPowerShell.Commands.LocalAccounts
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-LocalGroupMember" }; }
-        }
+            "Get-LocalGroupMember"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new StringArgument("Name", true),
-                    new StringArgument("SID", true),
-                    new BoolArgument("UseWMI") // Unofficial
-                };
-            }
-        }
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Name", true),
+            new StringArgument("SID", true),
+            new BoolArgument("UseWMI") // Unofficial
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets the members of local groups."; }
-        }
+        public static new string Synopsis => "Gets the members of local groups.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Gets the members of the local group Administrators", "Get-LocalGroupMember -Name Administrators"),
-                    new ExampleEntry("Gets the members of the local group with the specified SID", "Get-LocalGroupMember -SID S-1-5-32-544"),
-                    new ExampleEntry("Gets the members of a local group on a remote computer", "Get-LocalGroupMember -Name Administrators -ComputerName MyServer"),
-                    new ExampleEntry("Gets the members of a local group on a remote computer using WMI", "Get-LocalGroupMember -UseWMI -Name Administrators -ComputerName MyServer -Username LabAdmin -Password Password1!")
-                };
-            }
-        }
+            new ExampleEntry("Gets the members of the local group Administrators", "Get-LocalGroupMember -Name Administrators"),
+            new ExampleEntry("Gets the members of the local group with the specified SID", "Get-LocalGroupMember -SID S-1-5-32-544"),
+            new ExampleEntry("Gets the members of a local group on a remote computer", "Get-LocalGroupMember -Name Administrators -ComputerName MyServer"),
+            new ExampleEntry("Gets the members of a local group on a remote computer using WMI", "Get-LocalGroupMember -UseWMI -Name Administrators -ComputerName MyServer -Username LabAdmin -Password Password1!")
+        };
 
         private const uint NERR_Success = 0;
         private const uint MAX_PREFERRED_LENGTH = uint.MaxValue;

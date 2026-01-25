@@ -134,44 +134,30 @@ ALIASES
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-Help", "man" }; }
-        }
+            "Get-Help",
+            "man"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Name")
+        };
+
+        public static new string Synopsis => "Displays information about NoPowerShell commands.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Get help for a command",
+                new List<string>()
                 {
-                    new StringArgument("Name")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Displays information about NoPowerShell commands."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Get help for a command",
-                        new List<string>()
-                        {
-                            "Get-Help -Name Get-Process",
-                            "man ps"
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-Help -Name Get-Process",
+                    "man ps"
+                }
+            )
+        };
     }
 }

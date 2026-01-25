@@ -103,39 +103,24 @@ namespace NoPowerShell.Commands.Additional
             }
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Copy-Acl" }; }
-        }
+            "Copy-Acl"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Path"),
-                    new StringArgument("Destination"),
-                    new BoolArgument("Recurse")
-                };
-            }
-        }
+            new StringArgument("Path"),
+            new StringArgument("Destination"),
+            new BoolArgument("Recurse")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Copies access ACLs from source to destination file/directory"; }
-        }
+        public static new string Synopsis => "Copies access ACLs from source to destination file/directory";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Copy ACL from file to another file", "Copy-Acl C:\\Data\\file.txt C:\\Data\\destination.txt"),
-                    new ExampleEntry("Recursively copy ACLs from source to destination folder", "Copy-Acl -Recurse -Path C:\\SourceDir -Destination C:\\DestinationDir")
-                };
-            }
-        }
+            new ExampleEntry("Copy ACL from file to another file", "Copy-Acl C:\\Data\\file.txt C:\\Data\\destination.txt"),
+            new ExampleEntry("Recursively copy ACLs from source to destination folder", "Copy-Acl -Recurse -Path C:\\SourceDir -Destination C:\\DestinationDir")
+        };
     }
 }

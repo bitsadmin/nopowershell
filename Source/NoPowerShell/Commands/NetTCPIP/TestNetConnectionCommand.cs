@@ -238,62 +238,41 @@ namespace NoPowerShell.Commands.NetTCPIP
             return results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get
-            {
-                return new CaseInsensitiveList()
-                {
-                    "Test-NetConnection",
-                    "tnc",
-                    "ping" // Not official
-                };
-            }
-        }
+            "Test-NetConnection",
+            "tnc",
+            "ping" // Not official
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new BoolArgument("TraceRoute"),
-                    new StringArgument("ComputerName"),
-                    new IntegerArgument("Count", 1),      // Unofficial parameter
-                    new IntegerArgument("Timeout", 5000), // Unofficial parameter
-                    new IntegerArgument("TTL", 128),      // Unofficial parameter
-                    new IntegerArgument("Hops", 30),
-                    new IntegerArgument("Port", -1)
-                };
-            }
-        }
+            new BoolArgument("TraceRoute"),
+            new StringArgument("ComputerName"),
+            new IntegerArgument("Count", 1),      // Unofficial parameter
+            new IntegerArgument("Timeout", 5000), // Unofficial parameter
+            new IntegerArgument("TTL", 128),      // Unofficial parameter
+            new IntegerArgument("Hops", 30),
+            new IntegerArgument("Port", -1)
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Displays diagnostic information for a connection."; }
-        }
+        public static new string Synopsis => "Displays diagnostic information for a connection.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
+            new ExampleEntry
+            (
+                "Send ICMP request to host",
+                new List<string>()
                 {
-                    new ExampleEntry
-                    (
-                        "Send ICMP request to host",
-                        new List<string>()
-                        {
-                            "Test-NetConnection 1.1.1.1",
-                            "tnc 1.1.1.1"
-                        }
-                    ),
-                    new ExampleEntry("Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout", "Test-NetConnection -Count 2 -Timeout 500 1.1.1.1"),
-                    new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 bitsadmin.com"),
-                    new ExampleEntry("Perform ping with maximum TTL specified", "ping -TTL 32 1.1.1.1"),
-                    new ExampleEntry("Check for open port", "tnc bitsadmin.com -Port 80")
-                };
-            }
-        }
+                    "Test-NetConnection 1.1.1.1",
+                    "tnc 1.1.1.1"
+                }
+            ),
+            new ExampleEntry("Send 2 ICMP requests to IP address 1.1.1.1 with half a second of timeout", "Test-NetConnection -Count 2 -Timeout 500 1.1.1.1"),
+            new ExampleEntry("Perform a traceroute with a timeout of 1 second and a maximum of 20 hops", "Test-NetConnection -TraceRoute -Timeout 1000 -Hops 20 bitsadmin.com"),
+            new ExampleEntry("Perform ping with maximum TTL specified", "ping -TTL 32 1.1.1.1"),
+            new ExampleEntry("Check for open port", "tnc bitsadmin.com -Port 80")
+        };
     }
 }

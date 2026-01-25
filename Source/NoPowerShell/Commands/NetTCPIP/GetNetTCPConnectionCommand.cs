@@ -31,54 +31,33 @@ namespace NoPowerShell.Commands.NetTCPIP
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get
-            {
-                return new CaseInsensitiveList()
+            "Get-NetTCPConnection",
+            "netstat" // unofficial
+        };
+
+        public static new ArgumentList SupportedArguments => new ArgumentList()
+        {
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true)
+        };
+
+        public static new string Synopsis => "Gets TCP connections.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Show TCP connections on the local machine",
+                new List<string>()
                 {
                     "Get-NetTCPConnection",
-                    "netstat" // unofficial
-                };
-            }
-        }
-
-        public static new ArgumentList SupportedArguments
-        {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets TCP connections."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Show TCP connections on the local machine",
-                        new List<string>()
-                        {
-                            "Get-NetTCPConnection",
-                            "netstat"
-                        }
-                    ),
-                    new ExampleEntry("Show TCP connections on a remote machine", "Get-NetTCPConnection -ComputerName MyServer"),
-                };
-            }
-        }
+                    "netstat"
+                }
+            ),
+            new ExampleEntry("Show TCP connections on a remote machine", "Get-NetTCPConnection -ComputerName MyServer"),
+        };
     }
 }

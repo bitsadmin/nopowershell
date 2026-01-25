@@ -59,45 +59,31 @@ namespace NoPowerShell.Commands.Utility
             };
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Format-List", "fl" }; }
-        }
+            "Format-List",
+            "fl"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Property", string.Empty)
+        };
+
+        public static new string Synopsis => "Formats the output as a list of properties in which each property appears on a new line.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Format output as a list",
+                new List<string>()
                 {
-                    new StringArgument("Property", string.Empty)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Formats the output as a list of properties in which each property appears on a new line."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Format output as a list",
-                        new List<string>()
-                        {
-                            "Get-LocalUser | Format-List",
-                            "Get-LocalUser | fl"
-                        }
-                    ),
-                    new ExampleEntry("Format output as a list showing only specific attributes", "Get-LocalUser | fl Name,Description"),
-                };
-            }
-        }
+                    "Get-LocalUser | Format-List",
+                    "Get-LocalUser | fl"
+                }
+            ),
+            new ExampleEntry("Format output as a list showing only specific attributes", "Get-LocalUser | fl Name,Description"),
+        };
     }
 }

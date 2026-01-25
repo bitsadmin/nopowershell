@@ -103,43 +103,29 @@ namespace NoPowerShell.Commands
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ScheduledTask", "schtasks" }; }
-        }
+            "Get-ScheduledTask",
+            "schtasks" // Not official
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("TaskName", true),
-                    new StringArgument("TaskPath", true)
-                };
-            }
-        }
+            new StringArgument("ComputerName", true),
+            new StringArgument("TaskName", true),
+            new StringArgument("TaskPath", true)
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets the task definitions that are registered in the Task Scheduler service."; }
-        }
+        public static new string Synopsis => "Gets the task definitions that are registered in the Task Scheduler service.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Get all scheduled tasks from the root folder and subfolders", "Get-ScheduledTask | select TaskPath,TaskName,Status"),
-                    new ExampleEntry("Get all scheduled tasks from a specific folder", "Get-ScheduledTask -TaskPath \"\\Microsoft\\Windows\\Windows Defender\\*\" | select TaskPath,TaskName,Status"),
-                    new ExampleEntry("Get a specific scheduled task", "Get-ScheduledTask -TaskName \"Windows Defender Scheduled Scan\""),
-                    new ExampleEntry("Get scheduled tasks matching a wildcard", "Get-ScheduledTask -TaskName Update* | select TaskPath,TaskName,Status"),
-                    new ExampleEntry("Get scheduled tasks on a remote computer", "Get-ScheduledTask -ComputerName MyServer | select TaskPath,TaskName,Status")
-                };
-            }
-        }
+            new ExampleEntry("Get all scheduled tasks from the root folder and subfolders", "Get-ScheduledTask | select TaskPath,TaskName,Status"),
+            new ExampleEntry("Get all scheduled tasks from a specific folder", "Get-ScheduledTask -TaskPath \"\\Microsoft\\Windows\\Windows Defender\\*\" | select TaskPath,TaskName,Status"),
+            new ExampleEntry("Get a specific scheduled task", "Get-ScheduledTask -TaskName \"Windows Defender Scheduled Scan\""),
+            new ExampleEntry("Get scheduled tasks matching a wildcard", "Get-ScheduledTask -TaskName Update* | select TaskPath,TaskName,Status"),
+            new ExampleEntry("Get scheduled tasks on a remote computer", "Get-ScheduledTask -ComputerName MyServer | select TaskPath,TaskName,Status")
+        };
 
         private class TaskInfo
         {

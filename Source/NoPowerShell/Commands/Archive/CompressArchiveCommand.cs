@@ -81,54 +81,33 @@ namespace NoPowerShell.Commands.Archive
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get
-            {
-                return new CaseInsensitiveList()
-                {
-                    "Compress-Archive",
-                    "zip" // Unofficial
-                };
-            }
-        }
+            "Compress-Archive",
+            "zip" // Unofficial
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Path"),
-                    new StringArgument("DestinationPath"),
-                    new StringArgument("CompressionLevel", "Optimal")
-                };
-            }
-        }
+            new StringArgument("Path"),
+            new StringArgument("DestinationPath"),
+            new StringArgument("CompressionLevel", "Optimal")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Creates an archive, or zipped file, from specified files and folders."; }
-        }
+        public static new string Synopsis => "Creates an archive, or zipped file, from specified files and folders.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
+            new ExampleEntry
+            (
+                "Compress folder to zip",
+                new List<string>()
                 {
-                    new ExampleEntry
-                    (
-                        "Compress folder to zip",
-                        new List<string>()
-                        {
-                            "Compress-Archive -Path C:\\MyFolder -DestinationPath C:\\MyFolder.zip",
-                            "zip C:\\MyFolder C:\\MyFolder.zip"
-                        }
-                    )
-                };
-            }
-        }
+                    "Compress-Archive -Path C:\\MyFolder -DestinationPath C:\\MyFolder.zip",
+                    "zip C:\\MyFolder C:\\MyFolder.zip"
+                }
+            )
+        };
     }
 }
 #endif

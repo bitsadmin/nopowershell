@@ -194,50 +194,38 @@ namespace NoPowerShell.Commands.Utility
             };
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Invoke-WebRequest", "curl", "iwr", "wget" }; }
-        }
+            "Invoke-WebRequest",
+            "curl",
+            "iwr",
+            "wget"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("URI"),
-                    new StringArgument("OutFile", true),
-                    new StringArgument("UserAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"), // Internet Explorer on Windows 10 User Agent
-                    new StringArgument("Method", "GET"),
-                    new StringArgument("Proxy", true),
-                    new StringArgument("ProxyCredential", true),
-                    new BoolArgument("ProxyUseDefaultCredentials"),
-                    new BoolArgument("SkipCertificateCheck")
-                };
-            }
-        }
+            new StringArgument("URI"),
+            new StringArgument("OutFile", true),
+            new StringArgument("UserAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"), // Internet Explorer on Windows 10 User Agent
+            new StringArgument("Method", "GET"),
+            new StringArgument("Proxy", true),
+            new StringArgument("ProxyCredential", true),
+            new BoolArgument("ProxyUseDefaultCredentials"),
+            new BoolArgument("SkipCertificateCheck")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets content from a web page on the Internet."; }
-        }
+        public static new string Synopsis => "Gets content from a web page on the Internet.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry(
-                        "View external IP address using custom user agent",
-                        "iwr ifconfig.io/ip -UserAgent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0\""
-                    ),
-                    new ExampleEntry("View external IP using explicit proxy", "Invoke-WebRequest https://ifconfig.io/ip -Proxy http://proxy:8080"),
-                    new ExampleEntry("Download file from the Internet to disk", "wget https://live.sysinternals.com/psexec.exe -OutFile C:\\Tmp\\psexec.exe"),
-                    new ExampleEntry("Perform request ignoring invalid TLS certificates", "iwr https://74.242.189.11/about_this_site.txt -SkipCertificateCheck"),
-                    new ExampleEntry("Show certificate chain details", "Invoke-WebRequest -Verbose -SkipCertificateCheck https://74.242.189.11/about_this_site.txt")
-                };
-            }
-        }
+            new ExampleEntry(
+                "View external IP address using custom user agent",
+                "iwr ifconfig.io/ip -UserAgent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0\""
+            ),
+            new ExampleEntry("View external IP using explicit proxy", "Invoke-WebRequest https://ifconfig.io/ip -Proxy http://proxy:8080"),
+            new ExampleEntry("Download file from the Internet to disk", "wget https://live.sysinternals.com/psexec.exe -OutFile C:\\Tmp\\psexec.exe"),
+            new ExampleEntry("Perform request ignoring invalid TLS certificates", "iwr https://74.242.189.11/about_this_site.txt -SkipCertificateCheck"),
+            new ExampleEntry("Show certificate chain details", "Invoke-WebRequest -Verbose -SkipCertificateCheck https://74.242.189.11/about_this_site.txt")
+        };
     }
 }

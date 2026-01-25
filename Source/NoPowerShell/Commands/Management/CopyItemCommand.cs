@@ -111,49 +111,37 @@ namespace NoPowerShell.Commands.Management
             }
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Copy-Item", "copy", "cp", "cpi" }; }
-        }
+            "Copy-Item",
+            "copy",
+            "cp",
+            "cpi"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Path"),
+            new StringArgument("Destination"),
+            new BoolArgument("Recurse"),
+            new BoolArgument("Force"),
+            new BoolArgument("Verbose")
+        };
+
+        public static new string Synopsis => "Copies an item from one location to another.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "Copy file from one location to another",
+                new List<string>()
                 {
-                    new StringArgument("Path"),
-                    new StringArgument("Destination"),
-                    new BoolArgument("Recurse"),
-                    new BoolArgument("Force"),
-                    new BoolArgument("Verbose")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Copies an item from one location to another."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "Copy file from one location to another",
-                        new List<string>()
-                        {
-                            "Copy-Item C:\\Tmp\\nc.exe C:\\Windows\\System32\\nc.exe",
-                            "copy C:\\Tmp\\nc.exe C:\\Windows\\System32\\nc.exe",
-                        }
-                    ),
-                    new ExampleEntry("Copy folder", "copy C:\\Tmp\\MyFolder C:\\Tmp\\MyFolderBackup")
-                };
-            }
-        }
+                    "Copy-Item C:\\Tmp\\nc.exe C:\\Windows\\System32\\nc.exe",
+                    "copy C:\\Tmp\\nc.exe C:\\Windows\\System32\\nc.exe",
+                }
+            ),
+            new ExampleEntry("Copy folder", "copy C:\\Tmp\\MyFolder C:\\Tmp\\MyFolderBackup")
+        };
     }
 }

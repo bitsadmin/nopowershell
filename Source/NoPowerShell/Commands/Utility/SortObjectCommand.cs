@@ -103,38 +103,24 @@ namespace NoPowerShell.Commands.Utility
             return pipeIn;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Sort-Object", "sort" }; }
-        }
+            "Sort-Object",
+            "sort"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Property"),
-                    new BoolArgument("Descending"),
-                    new BoolArgument("Unique")
-                };
-            }
-        }
+            new StringArgument("Property"),
+            new BoolArgument("Descending"),
+            new BoolArgument("Unique")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Sorts objects by property values."; }
-        }
+        public static new string Synopsis => "Sorts objects by property values.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Sort processes by name descending", "ps | sort -d name")
-                };
-            }
-        }
+            new ExampleEntry("Sort processes by name descending", "ps | sort -d name")
+        };
     }
 }

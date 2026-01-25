@@ -88,38 +88,24 @@ namespace NoPowerShell.Commands.Utility
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Select-Object", "select" }; }
-        }
+            "Select-Object",
+            "select"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Property", "*"),
-                    new IntegerArgument("First", 0)
-                };
-            }
-        }
+            new StringArgument("Property", "*"),
+            new IntegerArgument("First", 0)
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Selects objects or object properties."; }
-        }
+        public static new string Synopsis => "Selects objects or object properties.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Show only the Name in a file listing", "ls C:\\ | select Name"),
-                    new ExampleEntry("Show first 10 results of file listing", "ls C:\\Windows\\System32 -Include *.exe | select -First 10 Name,Length")
-                };
-            }
-        }
+            new ExampleEntry("Show only the Name in a file listing", "ls C:\\ | select Name"),
+            new ExampleEntry("Show first 10 results of file listing", "ls C:\\Windows\\System32 -Include *.exe | select -First 10 Name,Length")
+        };
     }
 }

@@ -37,51 +37,37 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Invoke-WmiMethod", "iwmi" }; }
-        }
+            "Invoke-WmiMethod",
+            "iwmi"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Name"),
+            new StringArgument("Namespace", @"root\cimv2"),
+            new StringArgument("Class"),
+            new StringArgument("ArgumentList")
+        };
+
+        public static new string Synopsis => "Calls WMI methods.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry("Launch process", "Invoke-WmiMethod -Class Win32_Process -Name Create \"cmd /c calc.exe\""),
+            new ExampleEntry
+            (
+                "Launch process on remote system",
+                new List<string>()
                 {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new StringArgument("Name"),
-                    new StringArgument("Namespace", @"root\cimv2"),
-                    new StringArgument("Class"),
-                    new StringArgument("ArgumentList")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Calls WMI methods."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Launch process", "Invoke-WmiMethod -Class Win32_Process -Name Create \"cmd /c calc.exe\""),
-                    new ExampleEntry
-                    (
-                        "Launch process on remote system",
-                        new List<string>()
-                        {
-                            "Invoke-WmiMethod -ComputerName MyServer -Username MyUser -Password MyPassword -Class Win32_Process -Name Create \"powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA==\"",
-                            "iwmi -ComputerName MyServer -Class Win32_Process -Name Create \"powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA==\""
-                        }
-                    ),
-                };
-            }
-        }
+                    "Invoke-WmiMethod -ComputerName MyServer -Username MyUser -Password MyPassword -Class Win32_Process -Name Create \"powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA==\"",
+                    "iwmi -ComputerName MyServer -Class Win32_Process -Name Create \"powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA==\""
+                }
+            ),
+        };
     }
 }

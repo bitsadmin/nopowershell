@@ -79,41 +79,28 @@ namespace NoPowerShell.Commands.Core
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Where-Object", "where", "?" }; }
-        }
+            "Where-Object",
+            "where",
+            "?"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Property"),
-                    new BoolArgument("EQ"),
-                    new BoolArgument("NE"),
-                    new BoolArgument("Like"),
-                    new StringArgument("Value")
-                };
-            }
-        }
+            new StringArgument("Property"),
+            new BoolArgument("EQ"),
+            new BoolArgument("NE"),
+            new BoolArgument("Like"),
+            new StringArgument("Value")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Selects objects from a collection based on their property values."; }
-        }
+        public static new string Synopsis => "Selects objects from a collection based on their property values.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List all processes containing PowerShell in the process name", "Get-Process | ? Name -Like *PowerShell*"),
-                    new ExampleEntry("List local drives", "Get-PSDrive | ? Provider -EQ FileSystem")
-                };
-            }
-        }
+            new ExampleEntry("List all processes containing PowerShell in the process name", "Get-Process | ? Name -Like *PowerShell*"),
+            new ExampleEntry("List local drives", "Get-PSDrive | ? Provider -EQ FileSystem")
+        };
     }
 }

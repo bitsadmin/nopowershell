@@ -70,43 +70,29 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-PSDrive", "gdr" }; }
-        }
+            "Get-PSDrive",
+            "gdr"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+        };
+
+        public static new string Synopsis => "Gets drives in the current session.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "List drives",
+                new List<string>()
                 {
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets drives in the current session."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "List drives",
-                        new List<string>()
-                        {
-                            "Get-PSDrive",
-                            "gdr"
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-PSDrive",
+                    "gdr"
+                }
+            )
+        };
     }
 }

@@ -103,40 +103,27 @@ namespace NoPowerShell.Commands.Management
             return null;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Stop-Process", "kill", "spps" }; }
-        }
+            "Stop-Process",
+            "kill",
+            "spps"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Id", true),
-                    new StringArgument("ProcessName", true),
-                    new BoolArgument("Force")
-                };
-            }
-        }
+            new StringArgument("Id", true),
+            new StringArgument("ProcessName", true),
+            new BoolArgument("Force")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Stops one or more running processes."; }
-        }
+        public static new string Synopsis => "Stops one or more running processes.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Gracefully stop processes" , "Stop-Process -Id 4512,7241"),
-                    new ExampleEntry("Kill process" , "Stop-Process -Force -Id 4512"),
-                    new ExampleEntry("Kill all cmd.exe processes", "Get-Process cmd | Stop-Process -Force")
-                };
-            }
-        }
+            new ExampleEntry("Gracefully stop processes" , "Stop-Process -Id 4512,7241"),
+            new ExampleEntry("Kill process" , "Stop-Process -Force -Id 4512"),
+            new ExampleEntry("Kill all cmd.exe processes", "Get-Process cmd | Stop-Process -Force")
+        };
     }
 }

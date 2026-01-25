@@ -178,53 +178,39 @@ namespace NoPowerShell.Commands.Management
             return "Unknown";
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-Service", "gsv" }; }
-        }
+            "Get-Service",
+            "gsv"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Name", true),
+            new StringArgument("DisplayName", true),
+            new StringArgument("Include", true),
+            new StringArgument("Exclude", true)
+        };
+
+        public static new string Synopsis => "Gets the services on a local or remote computer.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry("Get all services on the local computer", "Get-Service"),
+            new ExampleEntry("Get a specific service by name", "Get-Service -Name wuauserv"),
+            new ExampleEntry("Get services by display name", "Get-Service -DisplayName \"Windows Update\""),
+            new ExampleEntry("Get services on a remote computer", "Get-Service -ComputerName MyServer"),
+            new ExampleEntry(
+                "Filter services using Include and Exclude",
+                new List<string>
                 {
-                    new StringArgument("ComputerName", true),
-                    new StringArgument("Username", true),
-                    new StringArgument("Password", true),
-                    new StringArgument("Name", true),
-                    new StringArgument("DisplayName", true),
-                    new StringArgument("Include", true),
-                    new StringArgument("Exclude", true)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets the services on a local or remote computer."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries
-                {
-                    new ExampleEntry("Get all services on the local computer", "Get-Service"),
-                    new ExampleEntry("Get a specific service by name", "Get-Service -Name wuauserv"),
-                    new ExampleEntry("Get services by display name", "Get-Service -DisplayName \"Windows Update\""),
-                    new ExampleEntry("Get services on a remote computer", "Get-Service -ComputerName MyServer"),
-                    new ExampleEntry(
-                        "Filter services using Include and Exclude",
-                        new List<string>
-                        {
-                            "Get-Service -Include \"Win\"",
-                            "Get-Service -Exclude \"WinRM\""
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-Service -Include \"Win\"",
+                    "Get-Service -Exclude \"WinRM\""
+                }
+            )
+        };
     }
 }
