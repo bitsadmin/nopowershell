@@ -6,39 +6,50 @@ License: BSD 3-Clause
 
 namespace NoPowerShell.Arguments
 {
-    public class BoolArgument : Argument
+    /// <summary>
+    /// Represents an optional boolean switch argument.
+    /// Bool arguments are always optional in this model.
+    /// </summary>
+    public sealed class BoolArgument : Argument
     {
         private bool _value;
 
-        public BoolArgument()
-        {
-        }
-
         /// <summary>
-        /// Create a new boolean argument. Bool arguments are always optional.
+        /// Initializes a new instance of the <see cref="BoolArgument"/> class.
+        /// Bool arguments are always optional and default to <c>false</c>.
         /// </summary>
-        /// <param name="argumentName">Name of the parameter</param>
-        public BoolArgument(string argumentName) : base(argumentName)
+        /// <param name="argumentName">Name of the parameter (for example, "-Recurse").</param>
+        public BoolArgument(string argumentName)
+            : base(argumentName)
         {
             _value = false;
             _isOptionalArgument = true;
         }
 
-        public new BoolArgument Clone()
+        /// <summary>
+        /// Creates a copy of this <see cref="BoolArgument"/> instance.
+        /// </summary>
+        /// <returns>A new <see cref="BoolArgument"/> with the same state.</returns>
+        public override Argument Clone()
         {
-            return new BoolArgument()
+            var clone = new BoolArgument(_name)
             {
-                _name = this._name,
-                _isOptionalArgument = this._isOptionalArgument,
-                _dashArgumentNameSkipUsed = this._dashArgumentNameSkipUsed,
-                _isSet = this._isSet,
-                _value = this._value
+                _isOptionalArgument = _isOptionalArgument,
+                _dashArgumentNameSkipUsed = _dashArgumentNameSkipUsed,
+                _isSet = _isSet,
+                _value = _value
             };
+
+            return clone;
         }
 
+        /// <summary>
+        /// Gets or sets the value of the argument.
+        /// Setting the value will mark the argument as explicitly set.
+        /// </summary>
         public bool Value
         {
-            get { return _value; }
+            get => _value;
             set
             {
                 _isSet = true;
@@ -46,6 +57,9 @@ namespace NoPowerShell.Arguments
             }
         }
 
+        /// <summary>
+        /// Returns a string representation suitable for debugging and logging.
+        /// </summary>
         public override string ToString()
         {
             return string.Format("{0}: {1}", _name, _value);
