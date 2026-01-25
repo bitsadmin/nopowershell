@@ -48,7 +48,7 @@ namespace NoPowerShell.Commands.LocalAccounts
             string groupName = null;
             string groupDomain = null;
 
-            string compName = computername == "." ? Environment.MachineName : computername;
+            string compName = (string.IsNullOrEmpty(computername) || computername == ".") ? Environment.MachineName : computername;
 
             if (!string.IsNullOrEmpty(sid))
             {
