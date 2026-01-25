@@ -17,6 +17,10 @@ namespace NoPowerShell.HelperClasses
             List<List<string>> parsedPipes = new List<List<string>>();
             List<string> currentPipe = new List<string>();
 
+            // Cleanup newline from last argument
+            if(args.Length > 0)
+                args[args.Length - 1] = args[args.Length - 1].TrimEnd('\r', '\n');
+
             // Split pipes
             foreach (string arg in args)
             {
