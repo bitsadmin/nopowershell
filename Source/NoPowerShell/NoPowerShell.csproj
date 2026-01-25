@@ -150,6 +150,7 @@
     <Compile Include="Commands\Additional\GetWhoamiCommand.cs" />
     <Compile Include="Commands\Management\GetChildItemCommand.cs" />
     <Compile Include="Commands\Management\GetWmiObjectCommand.cs" />
+    <Compile Include="Commands\Management\GetWindowsOptionalFeatureCommand.cs" />
     <Compile Include="Commands\PSCommand.cs" />
     <Compile Include="Commands\Utility\OutFileCommand.cs" />
     <Compile Include="Commands\Utility\SelectObjectCommand.cs" />
