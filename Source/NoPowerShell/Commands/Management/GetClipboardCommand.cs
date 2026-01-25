@@ -13,7 +13,7 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetClipboardCommand : PSCommand
     {
-        public GetClipboardCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetClipboardCommand(string[] userArguments) : base(userArguments)
         {
         }
 

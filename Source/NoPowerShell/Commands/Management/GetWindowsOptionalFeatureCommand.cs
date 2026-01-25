@@ -1,8 +1,6 @@
+using System;
 using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 /*
 Author: @bitsadmin
@@ -14,14 +12,18 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetWindowsOptionalFeatureCommand : PSCommand
     {
-        public GetWindowsOptionalFeatureCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetWindowsOptionalFeatureCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect parameters for remote execution
             base.Execute();
+
+            // Collect parameters for remote execution
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
 
             // Obtain cmdlet parameters
             string featureName = _arguments.Get<StringArgument>("FeatureName").Value;
@@ -38,7 +40,7 @@ namespace NoPowerShell.Commands.Management
                 // Query Windows Optional Features using WMI
                 // Note: Win32_OptionalFeature is available on Windows 7 and later
                 string wmiQuery = "SELECT * FROM Win32_OptionalFeature";
-                
+
                 // Filter by feature name if provided
                 if (!string.IsNullOrEmpty(featureName))
                 {
@@ -95,10 +97,10 @@ namespace NoPowerShell.Commands.Management
             // 4 = Disabled
             // 5 = Absent
             // 6 = Unknown
-            
+
             string installState = wmiRecord["InstallState"];
             int stateValue;
-            
+
             if (int.TryParse(installState, out stateValue))
             {
                 switch (stateValue)
@@ -131,7 +133,7 @@ namespace NoPowerShell.Commands.Management
             {
                 string installState = wmiRecord["InstallState"];
                 int stateValue;
-                
+
                 if (int.TryParse(installState, out stateValue))
                 {
                     // If state is in transition, restart might be required
@@ -143,34 +145,28 @@ namespace NoPowerShell.Commands.Management
             return "No";
         }
 
-        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList() { "Get-WindowsOptionalFeature" };
-
-        public static new ArgumentList SupportedArguments
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("FeatureName", true),
-                    new BoolArgument("Online")
-                };
-            }
-        }
+            "Get-WindowsOptionalFeature"
+        };
 
-        public static new string Synopsis => "Gets information about Windows optional features.";
-
-        public static new ExampleEntries Examples
+        public static new ArgumentList SupportedArguments => new ArgumentList
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List all Windows optional features", "Get-WindowsOptionalFeature -Online"),
-                    new ExampleEntry("Get a specific feature", "Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All"),
-                    new ExampleEntry("List enabled features", "Get-WindowsOptionalFeature -Online | ? State -EQ Enabled"),
-                    new ExampleEntry("List disabled features", "Get-WindowsOptionalFeature -Online | ? State -EQ Disabled")
-                };
-            }
-        }
+            new StringArgument("ComputerName", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("FeatureName", true),
+            new BoolArgument("Online")
+        };
+
+        public override string Synopsis => "Gets information about Windows optional features.";
+
+        public override ExampleEntries Examples => new ExampleEntries
+        {
+            new ExampleEntry("List all Windows optional features", "Get-WindowsOptionalFeature -Online"),
+            new ExampleEntry("Get a specific feature", "Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All"),
+            new ExampleEntry("List enabled features", "Get-WindowsOptionalFeature -Online | ? State -EQ Enabled"),
+            new ExampleEntry("List disabled features", "Get-WindowsOptionalFeature -Online | ? State -EQ Disabled")
+        };
     }
 }

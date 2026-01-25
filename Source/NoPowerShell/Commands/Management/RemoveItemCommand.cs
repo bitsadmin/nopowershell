@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Management
 {
     public class RemoveItemCommand : PSCommand
     {
-        public RemoveItemCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public RemoveItemCommand(string[] userArguments) : base(userArguments)
         {
         }
 
@@ -27,6 +27,7 @@ namespace NoPowerShell.Commands.Management
             string path = _arguments.Get<StringArgument>("Path").Value;
             bool force = _arguments.Get<BoolArgument>("Force").Value;
             bool recurse = _arguments.Get<BoolArgument>("Recurse").Value;
+            bool verbose = _arguments.Get<BoolArgument>("Verbose").Value;
 
             // Determine if provided path is a file or a directory
             if (!File.Exists(path) && !Directory.Exists(path))
@@ -113,7 +114,8 @@ namespace NoPowerShell.Commands.Management
                 {
                     new StringArgument("Path"),
                     new BoolArgument("Force"),
-                    new BoolArgument("Recurse")
+                    new BoolArgument("Recurse"),
+                    new BoolArgument("Verbose")
                 };
             }
         }

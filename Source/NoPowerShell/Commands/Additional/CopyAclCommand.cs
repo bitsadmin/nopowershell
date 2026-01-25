@@ -15,7 +15,7 @@ namespace NoPowerShell.Commands.Additional
 {
     public class CopyAclCommand : PSCommand
     {
-        public CopyAclCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public CopyAclCommand(string[] userArguments) : base(userArguments)
         {
         }
 

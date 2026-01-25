@@ -12,7 +12,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class WriteOutputCommand : PSCommand
     {
-        public WriteOutputCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public WriteOutputCommand(string[] userArguments) : base(userArguments)
         {
         }
 

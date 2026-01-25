@@ -13,17 +13,18 @@ namespace NoPowerShell.Commands.ActiveDirectory
 {
     public class GetADComputerCommand : PSCommand
     {
-        public GetADComputerCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetADComputerCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Obtain Username/Password parameters
             base.Execute(pipeIn);
 
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
@@ -66,58 +67,45 @@ namespace NoPowerShell.Commands.ActiveDirectory
             }
 
             // Obtain search base if not specified
-            if(string.IsNullOrWhiteSpace(searchBase))
+            if (string.IsNullOrWhiteSpace(searchBase))
                 searchBase = LDAPHelper.GetDistinguishedName(server, username, password);
 
             // Query
             _results = LDAPHelper.QueryLDAP(searchBase, queryFilter, new List<string>(properties.Split(',')), server, username, password);
 
             // Display error message if no results and identity is specified
-            if(_results.Count == 0 && !string.IsNullOrEmpty(identity))
+            if (_results.Count == 0 && !string.IsNullOrEmpty(identity))
                 Console.WriteLine($"{Aliases[0]}: Cannot find an object with identity: '{identity}' under '{searchBase}'.");
 
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ADComputer" }; }
-        }
+            "Get-ADComputer"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Server", true),
-                    new StringArgument("SearchBase", true),
-                    new StringArgument("Identity", true),
-                    new StringArgument("Filter", true),
-                    new StringArgument("LDAPFilter", true),
-                    new StringArgument("Properties", "DistinguishedName,DNSHostName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,UserPrincipalName")
-                };
-            }
-        }
+            new StringArgument("Server", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("SearchBase", true),
+            new StringArgument("Identity", true),
+            new StringArgument("Filter", true),
+            new StringArgument("LDAPFilter", true),
+            new StringArgument("Properties", "DistinguishedName,DNSHostName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,UserPrincipalName")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets one or more Active Directory computers."; }
-        }
+        public static new string Synopsis => "Gets one or more Active Directory computers.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List all properties of the DC1 domain computer", "Get-ADComputer -Identity DC1 -Properties *"),
-                    new ExampleEntry("List all Domain Controllers", "Get-ADComputer -LDAPFilter \"(msDFSR-ComputerReferenceBL=*)\""),
-                    new ExampleEntry("List all computers in domain", "Get-ADComputer -Filter *"),
-                    new ExampleEntry("List domain controllers", "Get-ADComputer -searchBase \"OU=Domain Controllers,DC=mydomain,DC=local\" -Filter *"),
-                    new ExampleEntry("List specific attributes of the DC1 domain computer", "Get-ADComputer -Identity DC1 -Properties Name,operatingSystem")
-                };
-            }
-        }
+            new ExampleEntry("List all properties of the DC1 domain computer", "Get-ADComputer -Identity DC1 -Properties *"),
+            new ExampleEntry("List all Domain Controllers", "Get-ADComputer -LDAPFilter \"(msDFSR-ComputerReferenceBL=*)\""),
+            new ExampleEntry("List all computers in domain", "Get-ADComputer -Filter *"),
+            new ExampleEntry("List domain controllers", "Get-ADComputer -searchBase \"OU=Domain Controllers,DC=mydomain,DC=local\" -Filter *"),
+            new ExampleEntry("List specific attributes of the DC1 domain computer", "Get-ADComputer -Identity DC1 -Properties Name,operatingSystem")
+        };
     }
 }

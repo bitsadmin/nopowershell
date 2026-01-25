@@ -16,13 +16,12 @@ namespace NoPowerShell.Commands.Utility
 {
     public class ConvertFromSddlStringCommand : PSCommand
     {
-        public ConvertFromSddlStringCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public ConvertFromSddlStringCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect the (optional) ComputerName, Username and Password parameters and Verbose and WhatIf flags
             base.Execute();
 
             // Obtain cmdlet parameters

@@ -16,7 +16,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class GetFileHashCommand : PSCommand
     {
-        public GetFileHashCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetFileHashCommand(string[] userArguments) : base(userArguments)
         {
         }
 

@@ -12,7 +12,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class FormatTableCommand : PSCommand
     {
-        public FormatTableCommand(string[] arguments) : base(arguments, SupportedArguments)
+        public FormatTableCommand(string[] arguments) : base(arguments)
         {
         }
 

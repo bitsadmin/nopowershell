@@ -13,17 +13,18 @@ namespace NoPowerShell.Commands.ActiveDirectory
 {
     public class GetADGroupMemberCommand : PSCommand
     {
-        public GetADGroupMemberCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetADGroupMemberCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Obtain Username/Password parameters
             base.Execute(pipeIn);
 
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
 
             // Obtain distinguishedname for group
@@ -53,45 +54,32 @@ namespace NoPowerShell.Commands.ActiveDirectory
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ADGroupMember" }; }
-        }
+            "Get-ADGroupMember"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new StringArgument("Server", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Identity")
+        };
+
+        public static new string Synopsis => "Gets the members of an Active Directory group.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry
+            (
+                "List all members of the \"Domain Admins\" group",
+                new List<string>()
                 {
-                    new StringArgument("Server", true),
-                    new StringArgument("Identity")
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "Gets the members of an Active Directory group."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry
-                    (
-                        "List all members of the \"Domain Admins\" group",
-                        new List<string>()
-                        {
-                            "Get-ADGroupMember -Identity \"Domain Admins\"",
-                            "Get-ADGroupMember \"Domain Admins\""
-                        }
-                    )
-                };
-            }
-        }
+                    "Get-ADGroupMember -Identity \"Domain Admins\"",
+                    "Get-ADGroupMember \"Domain Admins\""
+                }
+            )
+        };
     }
 }

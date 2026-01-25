@@ -15,7 +15,7 @@ namespace NoPowerShell.Commands.Additional
 {
     public class GetRemoteSmbShareCommand : PSCommand
     {
-        public GetRemoteSmbShareCommand(string[] arguments) : base(arguments, SupportedArguments)
+        public GetRemoteSmbShareCommand(string[] arguments) : base(arguments)
         {
         }
 

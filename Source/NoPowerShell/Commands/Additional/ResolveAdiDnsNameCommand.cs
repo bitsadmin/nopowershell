@@ -13,7 +13,7 @@ namespace NoPowerShell.Commands.Additional
 {
     public class ResolveAdiDnsNameCommand : PSCommand
     {
-        public ResolveAdiDnsNameCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public ResolveAdiDnsNameCommand(string[] userArguments) : base(userArguments)
         {
         }
 
@@ -24,6 +24,8 @@ namespace NoPowerShell.Commands.Additional
 
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             string zonename = _arguments.Get<StringArgument>("ZoneName").Value;
             string name = _arguments.Get<StringArgument>("Name").Value;
             //string rrtype = _arguments.Get<StringArgument>("Type").Value;
@@ -89,7 +91,9 @@ namespace NoPowerShell.Commands.Additional
                     new StringArgument("ZoneName"),
                     //new StringArgument("Type", true),
                     new StringArgument("Name", true),
-                    new StringArgument("Server", true)
+                    new StringArgument("Server", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true)
                 };
             }
         }

@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetPSDriveCommand : PSCommand
     {
-        public GetPSDriveCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetPSDriveCommand(string[] userArguments) : base(userArguments)
         {
         }
 

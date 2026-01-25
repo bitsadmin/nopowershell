@@ -13,7 +13,7 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetContentCommand : PSCommand
     {
-        public GetContentCommand(string[] arguments) : base(arguments, SupportedArguments)
+        public GetContentCommand(string[] arguments) : base(arguments)
         {
         }
 

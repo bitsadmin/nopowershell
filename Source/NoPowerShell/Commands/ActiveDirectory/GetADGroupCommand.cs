@@ -13,17 +13,18 @@ namespace NoPowerShell.Commands.ActiveDirectory
 {
     public class GetADGroupCommand : PSCommand
     {
-        public GetADGroupCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetADGroupCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Obtain Username/Password parameters
             base.Execute(pipeIn);
 
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
@@ -81,42 +82,29 @@ namespace NoPowerShell.Commands.ActiveDirectory
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ADGroup" }; }
-        }
+            "Get-ADGroup"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Server", true),
-                    new StringArgument("SearchBase", true),
-                    new StringArgument("Identity", true),
-                    new StringArgument("Filter", true),
-                    new StringArgument("LDAPFilter", true),
-                    new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID")
-                };
-            }
-        }
+            new StringArgument("Server", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("SearchBase", true),
+            new StringArgument("Identity", true),
+            new StringArgument("Filter", true),
+            new StringArgument("LDAPFilter", true),
+            new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets one or more Active Directory groups."; }
-        }
+        public static new string Synopsis => "Gets one or more Active Directory groups.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List all user groups in domain", "Get-ADGroup -Filter *"),
-                    new ExampleEntry("List all administrative groups in domain", "Get-ADGroup -LDAPFilter \"(admincount=1)\" | select Name")
-                };
-            }
-        }
+            new ExampleEntry("List all user groups in domain", "Get-ADGroup -Filter *"),
+            new ExampleEntry("List all administrative groups in domain", "Get-ADGroup -LDAPFilter \"(admincount=1)\" | select Name")
+        };
     }
 }

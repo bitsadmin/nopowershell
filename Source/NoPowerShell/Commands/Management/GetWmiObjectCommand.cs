@@ -14,14 +14,18 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetWmiObjectCommand : PSCommand
     {
-        public GetWmiObjectCommand(string[] arguments) : base(arguments, SupportedArguments)
+        public GetWmiObjectCommand(string[] arguments) : base(arguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect parameters for remote execution
             base.Execute();
+
+            // Collect parameters for remote execution
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
 
             // Obtain parameters
             string wmiNamespace = _arguments.Get<StringArgument>("Namespace").Value;
@@ -63,6 +67,9 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true),
                     new StringArgument("Query", true),
                     new StringArgument("Class", true),
                     new StringArgument("Namespace", @"ROOT\CIMV2"),

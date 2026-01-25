@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using NoPowerShell.Arguments;
 using NoPowerShell.HelperClasses;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 /*
 Author: @bitsadmin
@@ -15,7 +16,7 @@ namespace NoPowerShell.Commands.LocalAccounts
 {
     public class GetLocalGroupMemberCommand : PSCommand
     {
-        public GetLocalGroupMemberCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetLocalGroupMemberCommand(string[] userArguments) : base(userArguments)
         {
         }
 
@@ -23,6 +24,9 @@ namespace NoPowerShell.Commands.LocalAccounts
         {
             base.Execute();
 
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             string name = _arguments.Get<StringArgument>("Name").Value;
             string sid = _arguments.Get<StringArgument>("SID").Value;
             bool useWMI = _arguments.Get<BoolArgument>("UseWMI").Value;
@@ -34,12 +38,12 @@ namespace NoPowerShell.Commands.LocalAccounts
                 throw new NoPowerShellException("The Name and SID parameters are mutually exclusive.");
 
             if (useWMI)
-                return ExecuteWmi(name, sid);
+                return ExecuteWmi(computername, username, password, name, sid);
             else
-                return ExecutePInvoke(name, sid);
+                return ExecutePInvoke(computername, username, password, name, sid);
         }
 
-        public CommandResult ExecuteWmi(string name, string sid)
+        public CommandResult ExecuteWmi(string computername, string username, string password, string name, string sid)
         {
             string groupName = null;
             string groupDomain = null;
@@ -95,7 +99,7 @@ namespace NoPowerShell.Commands.LocalAccounts
             return _results;
         }
 
-        public CommandResult ExecutePInvoke(string name, string sid)
+        public CommandResult ExecutePInvoke(string computername, string username, string password, string name, string sid)
         {
             if (!string.IsNullOrEmpty(username) || !string.IsNullOrEmpty(password))
                 throw new NoPowerShellException("This implementation of retrieving group members via Netapi32!NetLocalGroupGetMembers does not support username and password. Use -UseWMI flag instead.");
@@ -229,6 +233,9 @@ namespace NoPowerShell.Commands.LocalAccounts
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true),
                     new StringArgument("Name", true),
                     new StringArgument("SID", true),
                     new BoolArgument("UseWMI") // Unofficial

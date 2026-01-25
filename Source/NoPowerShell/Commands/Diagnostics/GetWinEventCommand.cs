@@ -16,14 +16,16 @@ namespace NoPowerShell.Commands.Diagnostics
     public class GetWinEventCommand : PSCommand
     {
         // Inspired by https://github.com/PowerShell/PowerShell/blob/master/src/Microsoft.PowerShell.Commands.Diagnostics/GetEventCommand.cs
-        public GetWinEventCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetWinEventCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect the (optional) ComputerName, Username and Password parameters
             base.Execute();
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             //if (computername.ToLowerInvariant() == ".")
             //    computername = string.Empty;
 
@@ -144,6 +146,9 @@ namespace NoPowerShell.Commands.Diagnostics
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true),
                     new StringArgument("LogName"),
                     new StringArgument("FilterXPath", "*"),
                     new IntegerArgument("MaxEvents", 100),

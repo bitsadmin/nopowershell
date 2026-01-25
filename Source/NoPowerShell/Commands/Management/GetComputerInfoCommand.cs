@@ -14,15 +14,17 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetComputerInfo : PSCommand
     {
-        public GetComputerInfo(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetComputerInfo(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect parameters for remote execution
             base.Execute();
 
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             bool simple = _arguments.Get<BoolArgument>("Simple").Value;
 
             ResultRecord wmiOS = WmiHelper.ExecuteWmiQuery("Select * From Win32_OperatingSystem", computername, username, password)[0];
@@ -155,6 +157,9 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true),
                     new BoolArgument("Simple")
                 };
             }

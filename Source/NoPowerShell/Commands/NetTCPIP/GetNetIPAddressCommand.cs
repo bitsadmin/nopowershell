@@ -12,14 +12,18 @@ namespace NoPowerShell.Commands.NetTCPIP
 {
     public class GetNetIPAddress : PSCommand
     {
-        public GetNetIPAddress(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetNetIPAddress(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Obtain Username/Password parameters
             base.Execute(pipeIn);
+
+            // Obtain Username/Password parameters
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
 
             bool all = _arguments.Get<BoolArgument>("All").Value;
 
@@ -54,6 +58,9 @@ namespace NoPowerShell.Commands.NetTCPIP
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true),
                     new BoolArgument("All")
                 };
             }

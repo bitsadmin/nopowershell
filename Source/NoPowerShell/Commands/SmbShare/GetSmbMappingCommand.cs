@@ -12,14 +12,18 @@ namespace NoPowerShell.Commands.SmbShare
 {
     public class GetSmbMapping : PSCommand
     {
-        public GetSmbMapping(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetSmbMapping(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Obtain Username/Password parameters
             base.Execute(pipeIn);
+
+            // Obtain Username/Password parameters
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
 
             _results = WmiHelper.ExecuteWmiQuery(@"ROOT\Microsoft\Windows\SMB", "Select LocalPath,RemotePath From MSFT_SmbMapping", computername, username, password);
             return _results;
@@ -42,6 +46,9 @@ namespace NoPowerShell.Commands.SmbShare
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true)
                 };
             }
         }

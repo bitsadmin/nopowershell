@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
 {
     public class GetADObjectCommand : PSCommand
     {
-        public GetADObjectCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetADObjectCommand(string[] userArguments) : base(userArguments)
         {
         }
 
@@ -25,6 +25,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
             string searchScopeString = _arguments.Get<StringArgument>("SearchScope").Value;
             int resultSetSize = _arguments.Get<IntegerArgument>("ResultSetSize").Value;
@@ -58,7 +60,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 scope = SearchScope.Subtree;
 
             // Obtain SearchScope
-            switch(searchScopeString.ToLowerInvariant())
+            switch (searchScopeString.ToLowerInvariant())
             {
                 case "base":
                     scope = SearchScope.Base;
@@ -89,46 +91,33 @@ namespace NoPowerShell.Commands.ActiveDirectory
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ADObject" }; }
-        }
+            "Get-ADObject"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Server", true),
-                    new StringArgument("SearchBase", true),
-                    new StringArgument("SearchScope", string.Empty),
-                    new IntegerArgument("ResultSetSize", 0),
-                    new StringArgument("Identity", true),
-                    new StringArgument("LDAPFilter", true),
-                    new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID")
-                };
-            }
-        }
+            new StringArgument("Server", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("SearchBase", true),
+            new StringArgument("SearchScope", string.Empty),
+            new IntegerArgument("ResultSetSize", 0),
+            new StringArgument("Identity", true),
+            new StringArgument("LDAPFilter", true),
+            new StringArgument("Properties", "DistinguishedName,Name,ObjectClass,ObjectGUID")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets one or more Active Directory objects."; }
-        }
+        public static new string Synopsis => "Gets one or more Active Directory objects.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("Get the sites from the configuration naming context", "Get-ADObject -LDAPFilter \"(objectClass=site)\" -SearchBase \"CN=Configuration,DC=MyDomain,DC=local\" -Properties whenCreated,cn"),
-                    new ExampleEntry("Get specific object", "Get-ADObject -Identity \"CN=Directory Service,CN=Windows NT,CN=Services,CN=Configuration,DC=MyDomain,DC=local\" -Properties *"),
-                    new ExampleEntry("List all global groups", "Get-ADObject –LDAPFilter \"(GroupType:1.2.840.113556.1.4.803:=2)\" –SearchBase \"DC=MyDomain,DC=local\""),
-                    new ExampleEntry("List only users that are directly in the OU (not in sub-OUs)", "Get-ADObject -SearchBase \"CN=Users,DC=MyDomain,DC=local\" -LDAPFilter \"(objectClass=user)\" -SearchScope OneLevel"),
-                    new ExampleEntry("Obtain distinguishedname of domain", "Get-ADObject -LDAPFilter \"(objectClass=*)\" -SearchScope Base -Server MyServer")
-                };
-            }
-        }
+            new ExampleEntry("Get the sites from the configuration naming context", "Get-ADObject -LDAPFilter \"(objectClass=site)\" -SearchBase \"CN=Configuration,DC=MyDomain,DC=local\" -Properties whenCreated,cn"),
+            new ExampleEntry("Get specific object", "Get-ADObject -Identity \"CN=Directory Service,CN=Windows NT,CN=Services,CN=Configuration,DC=MyDomain,DC=local\" -Properties *"),
+            new ExampleEntry("List all global groups", "Get-ADObject –LDAPFilter \"(GroupType:1.2.840.113556.1.4.803:=2)\" –SearchBase \"DC=MyDomain,DC=local\""),
+            new ExampleEntry("List only users that are directly in the OU (not in sub-OUs)", "Get-ADObject -SearchBase \"CN=Users,DC=MyDomain,DC=local\" -LDAPFilter \"(objectClass=user)\" -SearchScope OneLevel"),
+            new ExampleEntry("Obtain distinguishedname of domain", "Get-ADObject -LDAPFilter \"(objectClass=*)\" -SearchScope Base -Server MyServer")
+        };
     }
 }

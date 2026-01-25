@@ -12,7 +12,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class MeasureObjectCommand : PSCommand
     {
-        public MeasureObjectCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public MeasureObjectCommand(string[] userArguments) : base(userArguments)
         {
         }
 

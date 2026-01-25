@@ -17,7 +17,7 @@ namespace NoPowerShell.Commands.Archive
 {
     public class ExpandArchiveCommand : PSCommand
     {
-        public ExpandArchiveCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public ExpandArchiveCommand(string[] userArguments) : base(userArguments)
         {
         }
 

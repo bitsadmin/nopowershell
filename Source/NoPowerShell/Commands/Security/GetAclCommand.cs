@@ -18,14 +18,17 @@ namespace NoPowerShell.Commands.Security
 {
     public class GetAclCommand : PSCommand
     {
-        public GetAclCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetAclCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect the (optional) ComputerName, Username and Password parameters and Verbose and WhatIf flags
             base.Execute();
+
+            // Collect the (optional) Username and Password parameters
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
 
             // Obtain cmdlet parameters
             string path = _arguments.Get<StringArgument>("Path").Value;
@@ -222,6 +225,8 @@ namespace NoPowerShell.Commands.Security
                 return new ArgumentList()
                 {
                     new StringArgument("Path"),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true),
                     new StringArgument("Server", true) // Just used in case Get-Acl is used on an AD object from outside of the domain
                 };
             }

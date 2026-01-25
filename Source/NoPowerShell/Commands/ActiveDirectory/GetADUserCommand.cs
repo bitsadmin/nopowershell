@@ -12,7 +12,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
 {
     public class GetADUserCommand : PSCommand
     {
-        public GetADUserCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetADUserCommand(string[] userArguments) : base(userArguments)
         {
         }
 
@@ -23,6 +23,8 @@ namespace NoPowerShell.Commands.ActiveDirectory
 
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
@@ -89,45 +91,32 @@ namespace NoPowerShell.Commands.ActiveDirectory
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ADUser" }; }
-        }
+            "Get-ADUser"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Server", true),
-                    new StringArgument("SearchBase", true),
-                    new StringArgument("Identity", true),
-                    new StringArgument("Filter", true),
-                    new StringArgument("LDAPFilter", true),
-                    new StringArgument("Properties", "DistinguishedName,userAccountControl,GivenName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,Surname,UserPrincipalName")
-                };
-            }
-        }
+            new StringArgument("Server", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("SearchBase", true),
+            new StringArgument("Identity", true),
+            new StringArgument("Filter", true),
+            new StringArgument("LDAPFilter", true),
+            new StringArgument("Properties", "DistinguishedName,userAccountControl,GivenName,Name,ObjectClass,ObjectGUID,SamAccountName,ObjectSID,Surname,UserPrincipalName")
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Gets one or more Active Directory users."; }
-        }
+        public static new string Synopsis => "Gets one or more Active Directory users.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List all properties of the Administrator domain user", "Get-ADUser -Identity Administrator -Properties *"),
-                    new ExampleEntry("List all Administrative users in domain", "Get-ADUser -LDAPFilter \"(admincount=1)\""),
-                    new ExampleEntry("List all users in domain", "Get-ADUser -Filter *"),
-                    new ExampleEntry("List specific attributes of user", "Get-ADUser -Identity Administrator -Properties SamAccountName,ObjectSID"),
-                    new ExampleEntry("List all users in a specific OU", "Get-ADUser -SearchBase \"CN=Users,DC=MyDomain,DC=local\" -Filter *")
-                };
-            }
-        }
+            new ExampleEntry("List all properties of the Administrator domain user", "Get-ADUser -Identity Administrator -Properties *"),
+            new ExampleEntry("List all Administrative users in domain", "Get-ADUser -LDAPFilter \"(admincount=1)\""),
+            new ExampleEntry("List all users in domain", "Get-ADUser -Filter *"),
+            new ExampleEntry("List specific attributes of user", "Get-ADUser -Identity Administrator -Properties SamAccountName,ObjectSID"),
+            new ExampleEntry("List all users in a specific OU", "Get-ADUser -SearchBase \"CN=Users,DC=MyDomain,DC=local\" -Filter *")
+        };
     }
 }

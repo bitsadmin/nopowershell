@@ -14,17 +14,18 @@ namespace NoPowerShell.Commands.ActiveDirectory
 {
     public class GetADTrustCommand : PSCommand
     {
-        public GetADTrustCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetADTrustCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Obtain Username/Password parameters
             base.Execute(pipeIn);
 
             // Obtain cmdlet parameters
             string server = _arguments.Get<StringArgument>("Server").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             string properties = _arguments.Get<StringArgument>("Properties").Value;
             string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
             string filter = _arguments.Get<StringArgument>("Filter").Value;
@@ -51,12 +52,12 @@ namespace NoPowerShell.Commands.ActiveDirectory
                 throw new NoPowerShellException("Currently only * filter is supported");
 
             // Perform query
-            _results = GetTrustsRecursive(server, ldapFilter, arrProperties, 1, maxDepth);
+            _results = GetTrustsRecursive(server, username, password, ldapFilter, arrProperties, 1, maxDepth);
 
             return _results;
         }
 
-        private CommandResult GetTrustsRecursive(string server, string filter, List<string> properties, int depth, int maxDepth)
+        private CommandResult GetTrustsRecursive(string server, string username, string password, string filter, List<string> properties, int depth, int maxDepth)
         {
             CommandResult results = new CommandResult();
 
@@ -123,7 +124,7 @@ namespace NoPowerShell.Commands.ActiveDirectory
                     // Follow outgoing trusts
                     if ((direction & TrustDirection.Outbound) == TrustDirection.Outbound)
                     {
-                        CommandResult res = GetTrustsRecursive(name, filter, properties, depth + 1, maxDepth);
+                        CommandResult res = GetTrustsRecursive(name, username, password, filter, properties, depth + 1, maxDepth);
                         subresults.AddRange(res);
                     }
                 }
@@ -204,43 +205,31 @@ namespace NoPowerShell.Commands.ActiveDirectory
             return ((b >> pos) & 1) != 0;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-ADTrust", "nltest" }; }
-        }
+            "Get-ADTrust",
+            "nltest" // unofficial
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
-                {
-                    new StringArgument("Server", true),
-                    new StringArgument("Properties", true),
-                    new StringArgument("Filter", true),
-                    new StringArgument("LDAPFilter", true),
-                    new IntegerArgument("Depth", 1) // Unofficial parameter
-                };
-            }
-        }
+            new StringArgument("Server", true),
+            new StringArgument("Username", true),
+            new StringArgument("Password", true),
+            new StringArgument("Properties", true),
+            new StringArgument("Filter", true),
+            new StringArgument("LDAPFilter", true),
+            new IntegerArgument("Depth", 1) // Unofficial parameter
+        };
 
-        public static new string Synopsis
-        {
-            get { return "Returns all trusted domain objects in the directory."; }
-        }
+        public static new string Synopsis => "Returns all trusted domain objects in the directory.";
 
-        public static new ExampleEntries Examples
+        public static new ExampleEntries Examples => new ExampleEntries()
         {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("List all direct trusts", "Get-ADTrust -Filter *"),
-                    new ExampleEntry("List trusts recursively till depth 3", "Get-ADTrust -Filter * -Depth 3"),
-                    new ExampleEntry("List all details of a certain trust", "Get-ADTrust -LDAPFilter \"(Name=mydomain.com)\""),
-                    new ExampleEntry("List specific details of a certain trust", "Get-ADTrust -LDAPFilter \"(Name=mydomain.com)\" -Properties Name,trustDirection,securityIdentifier")
-                };
-            }
-        }
+            new ExampleEntry("List all direct trusts", "Get-ADTrust -Filter *"),
+            new ExampleEntry("List trusts recursively till depth 3", "Get-ADTrust -Filter * -Depth 3"),
+            new ExampleEntry("List all details of a certain trust", "Get-ADTrust -LDAPFilter \"(Name=mydomain.com)\""),
+            new ExampleEntry("List specific details of a certain trust", "Get-ADTrust -LDAPFilter \"(Name=mydomain.com)\" -Properties Name,trustDirection,securityIdentifier")
+        };
     }
 }

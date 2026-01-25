@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class ExportCsvCommand : PSCommand
     {
-        public ExportCsvCommand(string[] arguments) : base(arguments, SupportedArguments)
+        public ExportCsvCommand(string[] arguments) : base(arguments)
         {
         }
 

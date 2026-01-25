@@ -10,26 +10,28 @@ namespace NoPowerShell.Commands.LocalAccounts
 {
     public class GetLocalUserCommand : PSCommand
     {
-        public GetLocalUserCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetLocalUserCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Fetch computername, username, password parameters
             base.Execute();
 
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
             string name = _arguments.Get<StringArgument>("Name").Value;
             string sid = _arguments.Get<StringArgument>("SID").Value;
             bool useWMI = _arguments.Get<BoolArgument>("UseWMI").Value;
 
             if (useWMI)
-                return ExecuteWmi(name, sid);
+                return ExecuteWmi(computername, username, password, name, sid);
             else
-                return ExecutePInvoke(name, sid);
+                return ExecutePInvoke(computername, username, password, name, sid);
         }
 
-        public CommandResult ExecuteWmi(string name, string sid)
+        public CommandResult ExecuteWmi(string computername, string username, string password, string name, string sid)
         {
             string query = "Select Name, Disabled, Description{0} From Win32_UserAccount{1}";
 
@@ -43,7 +45,7 @@ namespace NoPowerShell.Commands.LocalAccounts
             return WmiHelper.ExecuteWmiQuery(query, computername, username, password);
         }
 
-        public CommandResult ExecutePInvoke(string name, string sid)
+        public CommandResult ExecutePInvoke(string computername, string username, string password, string name, string sid)
         {
             if (!string.IsNullOrEmpty(username) || !string.IsNullOrEmpty(password))
                 throw new NoPowerShellException("This implementation of retrieving users via Netapi32!NetUserEnum does not support username and password. Use -UseWMI flag instead.");
@@ -213,6 +215,9 @@ namespace NoPowerShell.Commands.LocalAccounts
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true),
                     new StringArgument("Name", true),
                     new StringArgument("SID", true),
                     new BoolArgument("UseWMI") // Unofficial

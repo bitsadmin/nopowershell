@@ -1,12 +1,11 @@
-﻿using NoPowerShell.Arguments;
-using NoPowerShell.HelperClasses;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ServiceProcess;
-using System.Security.Principal;
 using System.ComponentModel;
 using System.Linq;
 using System.Security;
+using System.ServiceProcess;
+using NoPowerShell.Arguments;
+using NoPowerShell.HelperClasses;
 
 /*
 Author: @bitsadmin
@@ -18,14 +17,18 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetServiceCommand : PSCommand
     {
-        public GetServiceCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetServiceCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect optional ComputerName, Username, and Password parameters
             base.Execute();
+
+            // Collect optional ComputerName, Username, and Password parameters
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
 
             // Obtain cmdlet parameters
             string name = _arguments.Get<StringArgument>("Name").Value;
@@ -186,6 +189,9 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true),
                     new StringArgument("Name", true),
                     new StringArgument("DisplayName", true),
                     new StringArgument("Include", true),

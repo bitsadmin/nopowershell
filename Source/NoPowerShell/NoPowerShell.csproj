@@ -161,6 +161,7 @@
     <Compile Include="Commands\Utility\ConvertFromSddlStringCommand.cs" />
     <Compile Include="Commands\Utility\GetFileHashCommand.cs" />
     <Compile Include="Commands\Utility\WriteOutputCommand.cs" />
+    <Compile Include="HelperClasses\ArgumentParser.cs" />
     <Compile Include="HelperClasses\CaseInsensitiveList.cs" />
     <Compile Include="HelperClasses\CommandResult.cs" />
     <Compile Include="HelperClasses\DNSHelper.cs" />
@@ -194,10 +195,10 @@
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <ImportGroup Label=".NET DllExport">
+  <ImportGroup Label=".NET DllExport" Condition="'$(MSBuildRuntimeType)' == 'Full'">
     <Import Project="$(DllExportDir)packages\DllExport.1.8.1\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(DllExportDir)packages\DllExport.1.8.1\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
   </ImportGroup>
-  <Target Name="DllExportRestorePkg" BeforeTargets="PrepareForBuild">
+  <Target Name="DllExportRestorePkg" BeforeTargets="PrepareForBuild" Condition="'$(MSBuildRuntimeType)' == 'Full'">
     <Error Condition="'$(DllExportNoRestore)'!='true' And !Exists('$(DllExportDir)DllExport.bat')" Text="DllExport.bat was not found in $(DllExportDir); https://github.com/3F/DllExport" />
     <Exec Condition="'$(DllExportNoRestore)'!='true' And ('$(DllExportModImported)'!='true' Or !Exists('$(DllExportDir)packages\DllExport.1.8.1\tools\net.r_eg.DllExport.targets') Or !Exists('$(DllExportDir)packages\DllExport.1.8.1\gcache')) And Exists('$(DllExportDir)DllExport.bat')" Command=".\DllExport.bat  -action Restore" WorkingDirectory="$(DllExportDir)" />
     <MSBuild Condition="'$(DllExportModImported)'!='true'" Projects="$(DllExportDir)packages\DllExport.1.8.1\tools\net.r_eg.DllExport.targets" Targets="DllExportMetaXBaseTarget" Properties="TargetFramework=$(TargetFramework)">
@@ -211,7 +212,7 @@
       </Reference>
     </ItemGroup>
   </Target>
-  <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)'!='true' And '$(DllExportRPkgDyn)'!='false'">
+  <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(MSBuildRuntimeType)' == 'Full' And '$(DllExportModImported)'!='true' And '$(DllExportRPkgDyn)'!='false'">
     <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="Configuration=$(Configuration);DllExportRPkgDyn=true" Targets="Build" />
   </Target>
 </Project>

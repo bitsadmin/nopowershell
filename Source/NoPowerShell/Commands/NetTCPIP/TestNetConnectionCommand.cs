@@ -18,7 +18,7 @@ namespace NoPowerShell.Commands.NetTCPIP
     {
         private static readonly byte[] alphabet = Encoding.ASCII.GetBytes("abcdefghijklmnopqrstuvwabcdefghi");
 
-        public TestNetConnectionCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public TestNetConnectionCommand(string[] userArguments) : base(userArguments)
         {
         }
 

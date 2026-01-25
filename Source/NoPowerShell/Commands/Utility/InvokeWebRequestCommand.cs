@@ -18,7 +18,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class InvokeWebRequest : PSCommand
     {
-        public InvokeWebRequest(string[] userArguments) : base(userArguments, SupportedArguments)
+        public InvokeWebRequest(string[] userArguments) : base(userArguments)
         {
         }
 
@@ -36,6 +36,7 @@ namespace NoPowerShell.Commands.Utility
             string proxyCredential = _arguments.Get<StringArgument>("ProxyCredential").Value;
             bool proxyUseDefaultCredentials = _arguments.Get<BoolArgument>("ProxyUseDefaultCredentials").Value;
             bool skipCertificateCheck = _arguments.Get<BoolArgument>("SkipCertificateCheck").Value;
+            bool verbose = _arguments.Get<BoolArgument>("Verbose").Value;
 
             // Add http:// prefix if no protocol is present
             if (!uri.Contains("://"))

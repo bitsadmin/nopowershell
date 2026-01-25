@@ -12,14 +12,18 @@ namespace NoPowerShell.Commands.Management
 {
     public class InvokeWmiMethodCommand : PSCommand
     {
-        public InvokeWmiMethodCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public InvokeWmiMethodCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect parameters for remote execution
             base.Execute();
+
+            // Collect parameters for remote execution
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
 
             // Obtain parameters
             string wmiNamespace = _arguments.Get<StringArgument>("Namespace").Value;
@@ -44,6 +48,9 @@ namespace NoPowerShell.Commands.Management
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true),
                     new StringArgument("Name"),
                     new StringArgument("Namespace", @"root\cimv2"),
                     new StringArgument("Class"),

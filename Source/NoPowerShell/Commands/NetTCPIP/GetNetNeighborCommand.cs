@@ -62,7 +62,7 @@ namespace NoPowerShell.Commands.NetTCPIP
         // The insufficient buffer error.
         const int ERROR_INSUFFICIENT_BUFFER = 122;
 
-        public GetNetNeighborCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetNetNeighborCommand(string[] userArguments) : base(userArguments)
         {
         }
 

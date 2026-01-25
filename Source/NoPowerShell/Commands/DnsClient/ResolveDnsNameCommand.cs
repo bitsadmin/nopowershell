@@ -13,7 +13,7 @@ namespace NoPowerShell.Commands.DnsClient
 {
     public class ResolveDnsNameCommand : PSCommand
     {
-        public ResolveDnsNameCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public ResolveDnsNameCommand(string[] userArguments) : base(userArguments)
         {
         }
 

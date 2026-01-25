@@ -14,14 +14,17 @@ namespace NoPowerShell.Commands.SQLPS
 {
     public class InvokeSqlcmdCommand : PSCommand
     {
-        public InvokeSqlcmdCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public InvokeSqlcmdCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Obtain Username/Password parameters
             base.Execute();
+
+            // Obtain Username/Password parameters
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
 
             // Obtain cmdlet parameters
             string query = _arguments.Get<StringArgument>("Query").Value;

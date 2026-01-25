@@ -15,7 +15,7 @@ namespace NoPowerShell.Commands.Core
 {
     public class GetHelpCommand : PSCommand
     {
-        public GetHelpCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetHelpCommand(string[] userArguments) : base(userArguments)
         {
         }
 

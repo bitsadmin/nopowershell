@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class OutFileCommand : PSCommand
     {
-        public OutFileCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public OutFileCommand(string[] userArguments) : base(userArguments)
         {
         }
 

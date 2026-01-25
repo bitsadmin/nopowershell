@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Additional
 {
     public class NewShortcut : PSCommand
     {
-        public NewShortcut(string[] userArguments) : base(userArguments, SupportedArguments)
+        public NewShortcut(string[] userArguments) : base(userArguments)
         {
         }
 

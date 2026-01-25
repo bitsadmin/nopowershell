@@ -18,7 +18,7 @@ namespace NoPowerShell.Commands.Management
 {
     public class GetChildItemCommand : PSCommand
     {
-        public GetChildItemCommand(string[] arguments) : base(arguments, SupportedArguments)
+        public GetChildItemCommand(string[] arguments) : base(arguments)
         {
         }
 

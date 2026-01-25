@@ -11,7 +11,7 @@ namespace NoPowerShell.Commands.Utility
 {
     public class SortObjectCommand : PSCommand
     {
-        public SortObjectCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public SortObjectCommand(string[] userArguments) : base(userArguments)
         {
         }
 

@@ -17,7 +17,7 @@ namespace NoPowerShell.Commands.Additional
 {
     public class GetWinStationCommand : PSCommand
     {
-        public GetWinStationCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetWinStationCommand(string[] userArguments) : base(userArguments)
         {
         }
 

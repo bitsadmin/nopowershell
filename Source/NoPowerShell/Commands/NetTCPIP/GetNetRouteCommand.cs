@@ -12,14 +12,18 @@ namespace NoPowerShell.Commands.NetTCPIP
 {
     public class GetNetRouteCommand : PSCommand
     {
-        public GetNetRouteCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetNetRouteCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect the (optional) ComputerName, Username and Password parameters
             base.Execute();
+
+            // Collect the (optional) ComputerName, Username and Password parameters
+            string computername = _arguments.Get<StringArgument>("ComputerName").Value;
+            string username = _arguments.Get<StringArgument>("Username").Value;
+            string password = _arguments.Get<StringArgument>("Password").Value;
 
             _results = WmiHelper.ExecuteWmiQuery("Select Caption, Description, Destination, Mask, NextHop From Win32_IP4RouteTable", computername, username, password);
 
@@ -43,6 +47,9 @@ namespace NoPowerShell.Commands.NetTCPIP
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
+                    new StringArgument("Username", true),
+                    new StringArgument("Password", true)
                 };
             }
         }

@@ -11,7 +11,7 @@ namespace NoPowerShell.Commands.Core
 {
     public class WhereObjectCommand : PSCommand
     {
-        public WhereObjectCommand(string[] arguments) : base(arguments, SupportedArguments)
+        public WhereObjectCommand(string[] arguments) : base(arguments)
         {
         }
 

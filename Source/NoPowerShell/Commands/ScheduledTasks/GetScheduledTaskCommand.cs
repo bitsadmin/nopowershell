@@ -12,7 +12,7 @@ namespace NoPowerShell.Commands
 {
     public class GetScheduledTaskCommand : PSCommand
     {
-        public GetScheduledTaskCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public GetScheduledTaskCommand(string[] userArguments) : base(userArguments)
         {
         }
         public override CommandResult Execute(CommandResult pipeIn)
@@ -114,6 +114,7 @@ namespace NoPowerShell.Commands
             {
                 return new ArgumentList()
                 {
+                    new StringArgument("ComputerName", true),
                     new StringArgument("TaskName", true),
                     new StringArgument("TaskPath", true)
                 };

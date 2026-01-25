@@ -18,7 +18,7 @@ namespace NoPowerShell.Commands.Archive
 {
     public class CompressArchiveCommand : PSCommand
     {
-        public CompressArchiveCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public CompressArchiveCommand(string[] userArguments) : base(userArguments)
         {
         }
 

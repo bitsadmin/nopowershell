@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Management
 {
     public class CopyItemCommand : PSCommand
     {
-        public CopyItemCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public CopyItemCommand(string[] userArguments) : base(userArguments)
         {
         }
 
@@ -28,6 +28,7 @@ namespace NoPowerShell.Commands.Management
             string destination = _arguments.Get<StringArgument>("Destination").Value;
             bool recurse = _arguments.Get<BoolArgument>("Recurse").Value;
             bool force = _arguments.Get<BoolArgument>("Force").Value;
+            bool verbose = _arguments.Get<BoolArgument>("Verbose").Value;
 
             // Determine if provided path is a file or a directory
             FileAttributes attr = File.GetAttributes(path);
@@ -124,7 +125,8 @@ namespace NoPowerShell.Commands.Management
                     new StringArgument("Path"),
                     new StringArgument("Destination"),
                     new BoolArgument("Recurse"),
-                    new BoolArgument("Force")
+                    new BoolArgument("Force"),
+                    new BoolArgument("Verbose")
                 };
             }
         }

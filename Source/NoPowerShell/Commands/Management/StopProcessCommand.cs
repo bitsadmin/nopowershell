@@ -14,7 +14,7 @@ namespace NoPowerShell.Commands.Management
 {
     public class StopProcessCommand : PSCommand
     {
-        public StopProcessCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public StopProcessCommand(string[] userArguments) : base(userArguments)
         {
         }
 

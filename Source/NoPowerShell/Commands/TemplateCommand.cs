@@ -12,13 +12,12 @@ namespace NoPowerShell.Commands
 {
     public class TemplateCommand : PSCommand
     {
-        public TemplateCommand(string[] userArguments) : base(userArguments, SupportedArguments)
+        public TemplateCommand(string[] userArguments) : base(userArguments)
         {
         }
 
         public override CommandResult Execute(CommandResult pipeIn)
         {
-            // Collect the (optional) ComputerName, Username and Password parameters and Verbose and WhatIf flags
             base.Execute();
 
             // Obtain cmdlet parameters
@@ -70,49 +69,35 @@ namespace NoPowerShell.Commands
             return _results;
         }
 
-        public static new CaseInsensitiveList Aliases
+        public static new CaseInsensitiveList Aliases => new CaseInsensitiveList()
         {
-            get { return new CaseInsensitiveList() { "Get-TemplateCommand", "gtc" }; }
-        }
+            "Get-TemplateCommand",
+            "gtc"
+        };
 
-        public static new ArgumentList SupportedArguments
+        public static new ArgumentList SupportedArguments => new ArgumentList()
         {
-            get
-            {
-                return new ArgumentList()
+            new BoolArgument("MyFlag"),
+            new IntegerArgument("MyInteger", 5),
+            new StringArgument("MyString", "Hello World"),
+            new StringArgument("MyOptionalString", true)
+        };
+
+        public static new string Synopsis => "This template shows how easy it is to develop new NoPowerShell cmdlets.";
+
+        public static new ExampleEntries Examples => new ExampleEntries()
+        {
+            new ExampleEntry("These entries show up when executing the 'Get-Help Get-TemplateCommand' command", "Get-TemplateCommand -MyFlag"),
+            new ExampleEntry
+            (
+                "This is another example with two related or equivalent examples",
+                new List<string>()
                 {
-                    new BoolArgument("MyFlag"),
-                    new IntegerArgument("MyInteger", 5),
-                    new StringArgument("MyString", "Hello World"),
-                    new StringArgument("MyOptionalString", true)
-                };
-            }
-        }
-
-        public static new string Synopsis
-        {
-            get { return "This template shows how easy it is to develop new NoPowerShell cmdlets."; }
-        }
-
-        public static new ExampleEntries Examples
-        {
-            get
-            {
-                return new ExampleEntries()
-                {
-                    new ExampleEntry("These entries show up when executing the 'Get-Help Get-TemplateCommand' command", "Get-TemplateCommand -MyFlag"),
-                    new ExampleEntry
-                    (
-                        "This is another example with two related or equivalent examples",
-                        new List<string>()
-                        {
-                            "gtc \"Bye PowerShell\" -MyInteger 30 | ? Attribute2 -Like Line1* | select Attribute2 | fl",
-                            "Get-TemplateCommand -MyInteger 10 \"Bye PowerShell\""
-                        }
-                    ),
-                    new ExampleEntry("Example where optional parameter is specified", "gtc -MyOptionalString \"Hello Moon\"")
-                };
-            }
-        }
+                    "gtc \"Bye PowerShell\" -MyInteger 30 | ? Attribute2 -Like Line1* | select Attribute2 | fl",
+                    "Get-TemplateCommand -MyInteger 10 \"Bye PowerShell\""
+                }
+            ),
+            new ExampleEntry("Example where optional parameter is specified", "gtc -MyOptionalString \"Hello Moon\"")
+        };
     }
 }
