@@ -22,10 +22,11 @@ namespace NoPowerShell.Commands.DnsClient
             // Obtain cmdlet parameters
             string query = _arguments.Get<StringArgument>("Name").Value;
             string type = _arguments.Get<StringArgument>("Type").Value;
+            string server = _arguments.Get<StringArgument>("Server").Value;
 
             try
             {
-                _results = DnsHelper.GetRecords(query, type);
+                _results = DnsHelper.GetRecords(query, type, server);
             }
             catch(Win32Exception e)
             {
@@ -62,9 +63,8 @@ namespace NoPowerShell.Commands.DnsClient
         public static new ArgumentList SupportedArguments => new ArgumentList()
         {
             new StringArgument("Name"),
-            new StringArgument("Type", "A")
-            // TODO:
-            //new StringArgument("Server", true),
+            new StringArgument("Type", "A"),
+            new StringArgument("Server", true)
         };
 
         public static new string Synopsis => string.Format("Resolve DNS name.");
@@ -81,6 +81,7 @@ namespace NoPowerShell.Commands.DnsClient
                 }
             ),
             new ExampleEntry("Lookup specific record", "Resolve-DnsName -Type MX pm.me"),
+            new ExampleEntry("Query a specific DNS server", "Resolve-DnsName -Server 1.1.1.1 github.com"),
             new ExampleEntry("Reverse DNS lookup", "Resolve-DnsName 1.1.1.1")
         };
     }

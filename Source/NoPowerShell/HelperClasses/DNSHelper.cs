@@ -45,8 +45,9 @@ namespace NoPowerShell.HelperClasses
         /// </summary>
         /// <param name="domain">Domain to query</param>
         /// <param name="type">Query type</param>
+        /// <param name="server">Optional DNS server to query</param>
         /// <returns>List of records</returns>
-        public static CommandResult GetRecords(string domain, string type)
+        public static CommandResult GetRecords(string domain, string type, string server = null)
         {
             if (Environment.OSVersion.Platform != PlatformID.Win32NT)
             {
@@ -89,6 +90,7 @@ namespace NoPowerShell.HelperClasses
             }
 
             CommandResult results = new CommandResult();
+            IntPtr serverListPtr = IntPtr.Zero;
             object foundType = RecordTypes[type];
             if (foundType == null)
             {
@@ -98,10 +100,15 @@ namespace NoPowerShell.HelperClasses
             }
             DnsRecordType queryType = (DnsRecordType)foundType;
 
+            if (!string.IsNullOrWhiteSpace(server))
+            {
+                serverListPtr = BuildServerListPointer(server.Trim());
+            }
+
             var recordsArray = IntPtr.Zero;
             try
             {
-                var result = DnsQuery(ref domain, queryType, DnsQueryOption.DNS_QUERY_BYPASS_CACHE, IntPtr.Zero, ref recordsArray, IntPtr.Zero);
+                var result = DnsQuery(ref domain, queryType, DnsQueryOption.DNS_QUERY_BYPASS_CACHE, serverListPtr, ref recordsArray, IntPtr.Zero);
                 if (result != 0)
                 {
                     throw new Win32Exception(result);
@@ -305,6 +312,11 @@ namespace NoPowerShell.HelperClasses
             }
             finally
             {
+                if (serverListPtr != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(serverListPtr);
+                }
+
                 if (recordsArray != IntPtr.Zero)
                 {
                     DnsRecordListFree(recordsArray, DNS_FREE_TYPE.DnsFreeFlat);
@@ -920,6 +932,8 @@ namespace NoPowerShell.HelperClasses
             public IntPtr DHCID;          // BYTE  DHCID[1];
         }
 
+        private const int UInt32Size = 4;
+
         /// <summary>
         /// Converts an unsigned int to an ip address object
         /// See http://msdn.microsoft.com/en-us/library/windows/desktop/cc982163(v=vs.85).aspx
@@ -942,6 +956,63 @@ namespace NoPowerShell.HelperClasses
         public static string ConvertUintToIpAddressString(uint ipAddress)
         {
             return ConvertUintToIpAddress(ipAddress).ToString();
+        }
+
+        private static IntPtr BuildServerListPointer(string server)
+        {
+            IPAddress serverAddress = ResolveServerAddress(server);
+
+            if (serverAddress.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                throw new NoPowerShellException("Only IPv4 DNS servers are supported for the Server parameter. Unable to use \"{0}\".", server);
+            }
+
+            uint serverValue = ConvertIpAddressToUint(serverAddress);
+
+            IntPtr pointer = Marshal.AllocHGlobal(UInt32Size + UInt32Size);
+            Marshal.WriteInt32(pointer, 0, 1);
+
+            IntPtr addressPtr = IntPtr.Add(pointer, UInt32Size);
+            Marshal.WriteInt32(addressPtr, 0, unchecked((int)serverValue));
+
+            return pointer;
+        }
+
+        private static IPAddress ResolveServerAddress(string server)
+        {
+            if (IPAddress.TryParse(server, out IPAddress parsedAddress))
+            {
+                return parsedAddress;
+            }
+
+            try
+            {
+                IPAddress[] addresses = Dns.GetHostAddresses(server);
+                foreach (IPAddress address in addresses)
+                {
+                    if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        return address;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new NoPowerShellException("Unable to resolve DNS server \"{0}\". {1}", server, ex.Message);
+            }
+
+            throw new NoPowerShellException("Unable to resolve DNS server \"{0}\" to an IPv4 address.", server);
+        }
+
+        private static uint ConvertIpAddressToUint(IPAddress ipAddress)
+        {
+            byte[] addressBytes = ipAddress.GetAddressBytes();
+            if (addressBytes.Length != 4)
+            {
+                throw new NoPowerShellException("Only IPv4 DNS servers are supported for the Server parameter. Value provided: \"{0}\".", ipAddress);
+            }
+
+            return BitConverter.ToUInt32(addressBytes, 0);
         }
 
         /// <summary>
