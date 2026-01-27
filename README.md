@@ -99,6 +99,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Resolve-AdiDnsName | Additional | |
 | Get-Whoami | Additional | |
 | Get-WinStation | Additional | |
+| Invoke-Timestomp | Additional | |
 | Compress-Archive | Archive | Requires .NET 4.5+ |
 | Expand-Archive | Archive | Requires .NET 4.5+ |
 | Get-Help | Core | |
@@ -136,6 +137,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-SmbMapping | SmbShare | |
 | Get-SmbShare | SmbShare | |
 | Invoke-Sqlcmd | SQLPS | |
+| Get-Tpm | TrustedPlatformModule | |
 | Get-FileHash | Utility | |
 | ConvertFrom-SddlString | Utility | |
 | Sort-Object | Utility | |

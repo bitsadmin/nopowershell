@@ -33,6 +33,8 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | List specific details of a certain trust | `Get-ADTrust -LDAPFilter "(Name=mydomain.com)" -Properties Name,trustDirection,securityIdentifier` |
 | Copy ACL from file to another file | `Copy-Acl C:\Data\file.txt C:\Data\destination.txt` |
 | Recursively copy ACLs from source to destination folder | `Copy-Acl -Recurse -Path C:\SourceDir -Destination C:\DestinationDir` |
+| Copy timestamps from a trusted binary | `Invoke-Timestomp -TargetPath C:\Tools\payload.exe -SourcePath C:\Windows\System32\notepad.exe` |
+| Apply one timestamp to many files | `Invoke-Timestomp -TargetPath "C:\Temp\*.dll" -Timestamp "2024-01-01 09:00:00"` |
 | List local SMB shares | `Get-RemoteSmbShare` |
 | List SMB shares of MyServer | `Get-RemoteSmbShare \\MyServer` |
 | List DNS zones | `Get-ADObject -SearchBase "CN=MicrosoftDNS,DC=DomainDnsZones,DC=AD,DC=bitsadmin,DC=com" -LDAPFilter "(ObjectClass=dnsZone)" -SearchScope OneLevel` |
@@ -158,6 +160,8 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | List ACLs of file - Alternative | `Get-Acl -Path C:\Windows\explorer.exe` |
 | List ACLs of directory | `Get-Acl C:\Windows` |
 | List ACLs of AD Object | `Get-Acl "AD:\CN=User One,CN=Users,DC=ad,DC=bitsadmin,DC=com"` |
+| Show TPM status for the local computer | `Get-Tpm` |
+| Show TPM status on a remote computer | `Get-Tpm -ComputerName MyServer` |
 | List mapped network drives | `Get-SmbMapping` |
 | List mapped network drives - Alternative | `netuse` |
 | List SMB shares on the computer | `Get-SmbShare` |
