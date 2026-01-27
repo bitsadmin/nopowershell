@@ -130,6 +130,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-NetNeighbor | NetTCPIP | No support for IPv6 yet |
 | Get-NetRoute | NetTCPIP | |
 | Get-NetIPAddress | NetTCPIP | |
+| Get-NetFirewallRule | NetSecurity | |
 | Get-Service | Management | |
 | Get-LocalUser | LocalAccounts | |
 | Get-WinEvent | Diagnostics | |

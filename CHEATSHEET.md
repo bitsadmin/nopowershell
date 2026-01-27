@@ -144,6 +144,9 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | Show all network interfaces - Alternative | `ipconfig -All` |
 | Show all network interfaces on a remote machine using WMI | `Get-NetIPAddress -All -ComputerName MyServer -Username MyUser -Password MyPassword` |
 | Show all network interfaces on a remote machine using WMI - Alternative | `Get-NetIPAddress -All -ComputerName MyServer` |
+| List all Windows Firewall rules | `Get-NetFirewallRule` |
+| List Windows Firewall rules matching a DisplayName pattern | `Get-NetFirewallRule -DisplayName "Remote Desktop - User Mode*"` |
+| List Windows Firewall rules on a remote computer | `Get-NetFirewallRule -ComputerName MyServer` |
 | Get all services on the local computer | `Get-Service` |
 | Get a specific service by name | `Get-Service -Name wuauserv` |
 | Get services by display name | `Get-Service -DisplayName "Windows Update"` |
