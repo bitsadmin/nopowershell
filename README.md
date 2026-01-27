@@ -94,6 +94,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-ADComputer | ActiveDirectory | |
 | Get-ADDomainController | ActiveDirectory | |
 | Get-ADTrust | ActiveDirectory | |
+| Get-ADRootDSE | ActiveDirectory | |
 | Copy-Acl | Additional | |
 | Get-RemoteSmbShare | Additional | |
 | Resolve-AdiDnsName | Additional | |

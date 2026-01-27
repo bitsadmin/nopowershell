@@ -99,6 +99,7 @@
     <Compile Include="Commands\ActiveDirectory\GetADComputerCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupMemberCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADGroupCommand.cs" />
+    <Compile Include="Commands\ActiveDirectory\GetADRootDSECommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADReplicationSubnetCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADObjectCommand.cs" />
     <Compile Include="Commands\ActiveDirectory\GetADTrustCommand.cs" />

@@ -13,6 +13,7 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | List all global groups | `Get-ADObject -LDAPFilter "(GroupType:1.2.840.113556.1.4.803:=2)" -SearchBase "DC=MyDomain,DC=local"` |
 | List only users that are directly in the OU (not in sub-OUs) | `Get-ADObject -SearchBase "CN=Users,DC=MyDomain,DC=local" -LDAPFilter "(objectClass=user)" -SearchScope OneLevel` |
 | Obtain distinguishedname of domain | `Get-ADObject -LDAPFilter "(objectClass=*)" -SearchScope Base -Server MyServer` |
+| Query RootDSE attributes | `Get-ADRootDSE` |
 | Get all subnets | `Get-ADReplicationSubnet` |
 | Get subnets with a specified name | `Get-ADReplicationSubnet -Identity "10.0.10.0/24"` |
 | Get the properties of a specified subnet | `Get-ADReplicationSubnet -Identity "10.0.10.0/24" -Properties *` |

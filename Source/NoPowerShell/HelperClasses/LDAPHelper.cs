@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 /*
 Author: @bitsadmin
@@ -25,20 +26,8 @@ namespace NoPowerShell.HelperClasses
             return result[0]["distinguishedname"];
         }
 
-        public static CommandResult QueryLDAP(string queryFilter, List<string> properties)
+        public static DirectoryEntry InitializeDirectoryEntry(string searchBase, List<string> properties, string server, string username, string password)
         {
-            return QueryLDAP(null, queryFilter, properties, null, null, null);
-        }
-
-        public static CommandResult QueryLDAP(string searchBase, string queryFilter, List<string> properties, string server, string username, string password)
-        {
-            return QueryLDAP(searchBase, SearchScope.Subtree, queryFilter, properties, 0, server, username, password);
-        }
-
-        public static CommandResult QueryLDAP(string searchBase, SearchScope scope, string queryFilter, List<string> properties, int resultSetSize, string server, string username, string password)
-        {
-            CommandResult _results = new CommandResult();
-
             // Select all properties if * parameter is provided
             if (properties == null || (properties.Count > 0 && properties[0] == "*"))
                 properties = new List<string>(0);
@@ -66,6 +55,26 @@ namespace NoPowerShell.HelperClasses
                 password,
                 AuthenticationTypes.Secure
             );
+
+            return entry;
+        }
+
+        public static CommandResult QueryLDAP(string queryFilter, List<string> properties)
+        {
+            return QueryLDAP(null, queryFilter, properties, null, null, null);
+        }
+
+        public static CommandResult QueryLDAP(string searchBase, string queryFilter, List<string> properties, string server, string username, string password)
+        {
+            return QueryLDAP(searchBase, SearchScope.Subtree, queryFilter, properties, 0, server, username, password);
+        }
+
+        public static CommandResult QueryLDAP(string searchBase, SearchScope scope, string queryFilter, List<string> properties, int resultSetSize, string server, string username, string password)
+        {
+            CommandResult _results = new CommandResult();
+
+            // Initialize DirectoryEntry
+            DirectoryEntry entry = InitializeDirectoryEntry(searchBase, properties, server, username, password);
 
             // Initialize searcher
             using (DirectorySearcher ds = new DirectorySearcher(entry))
