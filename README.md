@@ -114,6 +114,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Stop-Process | Management | |
 | Get-ChildItem | Management | |
 | Copy-Item | Management | |
+| New-Item | Management | |
 | Invoke-WmiMethod | Management | |
 | Remove-Item | Management | |
 | Get-ItemPropertyValue | Management | |

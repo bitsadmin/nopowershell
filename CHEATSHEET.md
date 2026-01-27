@@ -86,6 +86,10 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | Copy file from one location to another | `Copy-Item C:\Tmp\nc.exe C:\Windows\System32\nc.exe` |
 | Copy file from one location to another - Alternative | `copy C:\Tmp\nc.exe C:\Windows\System32\nc.exe` |
 | Copy folder | `copy C:\Tmp\MyFolder C:\Tmp\MyFolderBackup` |
+| Create directory | `New-Item -Name MyNewDir -Type Directory` |
+| Create file with specific contents | `New-Item -Name MyFile.txt -Type File -Value "Contents of file"` |
+| Create 20 MB random file | `New-Item -Name payload.bin -Type RandomFile -Size 20M` |
+| Create 1.5 GB empty file | `New-Item -Path C:\Tmp\empty.bin -Type EmptyFile -Size 1.5G` |
 | Launch process | `Invoke-WmiMethod -Class Win32_Process -Name Create "cmd /c calc.exe"` |
 | Launch process on remote system | `Invoke-WmiMethod -ComputerName MyServer -Username MyUser -Password MyPassword -Class Win32_Process -Name Create "powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA=="` |
 | Launch process on remote system - Alternative | `iwmi -ComputerName MyServer -Class Win32_Process -Name Create "powershell -NoP -W H -E ZQBjAGgAbwAgACcASABlAGwAbABvACAATgBvAFAAbwB3AGUAcgBTAGgAZQBsAGwAIQAnAA=="` |
