@@ -147,6 +147,8 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | List all Windows Firewall rules | `Get-NetFirewallRule` |
 | List Windows Firewall rules matching a DisplayName pattern | `Get-NetFirewallRule -DisplayName "Remote Desktop - User Mode*"` |
 | List Windows Firewall rules on a remote computer | `Get-NetFirewallRule -ComputerName MyServer` |
+| List all Windows Firewall profiles | `Get-NetFirewallProfile` |
+| List a specific Windows Firewall profile | `Get-NetFirewallProfile -Name Public` |
 | Get all services on the local computer | `Get-Service` |
 | Get a specific service by name | `Get-Service -Name wuauserv` |
 | Get services by display name | `Get-Service -DisplayName "Windows Update"` |
