@@ -1,7 +1,8 @@
-﻿using NoPowerShell.Arguments;
-using NoPowerShell.HelperClasses;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.DirectoryServices;
+using NoPowerShell.Arguments;
+using NoPowerShell.HelperClasses;
 
 /*
 Author: @bitsadmin
@@ -25,18 +26,22 @@ namespace NoPowerShell.Commands.ActiveDirectory
             string server = _arguments.Get<StringArgument>("Server").Value;
             string username = _arguments.Get<StringArgument>("Username").Value;
             string password = _arguments.Get<StringArgument>("Password").Value;
-            //string searchBase = _arguments.Get<StringArgument>("SearchBase").Value;
             string identity = _arguments.Get<StringArgument>("Identity").Value;
             //string ldapFilter = _arguments.Get<StringArgument>("LDAPFilter").Value;
             List<string> properties = new List<string>(_arguments.Get<StringArgument>("Properties").Value.Split(','));
 
             // Query
-            string distinguishedName = LDAPHelper.GetDistinguishedName(server, username, password);
+            string configurationNamingContext = null;
+            using (DirectoryEntry rootDse = LDAPHelper.InitializeDirectoryEntry("RootDSE", null, server, username, password))
+            {
+                rootDse.RefreshCache(new string[] { "configurationNamingContext" });
+                configurationNamingContext = (string)rootDse.Properties["configurationNamingContext"].Value;
+            }
 
-            if(string.IsNullOrEmpty(distinguishedName))
-                throw new Exception("Could not determine the distinguished name of the domain");
+            if(string.IsNullOrEmpty(configurationNamingContext))
+                throw new Exception("Could not determine the configurationNamingContext of the domain");
 
-            string searchBase = $"CN=Subnets,CN=Sites,CN=Configuration,{distinguishedName}";
+            string searchBase = $"CN=Subnets,CN=Sites,{configurationNamingContext}";
             string filter = "(objectClass=subnet)";
             if (!string.IsNullOrEmpty(identity))
             {
