@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -58,7 +59,7 @@ namespace NoPowerShell.Commands.Management
             if (registryRegex.IsMatch(path))
             {
                 RegistryHive root = RegistryHelper.GetRoot(ref path);
-                _results = BrowseRegistry(root, path);
+                _results = BrowseRegistry(root, path, recurse, depth);
             }
             // Environment
             //     env:
@@ -74,7 +75,7 @@ namespace NoPowerShell.Commands.Management
             else if (path.StartsWith(@"\\"))
             {
                 // Fix path to support long paths if not the literal path is used
-                if(!useLiteralPath)
+                if (!useLiteralPath)
                 {
                     // Full network path: \\MYSERVER -> \\?\UNC\MYSERVER
                     if (!path.ToUpperInvariant().StartsWith(@"\\?\UNC"))
@@ -99,22 +100,32 @@ namespace NoPowerShell.Commands.Management
             return _results;
         }
 
-        private static CommandResult BrowseRegistry(RegistryHive root, string path)
+        private static CommandResult BrowseRegistry(RegistryHive root, string path, bool recurse, int depth)
         {
             CommandResult results = new CommandResult();
+            string displayPath = BuildRegistryDisplayPath(root, path);
 
             using (RegistryKey baseKey = RegistryKey.OpenBaseKey(root, RegistryView.Registry64))
             {
-                using (RegistryKey key = baseKey.OpenSubKey(path))
+                if (string.IsNullOrEmpty(path))
                 {
-                    foreach (string subkey in key.GetSubKeyNames())
+                    EnumerateRegistrySubKeys(baseKey, results, recurse, depth);
+                }
+                else
+                {
+                    try
                     {
-                        results.Add(
-                            new ResultRecord()
-                            {
-                                { "Name", subkey }
-                            }
-                        );
+                        using (RegistryKey key = baseKey.OpenSubKey(path))
+                        {
+                            if (key == null)
+                                throw new ItemNotFoundException(displayPath);
+
+                            EnumerateRegistrySubKeys(key, results, recurse, depth);
+                        }
+                    }
+                    catch (SecurityException)
+                    {
+                        Program.WriteError($"Access to the path '{baseKey.Name}\\{path}' is denied.");
                     }
                 }
             }
@@ -150,7 +161,7 @@ namespace NoPowerShell.Commands.Management
             // Obtain all variables
             else
             {
-                foreach(DictionaryEntry variable in variables)
+                foreach (DictionaryEntry variable in variables)
                 {
                     results.Add(
                         new ResultRecord()
@@ -281,6 +292,74 @@ namespace NoPowerShell.Commands.Management
                 return path
                     .Replace(@"\\?\UNC\", @"\\")
                     .Replace(@"\\?\", "");
+        }
+
+        private static void EnumerateRegistrySubKeys(RegistryKey key, CommandResult results, bool recurse, int depth)
+        {
+            foreach (string subkeyName in key.GetSubKeyNames())
+            {
+                ResultRecord currentKey = new ResultRecord()
+                {
+                    { "Name", recurse ? BuildRegistryFullName(key.Name, subkeyName) : subkeyName }
+                };
+
+                results.Add(currentKey);
+
+                if (recurse && depth > 0)
+                {
+                    try
+                    {
+                        using (RegistryKey childKey = key.OpenSubKey(subkeyName))
+                        {
+                            if (childKey == null)
+                                continue;
+
+                            EnumerateRegistrySubKeys(childKey, results, true, depth - 1);
+                        }
+                    }
+                    catch (SecurityException)
+                    {
+                        Program.WriteError($"Access to the path '{key.Name}\\{subkeyName}' is denied.");
+                    }
+                }
+            }
+        }
+
+        private static string BuildRegistryFullName(string parentKeyName, string childName)
+        {
+            if (string.IsNullOrEmpty(parentKeyName))
+                return childName;
+
+            if (parentKeyName.EndsWith("\\", StringComparison.Ordinal))
+                return parentKeyName + childName;
+
+            return parentKeyName + "\\" + childName;
+        }
+
+        private static string BuildRegistryDisplayPath(RegistryHive root, string path)
+        {
+            string hiveName = GetRegistryHiveName(root);
+            if (string.IsNullOrEmpty(path))
+                return $"{hiveName}:\\";
+
+            return $"{hiveName}:\\{path}";
+        }
+
+        private static string GetRegistryHiveName(RegistryHive hive)
+        {
+            switch (hive)
+            {
+                case RegistryHive.LocalMachine:
+                    return "HKLM";
+                case RegistryHive.CurrentUser:
+                    return "HKCU";
+                case RegistryHive.ClassesRoot:
+                    return "HKCR";
+                case RegistryHive.Users:
+                    return "HKU";
+                default:
+                    return hive.ToString();
+            }
         }
 
         private static string GetModeFlags(FileSystemInfo f)
