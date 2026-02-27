@@ -106,6 +106,7 @@
     <Compile Include="Commands\ActiveDirectory\GetADUserCommand.cs" />
     <Compile Include="Commands\Additional\CopyAclCommand.cs" />
     <Compile Include="Commands\Additional\GetRemoteSmbShareCommand.cs" />
+    <Compile Include="Commands\Additional\InvokeDsRegCmdCommand.cs" />
     <Compile Include="Commands\Additional\GetWinStationCommand.cs" />
     <Compile Include="Commands\Additional\InvokeTimestompCommand.cs" />
     <Compile Include="Commands\Additional\NewShortcutCommand.cs" />

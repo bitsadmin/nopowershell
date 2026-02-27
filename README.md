@@ -99,6 +99,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-RemoteSmbShare | Additional | |
 | Resolve-AdiDnsName | Additional | |
 | Get-Whoami | Additional | |
+| Invoke-DsRegCmd | Additional | |
 | Get-WinStation | Additional | |
 | Invoke-Timestomp | Additional | |
 | Compress-Archive | Archive | Requires .NET 4.5+ |

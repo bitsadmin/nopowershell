@@ -43,6 +43,7 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | Obtain LDAP servers in domain | `Resolve-AdiDnsName -ZoneName ad.bitsadmin.com -Name _ldap._tcp` |
 | Show the current user | `whoami` |
 | List groups the current user is member of | `whoami -Groups` |
+| Show Entra hybrid join status | `dsregcmd -Status` |
 | Query sessions on local machine | `Get-WinStation` |
 | Query sessions on a remote machine | `Get-WinStation -Server MyServer` |
 | Query sessions on a remote machine - Alternative | `qwinsta MyServer` |
