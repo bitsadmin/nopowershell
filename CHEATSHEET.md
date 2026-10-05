@@ -36,6 +36,13 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | Recursively copy ACLs from source to destination folder | `Copy-Acl -Recurse -Path C:\SourceDir -Destination C:\DestinationDir` |
 | Copy timestamps from a trusted binary | `Invoke-Timestomp -TargetPath C:\Tools\payload.exe -SourcePath C:\Windows\System32\notepad.exe` |
 | Apply one timestamp to many files | `Invoke-Timestomp -TargetPath "C:\Temp\*.dll" -Timestamp "2024-01-01 09:00:00"` |
+| Set active power scheme to High Performance | `Invoke-PowerCfg -SetActive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c` |
+| List available power schemes | `Invoke-PowerCfg -List` |
+| Disable hibernate timeout on AC and DC | `Invoke-PowerCfg -SetHibernateTimeoutAc 0 -SetHibernateTimeoutDc 0` |
+| Disable standby timeout on AC and DC | `Invoke-PowerCfg -SetStandbyTimeoutAc 0 -SetStandbyTimeoutDc 0` |
+| Disable sleep when closing the lid | `Invoke-PowerCfg -DisableLidSleep` |
+| Enable sleep when closing the lid | `Invoke-PowerCfg -EnableLidSleep` |
+| Re-activate the current power scheme | `Invoke-PowerCfg -ReactivateCurrentScheme` |
 | List local SMB shares | `Get-RemoteSmbShare` |
 | List SMB shares of MyServer | `Get-RemoteSmbShare \\MyServer` |
 | List DNS zones | `Get-ADObject -SearchBase "CN=MicrosoftDNS,DC=DomainDnsZones,DC=AD,DC=bitsadmin,DC=com" -LDAPFilter "(ObjectClass=dnsZone)" -SearchScope OneLevel` |

@@ -102,6 +102,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Invoke-DsRegCmd | Additional | |
 | Get-WinStation | Additional | |
 | Invoke-Timestomp | Additional | |
+| Invoke-PowerCfg | Additional | |
 | Compress-Archive | Archive | Requires .NET 4.5+ |
 | Expand-Archive | Archive | Requires .NET 4.5+ |
 | Get-Help | Core | |
