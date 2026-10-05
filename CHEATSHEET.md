@@ -38,6 +38,9 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | Apply one timestamp to many files | `Invoke-Timestomp -TargetPath "C:\Temp\*.dll" -Timestamp "2024-01-01 09:00:00"` |
 | Set active power scheme to High Performance | `Invoke-PowerCfg -SetActive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c` |
 | List available power schemes | `Invoke-PowerCfg -List` |
+| Query all settings for the active power scheme | `Invoke-PowerCfg -Query` |
+| Query all settings for a specific power scheme | `Invoke-PowerCfg -Query 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c` |
+| Query settings for a specific subgroup in a specific scheme | `Invoke-PowerCfg -Query 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 238c9fa8-0aad-41ed-83f4-97be242c8f20` |
 | Disable hibernate timeout on AC and DC | `Invoke-PowerCfg -SetHibernateTimeoutAc 0 -SetHibernateTimeoutDc 0` |
 | Disable standby timeout on AC and DC | `Invoke-PowerCfg -SetStandbyTimeoutAc 0 -SetStandbyTimeoutDc 0` |
 | Disable sleep when closing the lid | `Invoke-PowerCfg -DisableLidSleep` |
