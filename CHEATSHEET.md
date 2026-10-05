@@ -89,6 +89,10 @@ Cheatsheet of offensive PowerShell commands that are supported by NoPowerShell.
 | Gracefully stop processes | `Stop-Process -Id 4512,7241` |
 | Kill process | `Stop-Process -Force -Id 4512` |
 | Kill all cmd.exe processes | `Get-Process cmd \| Stop-Process -Force` |
+| Start a process with positional FilePath and Arguments | `Start-Process C:\test.exe "Arg1 Arg2 Arg3"` |
+| Start a hidden process | `Start-Process -FilePath C:\test.exe -Arguments "Arg1 Arg2 Arg3" -WindowStyle Hidden` |
+| Start process with elevated privileges | `Start-Process C:\Tmp\Legit.exe -Verb RunAs` |
+| Start process with alternate credentials | ` Start-Process C:\Tmp\Legit.exe -WorkingDirectory C:\Tmp -Verb RunAsUser -Username ad.bitsadmin.com\User1 -Password MyPass` |
 | Locate KeePass files in the C:\Users\ directory | `Get-ChildItem -Recurse -Force C:\Users\ -Include *.kdbx` |
 | Locate KeePass files in the C:\Users\ directory - Alternative | `ls -Recurse -Force C:\Users\ -Include *.kdbx` |
 | List autoruns | `ls HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run` |

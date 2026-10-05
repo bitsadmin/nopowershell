@@ -115,6 +115,7 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-PSDrive | Management | |
 | Get-HotFix | Management | |
 | Stop-Process | Management | |
+| Start-Process | Management | |
 | Get-ChildItem | Management | |
 | Copy-Item | Management | |
 | New-Item | Management | |
