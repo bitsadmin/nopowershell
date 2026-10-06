@@ -56,7 +56,7 @@ namespace NoPowerShell.Commands.Utility
                     "echo \"Hello World!\""
                 }
             ),
-            new ExampleEntry("Echo string with escaped characters", "Write-Output \"backtick: ``; tab: `t; lf: `ncr: `rrc\"")
+            new ExampleEntry("Echo string with escaped characters", "Write-Output \"backtick: ``; tab: `t; lf: `n; cr: `r\"")
         };
     }
 }
