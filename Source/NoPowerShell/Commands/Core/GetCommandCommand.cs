@@ -158,10 +158,17 @@ namespace NoPowerShell.Commands.Core
                             else
                                 desc = string.Format("{0} - Alternative", example.Description);
 
-                            if(tsv)
+                            if (tsv)
                                 Console.WriteLine("{0}\t{1}", desc, ex);
                             else
-                                Console.WriteLine("| {0} | `{1}` |", desc, ex);
+                            {
+                                if(ex.Contains("``"))
+                                    Console.WriteLine("| {0} | ```{1}``` |", desc, ex);
+                                else if (ex.Contains("`"))
+                                    Console.WriteLine("| {0} | ``{1}`` |", desc, ex);
+                                else
+                                    Console.WriteLine("| {0} | `{1}` |", desc, ex);
+                            }
 
                             i++;
                         }
