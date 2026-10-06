@@ -1,9 +1,9 @@
 # NoPowerShell
 NoPowerShell is a tool implemented in C# which supports executing PowerShell-like commands while remaining invisible to any PowerShell logging mechanisms. This .NET Framework 2 compatible binary can be loaded in Cobalt Strike to execute commands in-memory. No `System.Management.Automation.dll` is used; only native .NET libraries. An alternative usecase for NoPowerShell is to launch it as a DLL via `rundll32.exe` in a restricted environment: `rundll32 NoPowerShell.dll,main`.
 
-This project makes it easy for everyone to extend its functionality using only a few lines of C# code. For more info, see [CONTRIBUTING.md](https://github.com/bitsadmin/nopowershell/blob/master/CONTRIBUTING.md).
+This project makes it easy for everyone to extend its functionality using only a few lines of C# code. For more info, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Latest binaries available from the [Releases](https://github.com/bitsadmin/nopowershell/releases) page. The MASTER branch is not updated very regularly; the latest code and cmdlets are available in the [DEV](https://github.com/bitsadmin/nopowershell/tree/dev) branch. To kickstart your NoPowerShell skills, make sure to also check out the cmdlet [Cheatsheet](https://github.com/bitsadmin/nopowershell/blob/master/CHEATSHEET.md).
+Latest binaries available from the [Releases](https://github.com/bitsadmin/nopowershell/releases) page. The MASTER branch is not updated very regularly; the latest code and cmdlets are available in the [DEV](https://github.com/bitsadmin/nopowershell/tree/dev) branch. To kickstart your NoPowerShell skills, make sure to also check out the cmdlet [Cheatsheet](CHEATSHEET.md).
 
 # Screenshots
 ## Running in Cobalt Strike
@@ -25,7 +25,7 @@ Reasons to use NoPowerShell:
 
 # Usage
 ## Examples
-See [CHEATSHEET.md](https://github.com/bitsadmin/nopowershell/blob/master/CHEATSHEET.md).
+See [CHEATSHEET.md](CHEATSHEET.md).
 
 ## Use in Cobalt Strike via execute-assembly
 Use Cobalt Strike's `execute-assembly` command to launch the `NoPowerShell.exe`. For example `execute-assembly /path/to/NoPowerShell.exe Get-Command`.
@@ -89,76 +89,78 @@ Authors of additional NoPowerShell cmdlets are added to the table below. Moreove
 | Get-ADUser | ActiveDirectory | |
 | Get-ADObject | ActiveDirectory | |
 | Get-ADReplicationSubnet | ActiveDirectory | |
+| Get-ADRootDSE | ActiveDirectory | |
 | Get-ADGroup | ActiveDirectory | |
 | Get-ADGroupMember | ActiveDirectory | |
 | Get-ADComputer | ActiveDirectory | |
 | Get-ADDomainController | ActiveDirectory | |
 | Get-ADTrust | ActiveDirectory | |
-| Get-ADRootDSE | ActiveDirectory | |
 | Copy-Acl | Additional | |
-| Get-RemoteSmbShare | Additional | |
-| Resolve-AdiDnsName | Additional | |
-| Get-Whoami | Additional | |
 | Invoke-DsRegCmd | Additional | |
-| Get-WinStation | Additional | |
-| Invoke-Timestomp | Additional | |
 | Invoke-PowerCfg | Additional | |
+| Get-RemoteSmbShare | Additional | |
+| Invoke-Timestomp | Additional | |
+| New-Shortcut | Additional | |
+| Resolve-AdiDnsName | Additional | |
+| Get-WinStation | Additional | |
+| Get-Whoami | Additional | |
 | Compress-Archive | Archive | Requires .NET 4.5+ |
 | Expand-Archive | Archive | Requires .NET 4.5+ |
-| Get-Help | Core | |
 | Get-Command | Core | |
 | Where-Object | Core | |
+| Get-Help | Core | |
+| Get-WinEvent | Diagnostics | |
 | Resolve-DnsName | DnsClient | |
 | Get-LocalGroupMember | LocalAccounts | |
 | Get-LocalGroup | LocalAccounts | |
+| Get-LocalUser | LocalAccounts | |
 | Set-Clipboard | Management | |
-| Get-PSDrive | Management | |
 | Get-HotFix | Management | |
 | Stop-Process | Management | |
 | Start-Process | Management | |
-| Get-ChildItem | Management | |
-| Copy-Item | Management | |
-| New-Item | Management | |
-| Invoke-WmiMethod | Management | |
-| Remove-Item | Management | |
-| Get-ItemPropertyValue | Management | |
-| Get-ItemProperty | Management | |
-| Get-ComputerInfo | Management | |
-| Get-DnsClientCache | Management | |
+| Get-WindowsOptionalFeature | Management | |
 | Get-Process | Management | |
-| Get-WmiObject | Management | |
-| Get-Clipboard | Management | |
 | Get-Content | Management | |
+| Get-ChildItem | Management | |
+| Get-WmiObject | Management | |
+| New-Item | Management | |
+| Get-PSDrive | Management | |
+| Copy-Item | Management | |
+| Get-ItemProperty | Management | |
+| Remove-Item | Management | |
+| Get-Service | Management | |
+| Get-ItemPropertyValue | Management | |
+| Get-ComputerInfo | Management | |
+| Get-Clipboard | Management | |
+| Get-DnsClientCache | Management | |
+| Invoke-WmiMethod | Management | |
+| Get-NetFirewallRule | NetSecurity | |
+| Get-NetFirewallProfile | NetSecurity | |
 | Test-NetConnection | NetTCPIP | |
 | Get-NetTCPConnection | NetTCPIP | |
 | Get-NetNeighbor | NetTCPIP | No support for IPv6 yet |
 | Get-NetRoute | NetTCPIP | |
 | Get-NetIPAddress | NetTCPIP | |
-| Get-NetFirewallProfile | NetSecurity | |
-| Get-NetFirewallRule | NetSecurity | |
-| Get-Service | Management | |
-| Get-LocalUser | LocalAccounts | |
-| Get-WinEvent | Diagnostics | |
-| New-Shortcut | Additional | |
+| Get-ScheduledTask | NoPowerShell.Commands | |
 | Get-Acl | Security | |
-| Get-SmbMapping | SmbShare | |
 | Get-SmbShare | SmbShare | |
+| Get-SmbMapping | SmbShare | |
 | Invoke-Sqlcmd | SQLPS | |
 | Get-Tpm | TrustedPlatformModule | |
+| Write-Output | Utility | |
 | Get-FileHash | Utility | |
 | ConvertFrom-SddlString | Utility | |
 | Sort-Object | Utility | |
 | Measure-Object | Utility | |
-| Invoke-WebRequest | Utility | |
 | Select-Object | Utility | |
 | Out-File | Utility | |
 | Format-Table | Utility | |
 | Format-List | Utility | |
 | Export-Csv | Utility | |
 | ConvertTo-Csv | Utility | |
-| Write-Output | Utility | |
+| Invoke-WebRequest | Utility | |
 
-Also make sure to check out the [Cheatsheet](https://github.com/bitsadmin/nopowershell/blob/master/CHEATSHEET.md) for examples on how to use these cmdlets.
+Also make sure to check out the [Cheatsheet](CHEATSHEET.md) for examples on how to use these cmdlets.
 
 # Acknowledgements
 Various NoPowerShell cmdlets and NoPowerShell DLL include code created by other developers.
