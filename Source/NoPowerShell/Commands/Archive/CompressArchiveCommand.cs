@@ -29,6 +29,7 @@ namespace NoPowerShell.Commands.Archive
             string destinationPath = _arguments.Get<StringArgument>("DestinationPath").Value;
             string compressionLevel = _arguments.Get<StringArgument>("CompressionLevel").Value;
             CompressionLevel cl = CompressionLevel.Optimal;
+            bool containsWildcard = path.IndexOfAny(new char[] { '*', '?' }) >= 0;
 
             // Determine compression level
             switch (compressionLevel.ToLowerInvariant())
@@ -46,29 +47,54 @@ namespace NoPowerShell.Commands.Archive
                     throw new ArgumentException(string.Format("Unknown compression level: {0}. Possible options: Optimal, NoCompression, Fastest.", compressionLevel));
             }
 
-            // Validate path
-            if (!File.Exists(path))
-                throw new ItemNotFoundException(path);
-
-            // Determine whether input is file or directory
-            FileAttributes attr = File.GetAttributes(path);
-
-            // Compress directory
-            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            if (containsWildcard)
             {
-                ZipFile.CreateFromDirectory(path, destinationPath, cl, false);
-            }
+                string directory = Path.GetDirectoryName(path);
+                if (string.IsNullOrEmpty(directory))
+                    directory = Directory.GetCurrentDirectory();
 
-            // Compress file
-            else
-            {
-                FileInfo fi = new FileInfo(path);
+                string searchPattern = Path.GetFileName(path);
+                if (string.IsNullOrEmpty(searchPattern))
+                    searchPattern = "*";
+
+                if (!Directory.Exists(directory))
+                    throw new ItemNotFoundException(path);
+
+                string[] files = Directory.GetFiles(directory, searchPattern, SearchOption.TopDirectoryOnly);
+                if (files.Length == 0)
+                    throw new ItemNotFoundException(path);
 
                 using (FileStream fs = new FileStream(destinationPath, FileMode.Create))
                 using (ZipArchive arch = new ZipArchive(fs, ZipArchiveMode.Create))
                 {
-                    arch.CreateEntryFromFile(path, fi.Name);
+                    foreach (string file in files)
+                    {
+                        arch.CreateEntryFromFile(file, Path.GetFileName(file), cl);
+                    }
                 }
+            }
+            else
+            {
+                // Compress directory
+                if (Directory.Exists(path))
+                {
+                    ZipFile.CreateFromDirectory(path, destinationPath, cl, false);
+                }
+
+                // Compress file
+                else if (File.Exists(path))
+                {
+                    FileInfo fi = new FileInfo(path);
+
+                    using (FileStream fs = new FileStream(destinationPath, FileMode.Create))
+                    using (ZipArchive arch = new ZipArchive(fs, ZipArchiveMode.Create))
+                    {
+                        arch.CreateEntryFromFile(path, fi.Name, cl);
+                    }
+                }
+
+                else
+                    throw new ItemNotFoundException(path);
             }
 
             // Return resulting filename
